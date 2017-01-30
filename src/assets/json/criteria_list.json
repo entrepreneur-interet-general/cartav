@@ -1,0 +1,81 @@
+{
+  "criteria_list": [
+    {
+      "name": "PVE et accidents",
+      "values": [
+        {
+            "name": "année",
+            "field_name_pve": "ANNEE_INFRACTION",
+            "field_name_acc": "ANNEE",
+            "values": [{
+                "label": "2015",
+                "checked": true
+            }, {
+                "label": "2014",
+                "checked": false
+            }, {
+                "label": "2013",
+                "checked": false
+            }]
+        }, {
+            "name": "jour",
+            "field_name_pve": "LIBELLE_JOUR_INFRACTION",
+            "field_name_acc": "LIBELLE_JOUR",
+            "values": [{
+                "label": "lundi",
+                "checked": true
+            }, {
+                "label": "mardi",
+                "checked": true
+            }, {
+                "label": "mercredi",
+                "checked": true
+            }, {
+                "label": "jeudi",
+                "checked": true
+            }, {
+                "label": "vendredi",
+                "checked": true
+            }, {
+                "label": "samedi",
+                "checked": true
+            }, {
+                "label": "dimanche",
+                "checked": true
+            }]
+        }
+      ]
+    },
+    {
+      "name": "PVE",
+      "values": []
+    },
+    {
+      "name": "Accidents",
+      "values": [
+{
+            "name": "luminosité",
+            "field_name_acc": "lum",
+            "values": [{
+                "label": "plein jour",
+                "checked": true
+            }, {
+                "label": "nuit avec éclairage public allumé",
+                "checked": true
+            }, {
+                "label": "nuit sans éclairage public",
+                "checked": true
+            }, {
+                "label": "crépuscule ou aube",
+                "checked": true
+            }, {
+                "label": "nuit avec éclairage public non allumé",
+                "checked": true
+            }
+          ]
+        }
+
+      ]
+    }
+  ]
+}
