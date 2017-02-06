@@ -5,7 +5,7 @@
             <span v-for="cat_list in category.values">
                 <h3>{{ cat_list.name }}</h3>
                     <span v-for="val in cat_list.values">
-                        <input type="checkbox" name="crit.name" value="val.label" v-model="val.checked" v-on:click="update_clusters()"> {{val.label }}<br>
+                        <input type="checkbox" value="val.label" v-model="val.checked" v-on:click="emit_queries()"> {{val.label }}<br>
                     </span>
                 <hr>
             </span>
@@ -25,17 +25,16 @@ export default {
     }
   },
   methods: {
-    update_clusters () {
-      let queryPve = this.generate_query('pve')
-      // searchAndDisplay('es2_2010_2015_pve_sr', query_pve, markers_pve)
-      let queryAcc = this.generate_query('acc')
-      // searchAndDisplay('es2_2005_2015_accidents_caracteristiques_lieux', query_acc, markers_acc)
-      console.log(queryPve, queryAcc)
+    emit_queries () {
+      this.$store.dispatch('set_queries', {
+        pve: this.generate_query('pve'),
+        acc: this.generate_query('acc')
+      })
     },
-    generate_query (dataset) {
+    generate_query (type) {
       // lit les critères cochés et génère la requête ES correspondante
-      let fieldName = dataset === 'pve' ? 'field_name_pve' : 'field_name_acc'
-      let fieldDepartement = dataset === 'pve' ? 'DEPARTEMENT_INFRACTION' : 'dep'
+      let fieldName = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
+      let fieldDepartement = type === 'pve' ? 'DEPARTEMENT_INFRACTION' : 'dep'
       let query = {
         size: 0,
         query: {
@@ -59,11 +58,11 @@ export default {
 
       var must = []
 
-      for (let scope in this.criteria_list) {
-        for (let criteria in scope.values) {
+      for (let scope of this.criteria_list) {
+        for (let criteria of scope.values) {
           if (fieldName in criteria) {
             let criteriaFilters = []
-            for (let value in criteria.values) {
+            for (let value of criteria.values) {
               if (value.checked) {
                 let f = {}
                 f[criteria[fieldName]] = value.label
@@ -89,9 +88,13 @@ export default {
           }
         }
       }
+
       query.query.constant_score.filter.bool.must = must
-      return JSON.stringify(query)
+      return query
     }
+  },
+  mounted () {
+    this.emit_queries()
   }
 }
 </script>
@@ -99,6 +102,8 @@ export default {
 <style>
 #filters {
     width: 20%;
+    height: 100%;
+    overflow: scroll;
     float: left;
 }
 </style>
