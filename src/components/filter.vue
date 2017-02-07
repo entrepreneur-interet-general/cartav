@@ -6,7 +6,7 @@
       Lorem ipsum dolor text....
     </div>
 
-    <form id="filters">
+    <form>
         <span v-for="category in criteria_list">
             <h2>{{ category.name }}</h2>
             <span v-for="cat_list in category.values">
