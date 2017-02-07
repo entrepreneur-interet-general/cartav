@@ -144,7 +144,7 @@ export default {
         cluster = markersAcc
       }
 
-      let agg = resp.aggregations.group_by_dep.buckets
+      let agg = resp.aggregations.group_by.buckets
       let n = agg.length
       if (n === 0) {
         cluster.eachLayer((layer) => {

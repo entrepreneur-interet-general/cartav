@@ -6,7 +6,13 @@
       Lorem ipsum dolor text....
     </div>
 
-    <form>
+    <form id="filters">
+        <span v-for="category in criteria_list">
+            <h2>{{ category.name }}</h2>
+            <span v-for="cat_list in category.values">
+                <h3>{{ cat_list.name }}</h3>
+                    <span v-for="val in cat_list.values">
+                        <input type="checkbox" value="val.label" v-model="val.checked" v-on:click="emit_queries()"> {{val.label }}<br>
                     </span>
                 <hr>
             </span>
@@ -14,6 +20,7 @@
             <hr>
         </span>
     </form>
+  </div>
 </template>
 
 <script>
@@ -48,7 +55,7 @@ export default {
           }
         },
         aggs: {
-          group_by_dep: {
+          group_by: {
             terms: {
               field: fieldDepartement,
               size: 150
