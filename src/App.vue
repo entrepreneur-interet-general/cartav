@@ -8,6 +8,9 @@
 <script>
 import carte from './components/map'
 import filters from './components/filter'
+import jQuery from 'jquery'
+global.jQuery = jQuery
+require('bootstrap')
 
 export default {
   name: 'app',

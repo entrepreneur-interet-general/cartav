@@ -1,11 +1,12 @@
 <template>
-    <form id="filters">
-        <span v-for="category in criteria_list">
-            <h2>{{ category.name }}</h2>
-            <span v-for="cat_list in category.values">
-                <h3>{{ cat_list.name }}</h3>
-                    <span v-for="val in cat_list.values">
-                        <input type="checkbox" value="val.label" v-model="val.checked" v-on:click="emit_queries()"> {{val.label }}<br>
+  <div id="filters">
+
+    <button data-toggle="collapse" data-target="#demo">Collapsible</button>
+    <div id="demo" class="collapse">
+      Lorem ipsum dolor text....
+    </div>
+
+    <form>
                     </span>
                 <hr>
             </span>
@@ -101,7 +102,7 @@ export default {
 
 <style>
 #filters {
-    width: 20%;
+    width: 250px;
     height: 100%;
     overflow: scroll;
     float: left;
