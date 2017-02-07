@@ -168,9 +168,8 @@ export default {
 
 <style>
 #map2 {
-    height: 100%;
-    width: 80%;
-    float: right;
+     height: 100%;
+     width: auto;
 }
 
 .cluster-offset.marker-cluster {

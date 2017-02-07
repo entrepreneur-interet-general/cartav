@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
-    <filters></filters>
-    <carte></carte>
+  <div id="app" class="container">
+      <filters></filters>
+      <carte></carte>
   </div>
 </template>
 
