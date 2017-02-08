@@ -1,0 +1,116 @@
+{
+    "PVE et accidents" : {
+        "année" : {          
+          "field_name_pve": "ANNEE_INFRACTION",
+          "field_name_acc": "ANNEE",
+          "values": {
+            "2015": true,
+            "2014": false,
+            "2013": false
+          }
+        },
+        "jour" : {
+          "field_name_pve": "LIBELLE_JOUR_INFRACTION",
+          "field_name_acc": "LIBELLE_JOUR",
+          "values": {
+            "lundi": true,
+            "mardi": true,
+            "mercredi": true,
+            "jeudi": true,
+            "vendredi": true,
+            "samedi": true,
+            "dimanche": true
+          }
+        }
+    },
+    "PVE" : {
+
+    },
+    "Accidents" : {
+      "luminosité" : {
+        "field_name_acc": "lum.lum_facet",
+        "values": {
+          "plein jour": true,
+          "nuit avec éclairage public allumé": true,
+          "nuit sans éclairage public": true,
+          "crépuscule ou aube": true,
+          "nuit avec éclairage public non allumé": true
+        }
+      },
+      "Lieu" : {
+        "field_name_acc": "agg.agg_facet",
+        "values": {
+          "en agglomération": true,
+          "hors agglomération": true
+        }
+      },
+      "Intersection" : {
+        "field_name_acc": "int.int_facet",
+        "values": {
+          "hors intersection": true,
+          "intersection en X": true,
+          "intersection en T": true,
+          "giratoire": true,
+          "autre intersection": true,
+          "intersection en Y": true,
+          "place": true,
+          "place": true,
+          "passage à niveau": true
+        }
+      },
+      "Conditions météo" : {
+        "field_name_acc": "atm.atm_facet",
+        "values": {
+          "météo normale": true,
+          "pluie légère": true,
+          "temps couvert": true,
+          "pluie forte": true,
+          "temps éblouissant": true,
+          "neige - grêle": true,
+          "autre météo": true,
+          "vent fort - tempête": true
+        }
+      },
+      "Collisions" : {
+        "field_name_acc": "col.col_facet",
+        "values": {
+          "autre collision": true,
+          "2 véhicules côté": true,
+          "Sans collision": true,
+          "2 véhicules par l'arrière": true,
+          "2 véhicules frontal": true,
+          "3+ véhicules autre": true,
+          "3+ véhicules en chaîne": true
+        }
+      },
+      "Heure" : {
+        "field_name_acc": "HEURE.HEURE_facet",
+        "values": {
+          "0": true,
+          "1": true,
+          "2": true,
+          "3": true,
+          "4": true,
+          "5": true,
+          "6": true,
+          "7": true,
+          "8": true,
+          "9": true,
+          "10": true,
+          "11": true,
+          "12": true,
+          "13": true,
+          "14": true,
+          "15": true,
+          "16": true,
+          "17": true,
+          "18": true,
+          "19": true,
+          "20": true,
+          "21": true,
+          "22": true,
+          "23": true
+        }
+      }
+    }
+}

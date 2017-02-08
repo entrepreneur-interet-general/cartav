@@ -1,5 +1,7 @@
 import elasticsearch from 'elasticsearch'
 
+export default { search, generateQuery }
+
 var client = new elasticsearch.Client({
   host: 'http://10.237.27.129:80',
   apiVersion: '2.2'
@@ -15,4 +17,88 @@ function search (type, query) {
   })
 }
 
-export default { search }
+function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
+  // Lit les critères cochés et génère la requête ES correspondante
+  let fieldName = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
+  var must = []
+
+  for (let scopeName in criteriaList) {
+    let scope = criteriaList[scopeName]
+    for (let criteriaName in scope) {
+      let criteria = scope[criteriaName]
+      if (fieldName in criteria) {
+        if (criteria[fieldName] !== ExceptThisfield) {
+          let criteriaFilters = []
+          for (let valueName in criteria.values) {
+            if (criteria.values[valueName]) {
+              let f = {}
+              f[criteria[fieldName]] = valueName
+              let filter = {
+                term: f
+              }
+              criteriaFilters.push(filter)
+            }
+          }
+          if (criteriaFilters.length === 0) {
+            // ~hack~ rien n'est coché : pas de résultats attendus
+            let f = {}
+            f[criteria[fieldName]] = -1
+            criteriaFilters.push({
+              term: f
+            })
+          }
+          must.push({
+            bool: {
+              should: criteriaFilters
+            }
+          })
+        }
+      }
+    }
+  }
+
+  return must
+}
+
+function generateAggs (type, fieldName, size) {
+  // Génère le champ aggrégation de la requête ES
+  let aggs = {
+    group_by: {
+      terms: {
+        field: fieldName,
+        size: size
+      }
+    }
+  }
+
+  return aggs
+}
+
+function getQueryBase () {
+  return {
+    size: 0,
+    query: {
+      constant_score: {
+        filter: {
+          bool: {
+            must: []
+          }
+        }
+      }
+    },
+    aggs: {}
+  }
+}
+
+function generateQuery (criteriaList, type) {
+  // Génération de la query ES
+  let query = getQueryBase()
+  let must = generateFilter(criteriaList, type)
+  let fieldDepartement = type === 'pve' ? 'DEPARTEMENT_INFRACTION' : 'dep'
+  let aggs = generateAggs(type, fieldDepartement, 150)
+
+  query.query.constant_score.filter.bool.must = must
+  query.aggs = aggs
+
+  return query
+}

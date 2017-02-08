@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import carte from './components/map'
-import filters from './components/filter'
+import carte from './map'
+import filters from './filter'
 import jQuery from 'jquery'
 global.jQuery = jQuery
 require('bootstrap')
