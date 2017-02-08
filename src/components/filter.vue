@@ -39,31 +39,9 @@ export default {
         acc: this.generate_query('acc')
       })
     },
-    generate_query (type) {
-      // lit les critères cochés et génère la requête ES correspondante
+    generate_filter (type) {
+      // Lit les critères cochés et génère la requête ES correspondante
       let fieldName = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
-      let fieldDepartement = type === 'pve' ? 'DEPARTEMENT_INFRACTION' : 'dep'
-      let query = {
-        size: 0,
-        query: {
-          constant_score: {
-            filter: {
-              bool: {
-                must: []
-              }
-            }
-          }
-        },
-        aggs: {
-          group_by: {
-            terms: {
-              field: fieldDepartement,
-              size: 150
-            }
-          }
-        }
-      }
-
       var must = []
 
       for (let scope of this.criteria_list) {
@@ -97,7 +75,46 @@ export default {
         }
       }
 
+      return must
+    },
+    generate_aggs (type, fieldName, size) {
+      // Génère le champ aggrégation de la requête ES
+      let aggs = {
+        group_by: {
+          terms: {
+            field: fieldName,
+            size: size
+          }
+        }
+      }
+
+      return aggs
+    },
+    get_query_base () {
+      return {
+        size: 0,
+        query: {
+          constant_score: {
+            filter: {
+              bool: {
+                must: []
+              }
+            }
+          }
+        },
+        aggs: {}
+      }
+    },
+    generate_query (type) {
+      // Génération de la query ES
+      let query = this.get_query_base()
+      let must = this.generate_filter(type)
+      let fieldDepartement = type === 'pve' ? 'DEPARTEMENT_INFRACTION' : 'dep'
+      let aggs = this.generate_aggs(type, fieldDepartement, 150)
+
       query.query.constant_score.filter.bool.must = must
+      query.aggs = aggs
+
       return query
     }
   },
