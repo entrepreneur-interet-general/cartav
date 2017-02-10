@@ -24,7 +24,21 @@
         }
     },
     "PVE" : {
-
+      "LIBELLE_FAMILLE" : {
+        "field_name_pve": "LIBELLE_FAMILLE.LIBELLE_FAMILLE_facet",
+        "values": {
+          "Règles administratives": true,
+          "vitesse": true,
+          "Règles de conduite": true,
+          "Ceinture et casque": true,
+          "Priorité de passage - intersections": true,
+          "Etat ou équipement des utilisateurs et des véhicules": true,
+          "alcool": true,
+          "Eclairage et signalisation": true,
+          "Croisements et dépassements": true,
+          "Autres infractions à la circulation routière": true
+        }
+      }
     },
     "Accidents" : {
       "luminosité" : {

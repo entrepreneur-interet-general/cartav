@@ -105,29 +105,6 @@ export default {
 
     markersPve.addLayer(PVE)
     map.addLayer(markersPve)
-
-    /* markers_pve.eachLayer(function(layer) {
-      layer.on('click', function() {
-        if (map.hasLayer(communes_boundaries)) {
-          map.removeLayer(communes_boundaries)
-        }
-        //$.getJSON("../../data/communes/" + layer.dep + "/communes.geojson", function(geojson) {
-        $.getJSON("http://10.237.27.129/data/communes/" + layer.dep + "/communes.geojson", function(geojson) {
-
-            communes_boundaries = new L.geoJson(geojson, {
-                style: function(feature) {
-                    return {
-                        color: "black",
-                        weight: 1.,
-                        fillOpacity: 0.
-                     }
-                }
-            })
-            communes_boundaries.addTo(map)
-            map.fitBounds(communes_boundaries.getBounds())
-          })
-      })
-    }) */
   },
   actions: {
     level_changed (context, level) {
@@ -146,20 +123,18 @@ export default {
 
       let agg = resp.aggregations.group_by.buckets
       let n = agg.length
-      if (n === 0) {
-        cluster.eachLayer((layer) => {
-          layer.count = 0
-        })
-      }
-      for (var i = 0; i < n; ++i) {
-        let esKey = agg[i].key
-        let count = agg[i].doc_count
-        cluster.eachLayer((layer) => {
-          if (layer.dep === esKey) {
-            layer.count = count
+
+      cluster.eachLayer((layer) => {
+        let found = false
+        for (var i = 0; i < n; ++i) {
+          if (layer.dep === agg[i].key) {
+            layer.count = agg[i].doc_count
+            found = true
+            break
           }
-        })
-      }
+        }
+        if (!found) { layer.count = 0 }
+      })
       cluster.refreshClusters()
     }
   }

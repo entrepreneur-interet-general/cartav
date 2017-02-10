@@ -1,6 +1,6 @@
 import elasticsearch from 'elasticsearch'
 
-export default { search, generateQuery }
+export default { search, generateQuery, generateQueryAggByFilter }
 
 var client = new elasticsearch.Client({
   host: 'http://10.237.27.129:80',
@@ -9,8 +9,8 @@ var client = new elasticsearch.Client({
 
 function search (type, query) {
   let index = type === 'pve' ? 'es2_2010_2015_pve_sr' : 'es2_2005_2015_accidents_caracteristiques_lieux'
-  console.log(type)
-  console.log(query)
+  // console.log(type)
+  // console.log(query)
   return client.search({
     index: index,
     body: query
@@ -27,7 +27,8 @@ function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
     for (let criteriaName in scope) {
       let criteria = scope[criteriaName]
       if (fieldName in criteria) {
-        if (criteria[fieldName] !== ExceptThisfield) {
+        let criteriaPath = scopeName + '.' + criteriaName
+        if (criteriaPath !== ExceptThisfield) {
           let criteriaFilters = []
           for (let valueName in criteria.values) {
             if (criteria.values[valueName]) {
@@ -101,4 +102,37 @@ function generateQuery (criteriaList, type) {
   query.aggs = aggs
 
   return query
+}
+
+function generateQueryAggByFilter (criteriaList, type) {
+  let promises = []
+  let criteriaPaths = []
+  let fieldNameType = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
+  for (let scopeName in criteriaList) {
+    let scope = criteriaList[scopeName]
+    for (let criteriaName in scope) {
+      let criteria = scope[criteriaName]
+      if (fieldNameType in criteria) {
+        let criteriaPath = scopeName + '.' + criteriaName
+        let query = getQueryBase()
+        let must = generateFilter(criteriaList, type, criteriaPath)
+        let fieldName = criteria[fieldNameType]
+        let aggs = generateAggs(type, fieldName, 150)
+
+        query.query.constant_score.filter.bool.must = must
+        query.aggs = aggs
+        promises.push(search(type, query))
+        criteriaPaths.push(criteriaPath)
+      }
+    }
+  }
+  return Promise.all(promises).then(function (values) {
+    let res = {}
+    values.forEach(function (value, i) {
+      value.aggregations.group_by.buckets.forEach(function (b) {
+        res[criteriaPaths[i] + '.' + b['key']] = b['doc_count']
+      })
+    })
+    return res
+  })
 }

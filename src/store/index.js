@@ -38,10 +38,10 @@ export default new Vuex.Store({
       }
     },
     queryES (context) {
-      console.log('gtgt')
       let queryPve = es.generateQuery(context.state.criteria_list, 'pve')
       let queryAcc = es.generateQuery(context.state.criteria_list, 'acc')
       let queries = {acc: queryAcc, pve: queryPve} // context.commit('set_queries', {acc: queryAcc, pve: queryPve})
+      console.log(JSON.stringify(queryPve))
 
       function dispatchESResult (type) {
         es.search(type, queries[type]).then(
@@ -53,5 +53,14 @@ export default new Vuex.Store({
       dispatchESResult('pve')
       dispatchESResult('acc')
     }
+  },
+  getters: {
+    aggregated_acc: state => {
+      return es.generateQueryAggByFilter(state.criteria_list, 'acc')
+    },
+    aggregated_pve: state => {
+      return es.generateQueryAggByFilter(state.criteria_list, 'pve')
+    }
+
   }
 })

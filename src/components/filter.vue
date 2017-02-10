@@ -7,13 +7,20 @@
     </div>
 
     <form>
-        <span v-for="(category, category_name) in get_criteria_list">
-            <h2>{{ category_name }}</h2>
-            <span v-for="(criteria, criteria_name) in category">
-                <h3>{{ criteria_name }}</h3>
-                    <span v-for="(val, val_name) in criteria.values">
-                      <input type="checkbox" value="criteria_name" v-on:click="set_criteria(category_name+'.'+criteria_name+'.values.'+val_name, !val)" :checked="val"> {{val_name }}<br>                        
+        <span v-for="(category, categoryName) in get_criteria_list">
+            <h2>{{ categoryName }}</h2>
+            <span v-for="(criteria, criteriaName) in category">
+                <h3>{{ criteriaName }}</h3>
+                    <span v-for="(val, valName) in criteria.values">
+                      <input type="checkbox" value="criteriaName" v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val"> 
+                      {{valName }} 
+                      <span class="agg_acc" v-if="agg_acc_value(categoryName, criteriaName, valName)"> 
+                        [ {{ agg_acc_value(categoryName, criteriaName, valName) }} ]
+                        </span>
+                      <span class="agg_pve" v-if="agg_pve_value(categoryName, criteriaName, valName)">
+                        [ {{ agg_pve_value(categoryName, criteriaName, valName) }} ]
                       </span>
+                      <br>
                     </span>
                 <hr>
             </span>
@@ -22,7 +29,26 @@
 </template>
 
 <script>
+function niceDisplay (n) {
+  // Gère l'affichage des nombres dans les clusters
+  if (n > 1000000) {
+    n = Math.round(n / 10000) / 100 + 'm'
+  }
+  if (n > 10000) {
+    n = Math.round(n / 1000) + 'k'
+  } else if (n > 1000) {
+    n = Math.round(n / 100) / 10 + 'k'
+  }
+  return n
+}
+
 export default {
+  data () {
+    return {
+      agg_acc: {},
+      agg_pve: {}
+    }
+  },
   computed: {
     get_criteria_list () {
       return this.$store.state.criteria_list
@@ -31,10 +57,26 @@ export default {
   methods: {
     set_criteria (criteriaPath, value) {
       this.$store.dispatch('set_criteria', {criteriaPath: criteriaPath, value: value})
+      this.get_aggregated(this)
+    },
+    get_aggregated (vm) {
+      this.$store.getters.aggregated_acc.then(function (res) {
+        vm.agg_acc = res
+      })
+      this.$store.getters.aggregated_pve.then(function (res) {
+        vm.agg_pve = res
+      })
+    },
+    agg_pve_value (categoryName, criteriaName, valName) {
+      return niceDisplay(this.agg_pve[categoryName + '.' + criteriaName + '.' + valName])
+    },
+    agg_acc_value (categoryName, criteriaName, valName) {
+      return niceDisplay(this.agg_acc[categoryName + '.' + criteriaName + '.' + valName])
     }
   },
   mounted () {
     this.$store.dispatch('queryES')
+    this.get_aggregated(this)
   }
 }
 </script>
@@ -45,5 +87,15 @@ export default {
     height: 100%;
     overflow: scroll;
     float: left;
+    resize: horizontal;
+}
+.agg_acc {
+  color: red;
+}
+.agg_pve {
+  color: blue;
+}
+h2 {
+  background-color: #BEBEBE;
 }
 </style>
