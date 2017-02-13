@@ -1,0 +1,187 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.1025138096359837,
+          49.44303275406678
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "ROUEN",
+        "NOM_REG": "Normandie"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          3.0574986200428484,
+          50.63194973193236
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "LILLE",
+        "NOM_REG": "Hauts-de-France"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.341388853408767,
+          48.86005511300893
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "PARIS",
+        "NOM_REG": "Île-de-France"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          7.752286500860818,
+          48.57331461657618
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "STRASBOURG",
+        "NOM_REG": "Grand Est"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.6807291729423894,
+          48.11429418183454
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "RENNES",
+        "NOM_REG": "Bretagne"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.553912565469664,
+          47.217277601687094
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "NANTES",
+        "NOM_REG": "Pays de la Loire"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.9040461428801216,
+          47.902195177425995
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "ORLEANS",
+        "NOM_REG": "Centre-Val de Loire"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.041980231385232,
+          47.322977984221616
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "DIJON",
+        "NOM_REG": "Bourgogne-Franche-Comté"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.5795077025121529,
+          44.83775090103766
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "BORDEAUX",
+        "NOM_REG": "Nouvelle-Aquitaine"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.830147124494905,
+          45.76950932659448
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "LYON",
+        "NOM_REG": "Auvergne-Rhône-Alpes"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.4419950708425087,
+          43.60434467390564
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "TOULOUSE",
+        "NOM_REG": "Occitanie"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          5.3829239511772435,
+          43.298693043790905
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "MARSEILLE",
+        "NOM_REG": "Provence-Alpes-Côte d'Azur"
+      }
+    },
+    {
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.736308585597412,
+          41.92558214222727
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "NOM_CHF": "AJACCIO",
+        "NOM_REG": "Corse"
+      }
+    }
+  ]
+}

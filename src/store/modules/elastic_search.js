@@ -1,8 +1,21 @@
 import elasticsearch from 'elasticsearch'
 
-export default { search, generateQuery, generateQueryAggByFilter }
+export default { search, generateQuery, generateQueryAggByFilter, getFieldsMap }
 
-var client = new elasticsearch.Client({
+function getFieldsMap () {
+  return {
+    'acc': {
+      'region': 'NOM_REG.NOM_REG_facet',
+      'departement': 'dep'
+    },
+    'pve': {
+      'region': 'NOM_REG.NOM_REG_facet',
+      'departement': 'DEPARTEMENT_INFRACTION'
+    }
+  }
+}
+
+let client = new elasticsearch.Client({
   host: 'http://10.237.27.129:80',
   apiVersion: '2.2'
 })
@@ -91,12 +104,26 @@ function getQueryBase () {
   }
 }
 
-function generateQuery (criteriaList, type) {
+function addAdditionalFilters (must, type, additionalCriterias) {
+  for (let crit of additionalCriterias) {
+    let filterName = getFieldsMap()[type][crit.level]
+    let f = {}
+    f[filterName] = crit.name
+    must.push({
+      bool: {
+        should: [{term: f}]
+      }
+    })
+  }
+}
+
+function generateQuery (criteriaList, type, level, additionalCriterias) {
   // Génération de la query ES
   let query = getQueryBase()
   let must = generateFilter(criteriaList, type)
-  let fieldDepartement = type === 'pve' ? 'DEPARTEMENT_INFRACTION' : 'dep'
-  let aggs = generateAggs(type, fieldDepartement, 150)
+  addAdditionalFilters(must, type, additionalCriterias)
+  let aggKey = getFieldsMap()[type][level]
+  let aggs = generateAggs(type, aggKey, 150)
 
   query.query.constant_score.filter.bool.must = must
   query.aggs = aggs

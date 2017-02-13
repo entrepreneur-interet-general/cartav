@@ -9,6 +9,8 @@ import 'leaflet.markercluster'
 import '../../node_modules/leaflet/dist/leaflet.css'
 import '../../node_modules/leaflet.markercluster/dist/MarkerCluster.css'
 import departements from '../assets/json/departements_wgs84.json'
+import regions from '../assets/json/regions_nouvelles_wgs84.json'
+import es from '../store/modules/elastic_search'
 
 function niceDisplay (n) {
   // Gère l'affichage des nombres dans les clusters
@@ -55,21 +57,55 @@ function clusterIconCreateFunctionOffset (cluster) {
   return clusterIconCreateFunctionWithClass(cluster, 'cluster-pve cluster-offset marker-cluster')
 }
 
-var markersPve = L.markerClusterGroup({
-  // Création du cluster des verbalisations
-  iconCreateFunction: clusterIconCreateFunctionOffset,
-  singleMarkerMode: true
-})
+let clusters = {}
+let map
+let layerGroup = L.layerGroup()
 
-var markersAcc = L.markerClusterGroup({
-  // Création du cluster des accidents
-  iconCreateFunction: clusterIconCreateFunction,
-  singleMarkerMode: true
-})
+function createClusters () {
+  clusters = es.getFieldsMap()
+  for (let typeName in clusters) {
+    let type = clusters[typeName]
+    for (let levelName in type) {
+      clusters[typeName][levelName] = L.markerClusterGroup({
+        iconCreateFunction: typeName === 'acc'
+          ? clusterIconCreateFunction
+          : clusterIconCreateFunctionOffset,
+        singleMarkerMode: true
+      }).addLayer(levelName === 'region'
+        ? L.geoJson(regions, {
+          onEachFeature (feature, layer) {
+            layer.name = feature.properties.NOM_REG
+            layer.count = 0
+          }
+        })
+        : L.geoJson(departements, {
+          onEachFeature (feature, layer) {
+            layer.name = feature.properties.CODE_DEPT
+            layer.count = 0
+          }
+        })
+      )
+    }
+  }
+}
+
+function getCluster (type, level) {
+  return clusters[type][level]
+}
 
 export default {
+  data () {
+    return {}
+  },
+  computed: {
+    get_level () {
+      return this.$store.getters.get_level
+    }
+  },
+  methods: {
+  },
   mounted () {
-    var map = L.map('map2', {
+    map = L.map('map2', {
       zoomControl: false
     }).setView([45.853459, 2.349312], 6)
 
@@ -78,56 +114,48 @@ export default {
       maxZoom: 18
     }).addTo(map)
 
-    var prefectures = L.geoJson(departements, {
-      onEachFeature (feature, layer) {
-        layer.dep = feature.properties.CODE_DEPT
-        layer.count = 0
-      }
+    createClusters()
+    let level = this.$store.getters.get_level
+    layerGroup.addLayer(getCluster('acc', level))
+    layerGroup.addLayer(getCluster('pve', level))
+    map.addLayer(layerGroup)
+
+    let vm = this
+    getCluster('acc', 'region').eachLayer(function (layer) {
+      layer.on('click', function () {
+        vm.$store.dispatch('set_level', {level: 'departement', parentLevel: 'region', parentName: layer.name})
+      })
     })
-
-    markersAcc.addLayer(prefectures)
-    map.addLayer(markersAcc)
-
-    var PVE = L.geoJson(departements, {
-      onEachFeature (feature, layer) {
-        layer.dep = feature.properties.CODE_DEPT
-        layer.count = 0
-      }
+    getCluster('pve', 'region').eachLayer(function (layer) {
+      layer.on('click', function () {
+        vm.$store.dispatch('set_level', {level: 'departement', parentLevel: 'region', parentName: layer.name})
+      })
     })
 
     map.on('zoomend', (e) => {
-      if (map.getZoom() > 10) {
-        this.$store.dispatch('set_level', 'departement')
-      } else {
-        this.$store.dispatch('set_level', 'region')
+      if (map.getZoom() < 8) {
+        this.$store.dispatch('set_level', {level: 'region'})
       }
     })
-
-    markersPve.addLayer(PVE)
-    map.addLayer(markersPve)
   },
   actions: {
     level_changed (context, level) {
-      console.log('Il faut faire un truc maintenant !')
+      layerGroup.clearLayers()
+      layerGroup.addLayer(getCluster('acc', level))
+      layerGroup.addLayer(getCluster('pve', level))
     },
     display (context, response) {
       let resp = response.response
       let type = response.type
-
-      let cluster
-      if (type === 'pve') {
-        cluster = markersPve
-      } else {
-        cluster = markersAcc
-      }
-
+      let level = context.getters.get_level
+      let cluster = getCluster(type, level)
       let agg = resp.aggregations.group_by.buckets
       let n = agg.length
 
       cluster.eachLayer((layer) => {
         let found = false
         for (var i = 0; i < n; ++i) {
-          if (layer.dep === agg[i].key) {
+          if (layer.name === agg[i].key) {
             layer.count = agg[i].doc_count
             found = true
             break

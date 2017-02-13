@@ -6,6 +6,8 @@
       Lorem ipsum dolor text....
     </div>
 
+    {{ get_level }}
+
     <form>
         <span v-for="(category, categoryName) in get_criteria_list">
             <h2>{{ categoryName }}</h2>
@@ -52,6 +54,9 @@ export default {
   computed: {
     get_criteria_list () {
       return this.$store.state.criteria_list
+    },
+    get_level () {
+      return this.$store.getters.get_level
     }
   },
   methods: {
