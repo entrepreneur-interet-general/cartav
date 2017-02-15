@@ -26,17 +26,14 @@ function niceDisplay (n) {
   return n
 }
 
-function getCluster (type, level) {
-  return clusters[type][level]
-}
-
-let clusters = {}
 let map
 let layerGroup = L.layerGroup()
 
 export default {
   data () {
-    return {}
+    return {
+      clusters: es.getFieldsMap()
+    }
   },
   computed: {
     level () {
@@ -48,12 +45,27 @@ export default {
     verbalisations () {
       return this.$store.state.verbalisations
     }
-
+  },
+  watch: {
+    level () {
+      layerGroup.clearLayers()
+      layerGroup.addLayer(this.createCluster('acc', this.level, this.$store.state.parent.id))
+      layerGroup.addLayer(this.createCluster('pve', this.level, this.$store.state.parent.id))
+    },
+    accidents () {
+      this.display(this.accidents, 'acc')
+    },
+    verbalisations () {
+      this.display(this.verbalisations, 'pve')
+    }
   },
   methods: {
+    getCluster (type, level) {
+      return this.clusters[type][level]
+    },
     display (resp, type) {
       let level = this.level
-      let cluster = getCluster(type, level)
+      let cluster = this.getCluster(type, level)
       let agg = resp.aggregations.group_by.buckets
       let n = agg.length
 
@@ -77,10 +89,11 @@ export default {
       let n = _(childMarkers).map(c => c.count).sum()
 
       let c = ' '
+      /*
       if (this.level === 'departement') {
         let parentId = this.$store.state.parent.id
-        c += _.includes(childMarkers.map(c => c.parentgeoId), parentId) ? '' : 'hidden '
-      }
+        c += _.includes(childMarkers.map(c => c.parentGeoId), parentId) ? '' : 'hidden '
+      } */
 
       c += 'marker-cluster-'
       if (n < 10000) {
@@ -103,16 +116,50 @@ export default {
     clusterIconCreateFunctionOffset (cluster) {
       return this.clusterIconCreateFunctionWithClass(cluster, 'cluster-pve cluster-offset marker-cluster')
     },
+    createCluster (type, level, filter) {
+      let iconCreateFunction = type === 'acc' ? this.clusterIconCreateFunction : this.clusterIconCreateFunctionOffset
+      let geoName = level === 'region' ? 'NOM_REG' : 'CODE_DEPT'
+      let geoId = level === 'region' ? 'CODE_REG' : 'CODE_DEPT'
+      let parentGeoId = level === 'region' ? '' : 'CODE_REG'
+      let geoJson = level === 'region' ? regions : departements
+
+      let cluster = L.markerClusterGroup({
+        iconCreateFunction: iconCreateFunction,
+        singleMarkerMode: true,
+        maxClusterRadius: 40
+      }).addLayer(L.geoJson(geoJson, {
+        onEachFeature (feature, layer) {
+          layer.geoName = feature.properties[geoName]
+          layer.geoId = feature.properties[geoId]
+          layer.parentGeoId = feature.properties[parentGeoId]
+          layer.count = 0
+        },
+        filter (feature, layer) {
+          if (filter) {
+            return feature.properties[parentGeoId] === filter
+          } else {
+            return true
+          }
+        }
+      })
+      )
+      // console.log(type)
+      // console.log(this.clusters[type]['region'])
+      this.clusters[type][level] = cluster
+
+      return cluster
+    },
     createClusters () {
-      clusters = es.getFieldsMap()
-      for (let typeName in clusters) {
-        let type = clusters[typeName]
+      // clusters = es.getFieldsMap()
+      for (let typeName in this.clusters) {
+        let type = this.clusters[typeName]
         for (let levelName in type) {
-          clusters[typeName][levelName] = L.markerClusterGroup({
+          this.clusters[typeName][levelName] = L.markerClusterGroup({
             iconCreateFunction: typeName === 'acc'
               ? this.clusterIconCreateFunction
               : this.clusterIconCreateFunctionOffset,
-            singleMarkerMode: true
+            singleMarkerMode: true,
+            maxClusterRadius: 40
           }).addLayer(levelName === 'region'
             ? L.geoJson(regions, {
               onEachFeature (feature, layer) {
@@ -125,25 +172,12 @@ export default {
               onEachFeature (feature, layer) {
                 layer.geoName = feature.properties.CODE_DEPT
                 layer.count = 0
-                layer.parentgeoId = feature.properties.CODE_REG
+                layer.parentGeoId = feature.properties.CODE_REG
               }
             })
           )
         }
       }
-    }
-  },
-  watch: {
-    level () {
-      layerGroup.clearLayers()
-      layerGroup.addLayer(getCluster('acc', this.level))
-      layerGroup.addLayer(getCluster('pve', this.level))
-    },
-    accidents () {
-      this.display(this.accidents, 'acc')
-    },
-    verbalisations () {
-      this.display(this.verbalisations, 'pve')
     }
   },
   mounted () {
@@ -156,19 +190,25 @@ export default {
       maxZoom: 18
     }).addTo(map)
 
-    this.createClusters()
+    // this.createClusters()
     let level = this.$store.state.level
-    layerGroup.addLayer(getCluster('acc', level))
-    layerGroup.addLayer(getCluster('pve', level))
+    this.createCluster('acc', level)
+    this.createCluster('pve', level)
+    // this.createCluster('pve', level)
+    layerGroup.addLayer(this.getCluster('acc', level))
+    layerGroup.addLayer(this.getCluster('pve', level))
+
+    // layerGroup.addLayer(this.createCluster('acc', level))
+    // layerGroup.addLayer(this.createCluster('pve', level))
     map.addLayer(layerGroup)
 
     let vm = this
-    getCluster('acc', 'region').eachLayer(function (layer) {
+    this.getCluster('acc', 'region').eachLayer(function (layer) {
       layer.on('click', function () {
         vm.$store.dispatch('set_level', {level: 'departement', parentLevel: 'region', parentName: layer.geoName, parentId: layer.geoId})
       })
     })
-    getCluster('pve', 'region').eachLayer(function (layer) {
+    this.getCluster('pve', 'region').eachLayer(function (layer) {
       layer.on('click', function () {
         vm.$store.dispatch('set_level', {level: 'departement', parentLevel: 'region', parentName: layer.geoName, parentId: layer.geoId})
       })
