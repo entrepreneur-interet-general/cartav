@@ -1,16 +1,14 @@
 <template>
   <div id="filters">
 
-    <button data-toggle="collapse" data-target="#demo">Collapsible</button>
-    <div id="demo" class="collapse">
-      Lorem ipsum dolor text....
-    </div>
+    <h4>Niveau : {{ get_level }}</h4>
 
-    {{ get_level }}
-
-    <form>
+    <div>
         <span v-for="(category, categoryName) in get_criteria_list">
-            <h2>{{ categoryName }}</h2>
+          <h2>{{ categoryName }}</h2>
+          <button type="button" class="btn btn-xs btn-default" data-toggle="collapse" v-bind:data-target="'#id'+categoryName.replace(/ /g,'_')"><i class="glyphicon glyphicon-chevron-down"></i></button>
+          
+          <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse">
             <span v-for="(criteria, criteriaName) in category">
                 <h3>{{ criteriaName }}</h3>
                     <span v-for="(val, valName) in criteria.values">
@@ -26,7 +24,8 @@
                     </span>
                 <hr>
             </span>
-    </form>
+        </span>
+    </div>
   </div>
 </template>
 
@@ -48,7 +47,8 @@ export default {
   data () {
     return {
       agg_acc: {},
-      agg_pve: {}
+      agg_pve: {},
+      show: true
     }
   },
   computed: {
@@ -56,7 +56,7 @@ export default {
       return this.$store.state.criteria_list
     },
     get_level () {
-      return this.$store.getters.get_level
+      return this.$store.state.level
     }
   },
   methods: {
@@ -99,8 +99,5 @@ export default {
 }
 .agg_pve {
   color: blue;
-}
-h2 {
-  background-color: #BEBEBE;
 }
 </style>

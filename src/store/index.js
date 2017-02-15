@@ -17,7 +17,9 @@ export default new Vuex.Store({
   state: {
     level: 'region',
     criteria_list: criteriaList,
-    additional_criterias: []
+    parent: {level: '', name: '', id: ''},
+    accidents: {},
+    verbalisations: {}
   },
   mutations: {
     set_level (state, level) {
@@ -26,11 +28,17 @@ export default new Vuex.Store({
     set_criteria (state, {criteriaPath, value}) {
       set(state.criteria_list, criteriaPath, value)
     },
-    set_additional_criterias (state, {level, name}) {
-      state.additional_criterias = [{level, name}]
+    set_parent (state, {level, name, id}) {
+      state.parent = {level: level, name: name, id: id}
     },
-    clear_additional_criterias (state) {
-      state.additional_criterias = []
+    clear_parent (state) {
+      state.parent = {level: '', name: '', id: ''}
+    },
+    accidents_data (state, response) {
+      state.accidents = response
+    },
+    verbalisations_data (state, response) {
+      state.verbalisations = response
     }
   },
   actions: {
@@ -38,48 +46,41 @@ export default new Vuex.Store({
       context.commit('set_criteria', o)
       context.dispatch('queryES')
     },
-    set_level (context, {level, parentLevel, parentName}) {
+    set_level (context, {level, parentLevel, parentName, parentId}) {
       if (context.state.level !== level) {
         context.commit('set_level', level)
         console.log(parentLevel)
         console.log(parentName)
-        if (parentLevel && parentName) {
-          context.commit('set_additional_criterias', {level: parentLevel, name: parentName})
+        if (parentLevel && parentName && parentId) {
+          context.commit('set_parent', {level: parentLevel, name: parentName, id: parentId})
         } else {
-          context.commit('clear_additional_criterias')
+          context.commit('clear_parent')
         }
-        context.dispatch('level_changed', level)
         context.dispatch('queryES')
       }
     },
     queryES (context) {
       let state = context.state
-      let queryPve = es.generateQuery(state.criteria_list, 'pve', state.level, state.additional_criterias)
-      let queryAcc = es.generateQuery(state.criteria_list, 'acc', state.level, state.additional_criterias)
-      let queries = {acc: queryAcc, pve: queryPve}
+      let queryPve = es.generateQuery(state.criteria_list, 'pve', state.level, state.parent)
+      let queryAcc = es.generateQuery(state.criteria_list, 'acc', state.level, state.parent)
 
-      // console.log(JSON.stringify(queryAcc))
+      es.search('acc', queryAcc).then(
+        resp => context.commit('accidents_data', resp),
+        err => console.trace(`Requête ES accidents`, err.message)
+      )
 
-      function dispatchESResult (type) {
-        es.search(type, queries[type]).then(
-          resp => context.dispatch('display', {response: resp, type: type}),
-          err => console.trace(`Requête ES ${type}`, err.message)
-        )
-      }
-
-      dispatchESResult('pve')
-      dispatchESResult('acc')
+      es.search('pve', queryPve).then(
+        resp => context.commit('verbalisations_data', resp),
+        err => console.trace(`Requête ES verbalisations`, err.message)
+      )
     }
   },
   getters: {
     aggregated_acc: state => {
-      return es.generateQueryAggByFilter(state.criteria_list, 'acc')
+      return es.generateQueryAggByFilter(state.criteria_list, 'acc', state.parent)
     },
     aggregated_pve: state => {
-      return es.generateQueryAggByFilter(state.criteria_list, 'pve')
-    },
-    get_level: state => {
-      return state.level
+      return es.generateQueryAggByFilter(state.criteria_list, 'pve', state.parent)
     }
   }
 })

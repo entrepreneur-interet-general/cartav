@@ -12,7 +12,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "ROUEN",
-        "NOM_REG": "Normandie"
+        "NOM_REG": "Normandie",
+        "CODE_REG": "28"
       }
     },
     {
@@ -26,7 +27,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LILLE",
-        "NOM_REG": "Hauts-de-France"
+        "NOM_REG": "Hauts-de-France",
+        "CODE_REG": "32"
       }
     },
     {
@@ -40,7 +42,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "PARIS",
-        "NOM_REG": "Île-de-France"
+        "NOM_REG": "Île-de-France",
+        "CODE_REG": "11"
       }
     },
     {
@@ -54,7 +57,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "STRASBOURG",
-        "NOM_REG": "Grand Est"
+        "NOM_REG": "Grand Est",
+        "CODE_REG": "44"
       }
     },
     {
@@ -68,7 +72,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "RENNES",
-        "NOM_REG": "Bretagne"
+        "NOM_REG": "Bretagne",
+        "CODE_REG": "53"
       }
     },
     {
@@ -82,7 +87,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "NANTES",
-        "NOM_REG": "Pays de la Loire"
+        "NOM_REG": "Pays de la Loire",
+        "CODE_REG": "52"
       }
     },
     {
@@ -96,7 +102,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "ORLEANS",
-        "NOM_REG": "Centre-Val de Loire"
+        "NOM_REG": "Centre-Val de Loire",
+        "CODE_REG": "24"
       }
     },
     {
@@ -110,7 +117,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "DIJON",
-        "NOM_REG": "Bourgogne-Franche-Comté"
+        "NOM_REG": "Bourgogne-Franche-Comté",
+        "CODE_REG": "27"
       }
     },
     {
@@ -124,7 +132,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "BORDEAUX",
-        "NOM_REG": "Nouvelle-Aquitaine"
+        "NOM_REG": "Nouvelle-Aquitaine",
+        "CODE_REG": "75"
       }
     },
     {
@@ -138,7 +147,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LYON",
-        "NOM_REG": "Auvergne-Rhône-Alpes"
+        "NOM_REG": "Auvergne-Rhône-Alpes",
+        "CODE_REG": "84"
       }
     },
     {
@@ -152,7 +162,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "TOULOUSE",
-        "NOM_REG": "Occitanie"
+        "NOM_REG": "Occitanie",
+        "CODE_REG": "76"
       }
     },
     {
@@ -166,7 +177,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "MARSEILLE",
-        "NOM_REG": "Provence-Alpes-Côte d'Azur"
+        "NOM_REG": "Provence-Alpes-Côte d'Azur",
+        "CODE_REG": "93"
       }
     },
     {
@@ -180,7 +192,8 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "AJACCIO",
-        "NOM_REG": "Corse"
+        "NOM_REG": "Corse",
+        "CODE_REG": "94"
       }
     }
   ]

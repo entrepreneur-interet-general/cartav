@@ -104,8 +104,8 @@ function getQueryBase () {
   }
 }
 
-function addAdditionalFilters (must, type, additionalCriterias) {
-  for (let crit of additionalCriterias) {
+function addAdditionalFilters (must, type, crit) {
+  if (crit.level && crit.name) {
     let filterName = getFieldsMap()[type][crit.level]
     let f = {}
     f[filterName] = crit.name
@@ -117,11 +117,11 @@ function addAdditionalFilters (must, type, additionalCriterias) {
   }
 }
 
-function generateQuery (criteriaList, type, level, additionalCriterias) {
+function generateQuery (criteriaList, type, level, additionalCriteria) {
   // Génération de la query ES
   let query = getQueryBase()
   let must = generateFilter(criteriaList, type)
-  addAdditionalFilters(must, type, additionalCriterias)
+  addAdditionalFilters(must, type, additionalCriteria)
   let aggKey = getFieldsMap()[type][level]
   let aggs = generateAggs(type, aggKey, 150)
 
@@ -131,7 +131,7 @@ function generateQuery (criteriaList, type, level, additionalCriterias) {
   return query
 }
 
-function generateQueryAggByFilter (criteriaList, type) {
+function generateQueryAggByFilter (criteriaList, type, additionalCriteria) {
   let promises = []
   let criteriaPaths = []
   let fieldNameType = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
@@ -146,6 +146,7 @@ function generateQueryAggByFilter (criteriaList, type) {
         let fieldName = criteria[fieldNameType]
         let aggs = generateAggs(type, fieldName, 150)
 
+        addAdditionalFilters(must, type, additionalCriteria)
         query.query.constant_score.filter.bool.must = must
         query.aggs = aggs
         promises.push(search(type, query))
