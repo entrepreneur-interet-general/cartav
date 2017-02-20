@@ -8,10 +8,8 @@ import L from 'leaflet'
 import 'leaflet.markercluster'
 import '../../node_modules/leaflet/dist/leaflet.css'
 import '../../node_modules/leaflet.markercluster/dist/MarkerCluster.css'
-import departements from '../assets/json/departements_wgs84.json'
-import regions from '../assets/json/regions_nouvelles_wgs84.json'
-import es from '../store/modules/elastic_search'
 import _ from 'lodash'
+import test from './test'
 
 function niceDisplay (n) {
   // Gère l'affichage des nombres dans les clusters
@@ -26,50 +24,114 @@ function niceDisplay (n) {
   return n
 }
 
-let map
-let layerGroup = L.layerGroup()
-
 export default {
+  components: {
+    test: test
+  },
   data () {
     return {
-      clusters: es.getFieldsMap()
+      map: null,
+      layerGroup: L.layerGroup(),
+      clusters: {
+        'Pve': null,
+        'Acc': null
+      },
+      cluster_Acc: null,
+      cluster_Pve: null,
+      levelsInfos: {
+        region: {
+          parent: '',
+          child: 'departement',
+          geoName: 'NOM_REG',
+          geoId: 'CODE_REG',
+          parentGeoId: ''
+
+        },
+        departement: {
+          parent: 'region',
+          child: 'commune',
+          geoName: 'CODE_DEPT',
+          geoId: 'CODE_DEPT',
+          parentGeoId: 'CODE_REG'
+        },
+        commune: {
+          parent: 'departement',
+          child: '',
+          geoName: 'CodeINSEE',
+          geoId: 'CodeINSEE',
+          parentGeoId: 'CodeDepartement'
+        }
+      }
     }
   },
   computed: {
     level () {
       return this.$store.state.level
     },
+    level_geojson () {
+      return this.$store.state.level_geojson
+    },
     accidents () {
       return this.$store.state.accidents
     },
     verbalisations () {
       return this.$store.state.verbalisations
+    },
+    criteria_list () {
+      return this.$store.state.criteria_list
     }
   },
   watch: {
     level () {
-      layerGroup.clearLayers()
-      layerGroup.addLayer(this.createCluster('acc', this.level, this.$store.state.parent.id))
-      layerGroup.addLayer(this.createCluster('pve', this.level, this.$store.state.parent.id))
+    },
+    level_geojson () {
+      console.log('nouveau geojson chargé !')
+      this.layerGroup.clearLayers()
+      this.createCluster('acc', this.level, this.$store.state.parent.id)
+      this.createCluster('pve', this.level, this.$store.state.parent.id)
+
+      this.clusters['acc'] = this.cluster_Acc
+      this.layerGroup.addLayer(this.cluster_Acc)
+      this.addClusterActions('acc')
+      this.map.fitBounds(this.cluster_Acc.getBounds())
+
+      this.clusters['pve'] = this.cluster_Pve
+      this.layerGroup.addLayer(this.cluster_Pve)
+      this.addClusterActions('pve')
     },
     accidents () {
-      this.display(this.accidents, 'acc')
+      this.updateClusterValues(this.accidents, 'acc')
     },
     verbalisations () {
-      this.display(this.verbalisations, 'pve')
+      this.updateClusterValues(this.verbalisations, 'pve')
     }
   },
   methods: {
-    getCluster (type, level) {
-      return this.clusters[type][level]
+    setCluster (type, cluster) {
+      if (type === 'acc') {
+        this.cluster_Acc = cluster
+      } else if (type === 'pve') {
+        this.cluster_Pve = cluster
+      }
     },
-    display (resp, type) {
-      let level = this.level
-      let cluster = this.getCluster(type, level)
+    getCluster (type) {
+      return this.clusters[type]
+    },
+    updateClusterValues (resp, type) {
+      // console.log('tentative de updateClusterValues')
+      let cluster = this.getCluster(type)
       let agg = resp.aggregations.group_by.buckets
       let n = agg.length
 
+      /*
+      if (this.level === 'commune' && type === 'acc') {
+        console.log(agg)
+      } */
+
       cluster.eachLayer((layer) => {
+        /* if (this.level === 'commune' && type === 'acc') {
+          console.log(layer.geoName)
+        } */
         let found = false
         for (var i = 0; i < n; ++i) {
           if (layer.geoName === agg[i].key) {
@@ -82,6 +144,18 @@ export default {
       })
       cluster.refreshClusters()
     },
+    addClustersActions () {
+      this.addClusterActions('acc')
+      this.addClusterActions('pve')
+    },
+    addClusterActions (type) {
+      let vm = this
+      this.clusters[type].eachLayer(function (layer) {
+        layer.on('click', function () {
+          vm.$store.dispatch('set_level', {level: vm.levelsInfos[vm.level].child, parentLevel: vm.level, parentName: layer.geoName, parentId: layer.geoId})
+        })
+      })
+    },
     clusterIconCreateFunctionWithClass (cluster, Additionalclass) {
       // Fonction personnalisée de création des icones de clusters
       // Additionalclass permet de passer une customization via le css
@@ -89,14 +163,10 @@ export default {
       let n = _(childMarkers).map(c => c.count).sum()
 
       let c = ' '
-      /*
-      if (this.level === 'departement') {
-        let parentId = this.$store.state.parent.id
-        c += _.includes(childMarkers.map(c => c.parentGeoId), parentId) ? '' : 'hidden '
-      } */
-
       c += 'marker-cluster-'
-      if (n < 10000) {
+      if (n === 0) {
+        c += 'empty'
+      } else if (n < 10000) {
         c += 'small'
       } else if (n < 50000) {
         c += 'medium'
@@ -118,16 +188,16 @@ export default {
     },
     createCluster (type, level, filter) {
       let iconCreateFunction = type === 'acc' ? this.clusterIconCreateFunction : this.clusterIconCreateFunctionOffset
-      let geoName = level === 'region' ? 'NOM_REG' : 'CODE_DEPT'
-      let geoId = level === 'region' ? 'CODE_REG' : 'CODE_DEPT'
-      let parentGeoId = level === 'region' ? '' : 'CODE_REG'
-      let geoJson = level === 'region' ? regions : departements
+
+      let geoName = this.levelsInfos[level].geoName
+      let geoId = this.levelsInfos[level].geoId
+      let parentGeoId = this.levelsInfos[level].parentGeoId
 
       let cluster = L.markerClusterGroup({
         iconCreateFunction: iconCreateFunction,
         singleMarkerMode: true,
         maxClusterRadius: 40
-      }).addLayer(L.geoJson(geoJson, {
+      }).addLayer(L.geoJson(this.level_geojson, {
         onEachFeature (feature, layer) {
           layer.geoName = feature.properties[geoName]
           layer.geoId = feature.properties[geoId]
@@ -141,84 +211,38 @@ export default {
             return true
           }
         }
-      })
-      )
-      // console.log(type)
-      // console.log(this.clusters[type]['region'])
-      this.clusters[type][level] = cluster
-
-      return cluster
-    },
-    createClusters () {
-      // clusters = es.getFieldsMap()
-      for (let typeName in this.clusters) {
-        let type = this.clusters[typeName]
-        for (let levelName in type) {
-          this.clusters[typeName][levelName] = L.markerClusterGroup({
-            iconCreateFunction: typeName === 'acc'
-              ? this.clusterIconCreateFunction
-              : this.clusterIconCreateFunctionOffset,
-            singleMarkerMode: true,
-            maxClusterRadius: 40
-          }).addLayer(levelName === 'region'
-            ? L.geoJson(regions, {
-              onEachFeature (feature, layer) {
-                layer.geoName = feature.properties.NOM_REG
-                layer.geoId = feature.properties.CODE_REG
-                layer.count = 0
-              }
-            })
-            : L.geoJson(departements, {
-              onEachFeature (feature, layer) {
-                layer.geoName = feature.properties.CODE_DEPT
-                layer.count = 0
-                layer.parentGeoId = feature.properties.CODE_REG
-              }
-            })
-          )
-        }
-      }
+      }))
+      this.setCluster(type, cluster)
     }
   },
   mounted () {
-    map = L.map('map2', {
-      zoomControl: false
-    }).setView([45.853459, 2.349312], 6)
+    this.map = L.map('map2', {zoomControl: false}).setView([45.853459, 2.349312], 6)
 
     L.tileLayer(' http://osm.psi.minint.fr/{z}/{x}/{y}.png', {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
       maxZoom: 18
-    }).addTo(map)
+    }).addTo(this.map)
 
-    // this.createClusters()
-    let level = this.$store.state.level
-    this.createCluster('acc', level)
-    this.createCluster('pve', level)
-    // this.createCluster('pve', level)
-    layerGroup.addLayer(this.getCluster('acc', level))
-    layerGroup.addLayer(this.getCluster('pve', level))
+    this.map.addLayer(this.layerGroup)
+    this.$store.dispatch('set_level', {level: 'region'})
 
-    // layerGroup.addLayer(this.createCluster('acc', level))
-    // layerGroup.addLayer(this.createCluster('pve', level))
-    map.addLayer(layerGroup)
-
-    let vm = this
-    this.getCluster('acc', 'region').eachLayer(function (layer) {
-      layer.on('click', function () {
-        vm.$store.dispatch('set_level', {level: 'departement', parentLevel: 'region', parentName: layer.geoName, parentId: layer.geoId})
-      })
-    })
-    this.getCluster('pve', 'region').eachLayer(function (layer) {
-      layer.on('click', function () {
-        vm.$store.dispatch('set_level', {level: 'departement', parentLevel: 'region', parentName: layer.geoName, parentId: layer.geoId})
-      })
-    })
-
-    map.on('zoomend', (e) => {
-      if (map.getZoom() < 4) {
+    this.map.on('zoomend', (e) => {
+      if (this.map.getZoom() < 6) {
         this.$store.dispatch('set_level', {level: 'region'})
       }
     })
+    /*
+    $.getJSON('http://10.237.27.129/data/communes/' + '75' + '/communes.geojson', function (geojson) {
+      vm.layerGroup.addLayer(L.geoJson(geojson, {
+        style (feature) {
+          return {
+            color: 'black',
+            weight: 1,
+            fillOpacity: 0
+          }
+        }
+      }))
+    }) */
   }
 }
 </script>
@@ -234,48 +258,59 @@ export default {
 }
 
 /*ACCIDENTS*/
+.cluster-acc.marker-cluster-empty {
+    background-color: rgba(226, 118, 29, 0.3);
+}
+.cluster-acc.marker-cluster-empty div {
+    background-color: rgba(226, 118, 29, 0.3);
+}
 .cluster-acc.marker-cluster-small {
-    background-color: rgba(226, 152, 152, 0.6);
+    background-color: rgba(226, 118, 29, 0.8);
 }
 .cluster-acc.marker-cluster-small div {
-    background-color: rgba(226, 152, 152, 0.6);
+    background-color: rgba(226, 118, 29, 0.8);
 }
-
 .cluster-acc.marker-cluster-medium {
-    background-color: rgba(241, 95, 95, 0.6);
+    background-color: rgba(241, 77, 27, 0.8);
 }
 .cluster-acc.marker-cluster-medium div {
-    background-color: rgba(241, 95, 95, 0.6);
+    background-color: rgba(241, 77, 27, 0.8);
 }
 
 .cluster-acc.marker-cluster-large {
-    background-color: rgba(253, 32, 32, 0.6);
+    background-color: rgba(253, 32, 32, 0.8);
 }
 .cluster-acc.marker-cluster-large div {
-    background-color: rgba(253, 32, 32, 0.6);
+    background-color: rgba(253, 32, 32, 1.0);
 }
 
 
 /*PVE*/
+.cluster-pve.marker-cluster-empty {
+    background-color: rgba(131, 133, 226, 0.3);
+}
+.cluster-pve.marker-cluster-empty div {
+    background-color: rgba(131, 133, 226, 0.3);
+}
 .cluster-pve.marker-cluster-small {
-    background-color: rgba(131, 133, 226, 0.4);
+    background-color: rgba(131, 133, 226, 0.8);
 }
 .cluster-pve.marker-cluster-small div {
-    background-color: rgba(131, 133, 226, 0.4);
+    background-color: rgba(131, 133, 226, 0.8);
 }
 
 .cluster-pve.marker-cluster-medium {
-    background-color: rgba(74, 74, 241, 0.4);
+    background-color: rgba(74, 74, 241, 0.8);
 }
 .cluster-pve.marker-cluster-medium div {
-    background-color: rgba(74, 74, 241, 0.4);
+    background-color: rgba(74, 74, 241, 0.8);
 }
 
 .cluster-pve.marker-cluster-large {
-    background-color: rgba(9, 9, 253, 0.4);
+    background-color: rgba(9, 9, 253, 0.8);
 }
 .cluster-pve.marker-cluster-large div {
-    background-color: rgba(9, 9, 253, 0.4);
+    background-color: rgba(9, 9, 253, 0.8);
 }
 
 
@@ -292,6 +327,7 @@ export default {
     text-align: center;
     border-radius: 15px;
     font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    color: white;
 }
 .marker-cluster span {
     line-height: 30px;

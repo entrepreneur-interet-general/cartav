@@ -1,16 +1,18 @@
 import elasticsearch from 'elasticsearch'
 
-export default { search, generateQuery, generateQueryAggByFilter, getFieldsMap }
+export default { search, generateQuery, generateQueryAggByFilter, getFieldsMap, getCommunesGeoJson }
 
 function getFieldsMap () {
   return {
     'acc': {
       'region': 'NOM_REG.NOM_REG_facet',
-      'departement': 'dep'
+      'departement': 'dep',
+      'commune': 'city_code_x'
     },
     'pve': {
       'region': 'NOM_REG.NOM_REG_facet',
-      'departement': 'DEPARTEMENT_INFRACTION'
+      'departement': 'DEPARTEMENT_INFRACTION',
+      'commune': 'CODE_INSEE_INFRACTION'
     }
   }
 }
@@ -123,7 +125,7 @@ function generateQuery (criteriaList, type, level, additionalCriteria) {
   let must = generateFilter(criteriaList, type)
   addAdditionalFilters(must, type, additionalCriteria)
   let aggKey = getFieldsMap()[type][level]
-  let aggs = generateAggs(type, aggKey, 150)
+  let aggs = generateAggs(type, aggKey, 1000)
 
   query.query.constant_score.filter.bool.must = must
   query.aggs = aggs
@@ -162,5 +164,60 @@ function generateQueryAggByFilter (criteriaList, type, additionalCriteria) {
       })
     })
     return res
+  })
+}
+
+function getCommunesGeoJson (dep) {
+  return client.search({
+    index: 'es2_2016_geohisto_communes',
+    body: {
+      size: 1000,
+      _source: [
+        'Population',
+        'Commune',
+        'Code INSEE',
+        'Code Département',
+        'latitude',
+        'longitude'
+      ],
+      query: {
+        'constant_score': {
+          'filter': {
+            'bool': {
+              'must': [
+                {
+                  'bool': {
+                    'should': [
+                      {
+                        'term': {
+                          'Code Département': dep
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }).then(function (resp) {
+    let features = []
+    let geoJson = {'type': 'FeatureCollection',
+      'features': features
+    }
+    for (let hit of resp.hits.hits) {
+      features.push({'type': 'Feature',
+        'geometry': {'type': 'Point', 'coordinates': [parseFloat(hit._source.longitude), parseFloat(hit._source.latitude)]},
+        'properties': {
+          'Population': hit._source.Population,
+          'Commune': hit._source.Commune,
+          'CodeINSEE': hit._source['Code INSEE'],
+          'CodeDepartement': hit._source['Code Département']
+        }
+      })
+    }
+    return geoJson
   })
 }
