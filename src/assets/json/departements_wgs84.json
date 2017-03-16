@@ -12,7 +12,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LONS-LE-SAUNIER",
-        "NOM_REG": "BOURGOGNE-FRANCHE-COMTE",
+        "NOM_REG": "Bourgogne-Franche-Comté",
         "NOM_DEPT": "JURA",
         "CODE_REG": "27",
         "CODE_DEPT": "39"
@@ -29,7 +29,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "SAINT-ETIENNE",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "LOIRE",
         "CODE_REG": "84",
         "CODE_DEPT": "42"
@@ -46,7 +46,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "ROUEN",
-        "NOM_REG": "NORMANDIE",
+        "NOM_REG": "Normandie",
         "NOM_DEPT": "SEINE-MARITIME",
         "CODE_REG": "28",
         "CODE_DEPT": "76"
@@ -63,7 +63,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "AUXERRE",
-        "NOM_REG": "BOURGOGNE-FRANCHE-COMTE",
+        "NOM_REG": "Bourgogne-Franche-Comté",
         "NOM_DEPT": "YONNE",
         "CODE_REG": "27",
         "CODE_DEPT": "89"
@@ -80,7 +80,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "COLMAR",
-        "NOM_REG": "ALSACE-CHAMPAGNE-ARDENNE-LORRAINE",
+        "NOM_REG": "Grand Est",
         "NOM_DEPT": "HAUT-RHIN",
         "CODE_REG": "44",
         "CODE_DEPT": "68"
@@ -97,7 +97,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "CHARTRES",
-        "NOM_REG": "CENTRE-VAL DE LOIRE",
+        "NOM_REG": "Centre-Val de Loire",
         "NOM_DEPT": "EURE-ET-LOIR",
         "CODE_REG": "24",
         "CODE_DEPT": "28"
@@ -114,7 +114,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "TROYES",
-        "NOM_REG": "ALSACE-CHAMPAGNE-ARDENNE-LORRAINE",
+        "NOM_REG": "Grand Est",
         "NOM_DEPT": "AUBE",
         "CODE_REG": "44",
         "CODE_DEPT": "10"
@@ -131,7 +131,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "BAR-LE-DUC",
-        "NOM_REG": "ALSACE-CHAMPAGNE-ARDENNE-LORRAINE",
+        "NOM_REG": "Grand Est",
         "NOM_DEPT": "MEUSE",
         "CODE_REG": "44",
         "CODE_DEPT": "55"
@@ -148,7 +148,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "ALENCON",
-        "NOM_REG": "NORMANDIE",
+        "NOM_REG": "Normandie",
         "NOM_DEPT": "ORNE",
         "CODE_REG": "28",
         "CODE_DEPT": "61"
@@ -165,7 +165,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "STRASBOURG",
-        "NOM_REG": "ALSACE-CHAMPAGNE-ARDENNE-LORRAINE",
+        "NOM_REG": "Grand Est",
         "NOM_DEPT": "BAS-RHIN",
         "CODE_REG": "44",
         "CODE_DEPT": "67"
@@ -182,7 +182,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "AGEN",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "LOT-ET-GARONNE",
         "CODE_REG": "75",
         "CODE_DEPT": "47"
@@ -199,7 +199,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "MONT-DE-MARSAN",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "LANDES",
         "CODE_REG": "75",
         "CODE_DEPT": "40"
@@ -216,7 +216,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "CAEN",
-        "NOM_REG": "NORMANDIE",
+        "NOM_REG": "Normandie",
         "NOM_DEPT": "CALVADOS",
         "CODE_REG": "28",
         "CODE_DEPT": "14"
@@ -233,7 +233,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "BOBIGNY",
-        "NOM_REG": "ILE-DE-FRANCE",
+        "NOM_REG": "Île-de-France",
         "NOM_DEPT": "SEINE-SAINT-DENIS",
         "CODE_REG": "11",
         "CODE_DEPT": "93"
@@ -250,7 +250,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "ARRAS",
-        "NOM_REG": "NORD-PAS-DE-CALAIS-PICARDIE",
+        "NOM_REG": "Hauts-de-France",
         "NOM_DEPT": "PAS-DE-CALAIS",
         "CODE_REG": "32",
         "CODE_DEPT": "62"
@@ -267,7 +267,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "AURILLAC",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "CANTAL",
         "CODE_REG": "84",
         "CODE_DEPT": "15"
@@ -284,7 +284,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "ORLEANS",
-        "NOM_REG": "CENTRE-VAL DE LOIRE",
+        "NOM_REG": "Centre-Val de Loire",
         "NOM_DEPT": "LOIRET",
         "CODE_REG": "24",
         "CODE_DEPT": "45"
@@ -301,7 +301,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "CLERMONT-FERRAND",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "PUY-DE-DOME",
         "CODE_REG": "84",
         "CODE_DEPT": "63"
@@ -318,7 +318,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LAON",
-        "NOM_REG": "NORD-PAS-DE-CALAIS-PICARDIE",
+        "NOM_REG": "Hauts-de-France",
         "NOM_DEPT": "AISNE",
         "CODE_REG": "32",
         "CODE_DEPT": "02"
@@ -335,7 +335,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "RENNES",
-        "NOM_REG": "BRETAGNE",
+        "NOM_REG": "Bretagne",
         "NOM_DEPT": "ILLE-ET-VILAINE",
         "CODE_REG": "53",
         "CODE_DEPT": "35"
@@ -352,7 +352,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "MACON",
-        "NOM_REG": "BOURGOGNE-FRANCHE-COMTE",
+        "NOM_REG": "Bourgogne-Franche-Comté",
         "NOM_DEPT": "SAONE-ET-LOIRE",
         "CODE_REG": "27",
         "CODE_DEPT": "71"
@@ -369,7 +369,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "FOIX",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "ARIEGE",
         "CODE_REG": "76",
         "CODE_DEPT": "09"
@@ -386,7 +386,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "VERSAILLES",
-        "NOM_REG": "ILE-DE-FRANCE",
+        "NOM_REG": "Île-de-France",
         "NOM_DEPT": "YVELINES",
         "CODE_REG": "11",
         "CODE_DEPT": "78"
@@ -403,7 +403,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "NEVERS",
-        "NOM_REG": "BOURGOGNE-FRANCHE-COMTE",
+        "NOM_REG": "Bourgogne-Franche-Comté",
         "NOM_DEPT": "NIEVRE",
         "CODE_REG": "27",
         "CODE_DEPT": "58"
@@ -420,7 +420,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LA ROCHE-SUR-YON",
-        "NOM_REG": "PAYS DE LA LOIRE",
+        "NOM_REG": "Pays de la Loire",
         "NOM_DEPT": "VENDEE",
         "CODE_REG": "52",
         "CODE_DEPT": "85"
@@ -437,7 +437,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "PAU",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "PYRENEES-ATLANTIQUES",
         "CODE_REG": "75",
         "CODE_DEPT": "64"
@@ -454,7 +454,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "PERIGUEUX",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "DORDOGNE",
         "CODE_REG": "75",
         "CODE_DEPT": "24"
@@ -471,7 +471,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LYON",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "RHONE",
         "CODE_REG": "84",
         "CODE_DEPT": "69"
@@ -488,7 +488,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "TOURS",
-        "NOM_REG": "CENTRE-VAL DE LOIRE",
+        "NOM_REG": "Centre-Val de Loire",
         "NOM_DEPT": "INDRE-ET-LOIRE",
         "CODE_REG": "24",
         "CODE_DEPT": "37"
@@ -505,7 +505,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "NANTERRE",
-        "NOM_REG": "ILE-DE-FRANCE",
+        "NOM_REG": "Île-de-France",
         "NOM_DEPT": "HAUTS-DE-SEINE",
         "CODE_REG": "11",
         "CODE_DEPT": "92"
@@ -522,7 +522,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "EPINAL",
-        "NOM_REG": "ALSACE-CHAMPAGNE-ARDENNE-LORRAINE",
+        "NOM_REG": "Grand Est",
         "NOM_DEPT": "VOSGES",
         "CODE_REG": "44",
         "CODE_DEPT": "88"
@@ -539,7 +539,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "MENDE",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "LOZERE",
         "CODE_REG": "76",
         "CODE_DEPT": "48"
@@ -556,7 +556,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "DIGNE-LES-BAINS",
-        "NOM_REG": "PROVENCE-ALPES-COTE D'AZUR",
+        "NOM_REG": "Provence-Alpes-Côte d'Azur",
         "NOM_DEPT": "ALPES-DE-HAUTE-PROVENCE",
         "CODE_REG": "93",
         "CODE_DEPT": "04"
@@ -573,7 +573,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "CHARLEVILLE-MEZIERES",
-        "NOM_REG": "ALSACE-CHAMPAGNE-ARDENNE-LORRAINE",
+        "NOM_REG": "Grand Est",
         "NOM_DEPT": "ARDENNES",
         "CODE_REG": "44",
         "CODE_DEPT": "08"
@@ -590,7 +590,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "ALBI",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "TARN",
         "CODE_REG": "76",
         "CODE_DEPT": "81"
@@ -607,7 +607,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "PARIS",
-        "NOM_REG": "ILE-DE-FRANCE",
+        "NOM_REG": "Île-de-France",
         "NOM_DEPT": "PARIS",
         "CODE_REG": "11",
         "CODE_DEPT": "75"
@@ -624,7 +624,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "MONTAUBAN",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "TARN-ET-GARONNE",
         "CODE_REG": "76",
         "CODE_DEPT": "82"
@@ -641,7 +641,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LA ROCHELLE",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "CHARENTE-MARITIME",
         "CODE_REG": "75",
         "CODE_DEPT": "17"
@@ -658,7 +658,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "TULLE",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "CORREZE",
         "CODE_REG": "75",
         "CODE_DEPT": "19"
@@ -675,7 +675,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LIMOGES",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "HAUTE-VIENNE",
         "CODE_REG": "75",
         "CODE_DEPT": "87"
@@ -692,7 +692,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "TOULON",
-        "NOM_REG": "PROVENCE-ALPES-COTE D'AZUR",
+        "NOM_REG": "Provence-Alpes-Côte d'Azur",
         "NOM_DEPT": "VAR",
         "CODE_REG": "93",
         "CODE_DEPT": "83"
@@ -709,7 +709,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "BEAUVAIS",
-        "NOM_REG": "NORD-PAS-DE-CALAIS-PICARDIE",
+        "NOM_REG": "Hauts-de-France",
         "NOM_DEPT": "OISE",
         "CODE_REG": "32",
         "CODE_DEPT": "60"
@@ -726,7 +726,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "GAP",
-        "NOM_REG": "PROVENCE-ALPES-COTE D'AZUR",
+        "NOM_REG": "Provence-Alpes-Côte d'Azur",
         "NOM_DEPT": "HAUTES-ALPES",
         "CODE_REG": "93",
         "CODE_DEPT": "05"
@@ -743,7 +743,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "PRIVAS",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "ARDECHE",
         "CODE_REG": "84",
         "CODE_DEPT": "07"
@@ -760,7 +760,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "EVREUX",
-        "NOM_REG": "NORMANDIE",
+        "NOM_REG": "Normandie",
         "NOM_DEPT": "EURE",
         "CODE_REG": "28",
         "CODE_DEPT": "27"
@@ -777,7 +777,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "SAINT-BRIEUC",
-        "NOM_REG": "BRETAGNE",
+        "NOM_REG": "Bretagne",
         "NOM_DEPT": "COTES-D'ARMOR",
         "CODE_REG": "53",
         "CODE_DEPT": "22"
@@ -794,7 +794,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "AJACCIO",
-        "NOM_REG": "CORSE",
+        "NOM_REG": "Corse",
         "NOM_DEPT": "CORSE-DU-SUD",
         "CODE_REG": "94",
         "CODE_DEPT": "2a"
@@ -811,7 +811,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "PERPIGNAN",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "PYRENEES-ORIENTALES",
         "CODE_REG": "76",
         "CODE_DEPT": "66"
@@ -828,7 +828,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "CRETEIL",
-        "NOM_REG": "ILE-DE-FRANCE",
+        "NOM_REG": "Île-de-France",
         "NOM_DEPT": "VAL-DE-MARNE",
         "CODE_REG": "11",
         "CODE_DEPT": "94"
@@ -845,7 +845,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "NIMES",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "GARD",
         "CODE_REG": "76",
         "CODE_DEPT": "30"
@@ -862,7 +862,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "CARCASSONNE",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "AUDE",
         "CODE_REG": "76",
         "CODE_DEPT": "11"
@@ -879,7 +879,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "MELUN",
-        "NOM_REG": "ILE-DE-FRANCE",
+        "NOM_REG": "Île-de-France",
         "NOM_DEPT": "SEINE-ET-MARNE",
         "CODE_REG": "11",
         "CODE_DEPT": "77"
@@ -896,7 +896,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "NICE",
-        "NOM_REG": "PROVENCE-ALPES-COTE D'AZUR",
+        "NOM_REG": "Provence-Alpes-Côte d'Azur",
         "NOM_DEPT": "ALPES-MARITIMES",
         "CODE_REG": "93",
         "CODE_DEPT": "06"
@@ -913,7 +913,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "CHAMBERY",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "SAVOIE",
         "CODE_REG": "84",
         "CODE_DEPT": "73"
@@ -930,7 +930,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "TARBES",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "HAUTES-PYRENEES",
         "CODE_REG": "76",
         "CODE_DEPT": "65"
@@ -947,7 +947,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "ANNECY",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "HAUTE-SAVOIE",
         "CODE_REG": "84",
         "CODE_DEPT": "74"
@@ -964,7 +964,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "BORDEAUX",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "GIRONDE",
         "CODE_REG": "75",
         "CODE_DEPT": "33"
@@ -981,7 +981,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "MOULINS",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "ALLIER",
         "CODE_REG": "84",
         "CODE_DEPT": "03"
@@ -998,7 +998,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "POITIERS",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "VIENNE",
         "CODE_REG": "75",
         "CODE_DEPT": "86"
@@ -1015,7 +1015,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "BESANCON",
-        "NOM_REG": "BOURGOGNE-FRANCHE-COMTE",
+        "NOM_REG": "Bourgogne-Franche-Comté",
         "NOM_DEPT": "DOUBS",
         "CODE_REG": "27",
         "CODE_DEPT": "25"
@@ -1032,7 +1032,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "GUERET",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "CREUSE",
         "CODE_REG": "75",
         "CODE_DEPT": "23"
@@ -1049,7 +1049,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "CHATEAUROUX",
-        "NOM_REG": "CENTRE-VAL DE LOIRE",
+        "NOM_REG": "Centre-Val de Loire",
         "NOM_DEPT": "INDRE",
         "CODE_REG": "24",
         "CODE_DEPT": "36"
@@ -1066,7 +1066,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "CHALONS-EN-CHAMPAGNE",
-        "NOM_REG": "ALSACE-CHAMPAGNE-ARDENNE-LORRAINE",
+        "NOM_REG": "Grand Est",
         "NOM_DEPT": "MARNE",
         "CODE_REG": "44",
         "CODE_DEPT": "51"
@@ -1083,7 +1083,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "QUIMPER",
-        "NOM_REG": "BRETAGNE",
+        "NOM_REG": "Bretagne",
         "NOM_DEPT": "FINISTERE",
         "CODE_REG": "53",
         "CODE_DEPT": "29"
@@ -1100,7 +1100,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "GRENOBLE",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "ISERE",
         "CODE_REG": "84",
         "CODE_DEPT": "38"
@@ -1117,7 +1117,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "METZ",
-        "NOM_REG": "ALSACE-CHAMPAGNE-ARDENNE-LORRAINE",
+        "NOM_REG": "Grand Est",
         "NOM_DEPT": "MOSELLE",
         "CODE_REG": "44",
         "CODE_DEPT": "57"
@@ -1134,7 +1134,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "AVIGNON",
-        "NOM_REG": "PROVENCE-ALPES-COTE D'AZUR",
+        "NOM_REG": "Provence-Alpes-Côte d'Azur",
         "NOM_DEPT": "VAUCLUSE",
         "CODE_REG": "93",
         "CODE_DEPT": "84"
@@ -1151,7 +1151,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "CHAUMONT",
-        "NOM_REG": "ALSACE-CHAMPAGNE-ARDENNE-LORRAINE",
+        "NOM_REG": "Grand Est",
         "NOM_DEPT": "HAUTE-MARNE",
         "CODE_REG": "44",
         "CODE_DEPT": "52"
@@ -1168,7 +1168,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "DIJON",
-        "NOM_REG": "BOURGOGNE-FRANCHE-COMTE",
+        "NOM_REG": "Bourgogne-Franche-Comté",
         "NOM_DEPT": "COTE-D'OR",
         "CODE_REG": "27",
         "CODE_DEPT": "21"
@@ -1185,7 +1185,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "AUCH",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "GERS",
         "CODE_REG": "76",
         "CODE_DEPT": "32"
@@ -1202,7 +1202,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "ANGOULEME",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "CHARENTE",
         "CODE_REG": "75",
         "CODE_DEPT": "16"
@@ -1219,7 +1219,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LE MANS",
-        "NOM_REG": "PAYS DE LA LOIRE",
+        "NOM_REG": "Pays de la Loire",
         "NOM_DEPT": "SARTHE",
         "CODE_REG": "52",
         "CODE_DEPT": "72"
@@ -1236,7 +1236,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "CAHORS",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "LOT",
         "CODE_REG": "76",
         "CODE_DEPT": "46"
@@ -1253,7 +1253,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "TOULOUSE",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "HAUTE-GARONNE",
         "CODE_REG": "76",
         "CODE_DEPT": "31"
@@ -1270,7 +1270,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "MARSEILLE",
-        "NOM_REG": "PROVENCE-ALPES-COTE D'AZUR",
+        "NOM_REG": "Provence-Alpes-Côte d'Azur",
         "NOM_DEPT": "BOUCHES-DU-RHONE",
         "CODE_REG": "93",
         "CODE_DEPT": "13"
@@ -1287,7 +1287,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "RODEZ",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "AVEYRON",
         "CODE_REG": "76",
         "CODE_DEPT": "12"
@@ -1304,7 +1304,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "SAINT-LO",
-        "NOM_REG": "NORMANDIE",
+        "NOM_REG": "Normandie",
         "NOM_DEPT": "MANCHE",
         "CODE_REG": "28",
         "CODE_DEPT": "50"
@@ -1321,7 +1321,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "ANGERS",
-        "NOM_REG": "PAYS DE LA LOIRE",
+        "NOM_REG": "Pays de la Loire",
         "NOM_DEPT": "MAINE-ET-LOIRE",
         "CODE_REG": "52",
         "CODE_DEPT": "49"
@@ -1338,7 +1338,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "BASTIA",
-        "NOM_REG": "CORSE",
+        "NOM_REG": "Corse",
         "NOM_DEPT": "HAUTE-CORSE",
         "CODE_REG": "94",
         "CODE_DEPT": "2b"
@@ -1355,7 +1355,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LE PUY-EN-VELAY",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "HAUTE-LOIRE",
         "CODE_REG": "84",
         "CODE_DEPT": "43"
@@ -1372,7 +1372,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LILLE",
-        "NOM_REG": "NORD-PAS-DE-CALAIS-PICARDIE",
+        "NOM_REG": "Hauts-de-France",
         "NOM_DEPT": "NORD",
         "CODE_REG": "32",
         "CODE_DEPT": "59"
@@ -1389,7 +1389,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "AMIENS",
-        "NOM_REG": "NORD-PAS-DE-CALAIS-PICARDIE",
+        "NOM_REG": "Hauts-de-France",
         "NOM_DEPT": "SOMME",
         "CODE_REG": "32",
         "CODE_DEPT": "80"
@@ -1406,7 +1406,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "BOURGES",
-        "NOM_REG": "CENTRE-VAL DE LOIRE",
+        "NOM_REG": "Centre-Val de Loire",
         "NOM_DEPT": "CHER",
         "CODE_REG": "24",
         "CODE_DEPT": "18"
@@ -1423,7 +1423,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "MONTPELLIER",
-        "NOM_REG": "LANGUEDOC-ROUSSILLON-MIDI-PYRENEES",
+        "NOM_REG": "Occitanie",
         "NOM_DEPT": "HERAULT",
         "CODE_REG": "76",
         "CODE_DEPT": "34"
@@ -1440,7 +1440,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "VALENCE",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "DROME",
         "CODE_REG": "84",
         "CODE_DEPT": "26"
@@ -1457,7 +1457,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "VESOUL",
-        "NOM_REG": "BOURGOGNE-FRANCHE-COMTE",
+        "NOM_REG": "Bourgogne-Franche-Comté",
         "NOM_DEPT": "HAUTE-SAONE",
         "CODE_REG": "27",
         "CODE_DEPT": "70"
@@ -1474,7 +1474,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "BOURG-EN-BRESSE",
-        "NOM_REG": "AUVERGNE-RHONE-ALPES",
+        "NOM_REG": "Auvergne-Rhône-Alpes",
         "NOM_DEPT": "AIN",
         "CODE_REG": "84",
         "CODE_DEPT": "01"
@@ -1491,7 +1491,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "NANTES",
-        "NOM_REG": "PAYS DE LA LOIRE",
+        "NOM_REG": "Pays de la Loire",
         "NOM_DEPT": "LOIRE-ATLANTIQUE",
         "CODE_REG": "52",
         "CODE_DEPT": "44"
@@ -1508,7 +1508,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "EVRY",
-        "NOM_REG": "ILE-DE-FRANCE",
+        "NOM_REG": "Île-de-France",
         "NOM_DEPT": "ESSONNE",
         "CODE_REG": "11",
         "CODE_DEPT": "91"
@@ -1525,7 +1525,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "PONTOISE",
-        "NOM_REG": "ILE-DE-FRANCE",
+        "NOM_REG": "Île-de-France",
         "NOM_DEPT": "VAL-D'OISE",
         "CODE_REG": "11",
         "CODE_DEPT": "95"
@@ -1542,7 +1542,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "VANNES",
-        "NOM_REG": "BRETAGNE",
+        "NOM_REG": "Bretagne",
         "NOM_DEPT": "MORBIHAN",
         "CODE_REG": "53",
         "CODE_DEPT": "56"
@@ -1559,7 +1559,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "BELFORT",
-        "NOM_REG": "BOURGOGNE-FRANCHE-COMTE",
+        "NOM_REG": "Bourgogne-Franche-Comté",
         "NOM_DEPT": "TERRITOIRE DE BELFORT",
         "CODE_REG": "27",
         "CODE_DEPT": "90"
@@ -1576,7 +1576,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "LAVAL",
-        "NOM_REG": "PAYS DE LA LOIRE",
+        "NOM_REG": "Pays de la Loire",
         "NOM_DEPT": "MAYENNE",
         "CODE_REG": "52",
         "CODE_DEPT": "53"
@@ -1593,7 +1593,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "BLOIS",
-        "NOM_REG": "CENTRE-VAL DE LOIRE",
+        "NOM_REG": "Centre-Val de Loire",
         "NOM_DEPT": "LOIR-ET-CHER",
         "CODE_REG": "24",
         "CODE_DEPT": "41"
@@ -1610,7 +1610,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "NANCY",
-        "NOM_REG": "ALSACE-CHAMPAGNE-ARDENNE-LORRAINE",
+        "NOM_REG": "Grand Est",
         "NOM_DEPT": "MEURTHE-ET-MOSELLE",
         "CODE_REG": "44",
         "CODE_DEPT": "54"
@@ -1627,7 +1627,7 @@
       "type": "Feature",
       "properties": {
         "NOM_CHF": "NIORT",
-        "NOM_REG": "AQUITAINE-LIMOUSIN-POITOU-CHARENTES",
+        "NOM_REG": "Nouvelle-Aquitaine",
         "NOM_DEPT": "DEUX-SEVRES",
         "CODE_REG": "75",
         "CODE_DEPT": "79"

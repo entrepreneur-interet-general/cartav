@@ -4,6 +4,7 @@
           "field_name_pve": "ANNEE_INFRACTION",
           "field_name_acc": "ANNEE",
           "values": {
+            "2006": true,
             "2015": true,
             "2014": false,
             "2013": false
@@ -25,18 +26,28 @@
     },
     "PVE" : {
       "LIBELLE_FAMILLE" : {
+        "display_name": "Famille Infraction",
         "field_name_pve": "LIBELLE_FAMILLE.LIBELLE_FAMILLE_facet",
         "values": {
           "Règles administratives": true,
-          "vitesse": true,
+          "Vitesse": true,
           "Règles de conduite": true,
           "Ceinture et casque": true,
           "Priorité de passage - intersections": true,
           "Etat ou équipement des utilisateurs et des véhicules": true,
-          "alcool": true,
+          "Alcool": true,
           "Eclairage et signalisation": true,
           "Croisements et dépassements": true,
           "Autres infractions à la circulation routière": true
+        }
+      },
+      "LIBELLE_CORPS" : {
+        "display_name": "Corps",
+        "field_name_pve": "LIBELLE_CORPS.LIBELLE_CORPS_facet",
+        "values": {
+          "Gendarmerie Nationale": true,
+          "Police Nationale": true,
+          "CONCENTRATEUR PM": true
         }
       }
     },

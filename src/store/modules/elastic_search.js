@@ -1,19 +1,36 @@
 import elasticsearch from 'elasticsearch'
 
-export default { search, generateQuery, generateQueryAggByFilter, getFieldsMap, getCommunesGeoJson }
+export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getFieldsMap, getCommunesGeoJson, searchSimpleFilter }
 
 function getFieldsMap () {
   return {
     'acc': {
-      'region': 'NOM_REG.NOM_REG_facet',
-      'departement': 'dep',
-      'commune': 'city_code_x'
+      'région': 'NOM_REG.NOM_REG_facet',
+      'département': 'dep',
+      'commune': 'current_city_code'
     },
     'pve': {
-      'region': 'NOM_REG.NOM_REG_facet',
-      'departement': 'DEPARTEMENT_INFRACTION',
+      'région': 'NOM_REG.NOM_REG_facet',
+      'département': 'DEPARTEMENT_INFRACTION',
       'commune': 'CODE_INSEE_INFRACTION'
     }
+  }
+}
+
+let communesGeoJsonFields = {
+  Population: 'Population',
+  nom: 'Commune',
+  code: 'Code INSEE',
+  CODE_DEPT: 'Code Département'
+}
+
+function getIndex () {
+  return {
+    acc: 'es2_2005_2015_accidents',
+    pve: 'es2_2010_2015_pve_sr',
+    commune: 'es2_2016_geohisto_communes_complete2',
+    acc_usagers: 'es2_accidents_usagers',
+    acc_vehicules: 'es2_accidents_vehicules'
   }
 }
 
@@ -23,12 +40,22 @@ let client = new elasticsearch.Client({
 })
 
 function search (type, query) {
-  let index = type === 'pve' ? 'es2_2010_2015_pve_sr' : 'es2_2005_2015_accidents_caracteristiques_lieux'
-  // console.log(type)
+  let index = getIndex()[type]
   // console.log(query)
   return client.search({
     index: index,
     body: query
+  })
+}
+
+function searchAsGeoJson (type, query, latField, longField, propertyFields) {
+  return search(type, query).then(function (resp) {
+    return generateGeoJson(
+      resp.hits.hits,
+      latField,
+      longField,
+      propertyFields
+    )
   })
 }
 
@@ -90,9 +117,9 @@ function generateAggs (type, fieldName, size) {
   return aggs
 }
 
-function getQueryBase () {
+function getQueryBase (size) {
   return {
-    size: 0,
+    size: size,
     query: {
       constant_score: {
         filter: {
@@ -110,7 +137,7 @@ function addAdditionalFilters (must, type, crit) {
   if (crit.level && crit.name) {
     let filterName = getFieldsMap()[type][crit.level]
     let f = {}
-    f[filterName] = crit.name
+    f[filterName] = crit.id
     must.push({
       bool: {
         should: [{term: f}]
@@ -119,9 +146,9 @@ function addAdditionalFilters (must, type, crit) {
   }
 }
 
-function generateQuery (criteriaList, type, level, additionalCriteria) {
+function generateAggregatedQuery (criteriaList, type, level, additionalCriteria) {
   // Génération de la query ES
-  let query = getQueryBase()
+  let query = getQueryBase(0)
   let must = generateFilter(criteriaList, type)
   addAdditionalFilters(must, type, additionalCriteria)
   let aggKey = getFieldsMap()[type][level]
@@ -133,7 +160,18 @@ function generateQuery (criteriaList, type, level, additionalCriteria) {
   return query
 }
 
-function generateQueryAggByFilter (criteriaList, type, additionalCriteria) {
+function generateQuery (criteriaList, type, additionalCriteria) {
+  // Génération de la query ES
+  let query = getQueryBase(1000)
+  let must = generateFilter(criteriaList, type)
+  addAdditionalFilters(must, type, additionalCriteria)
+
+  query.query.constant_score.filter.bool.must = must
+
+  return query
+}
+
+function generateAggregatedQueryByFilter (criteriaList, type, additionalCriteria) {
   let promises = []
   let criteriaPaths = []
   let fieldNameType = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
@@ -143,7 +181,7 @@ function generateQueryAggByFilter (criteriaList, type, additionalCriteria) {
       let criteria = scope[criteriaName]
       if (fieldNameType in criteria) {
         let criteriaPath = scopeName + '.' + criteriaName
-        let query = getQueryBase()
+        let query = getQueryBase(0)
         let must = generateFilter(criteriaList, type, criteriaPath)
         let fieldName = criteria[fieldNameType]
         let aggs = generateAggs(type, fieldName, 150)
@@ -167,57 +205,84 @@ function generateQueryAggByFilter (criteriaList, type, additionalCriteria) {
   })
 }
 
+function generateGeoJson (hits, latField, longField, propertyFields) {
+  let features = []
+  let geoJson = {'type': 'FeatureCollection',
+    'features': features
+  }
+  console.log('je geojsonne')
+  for (let hit of hits) {
+    let long = parseFloat(hit._source[longField])
+    let lat = parseFloat(hit._source[latField])
+    if (long && lat) {
+      let properties = {}
+      for (let prop in propertyFields) {
+        properties[prop] = hit._source[propertyFields[prop]]
+      }
+      features.push({'type': 'Feature',
+        'geometry': {'type': 'Point', 'coordinates': [long, lat]},
+        'properties': properties
+      })
+    }
+  }
+  console.log('fini !')
+  return geoJson
+}
+
 function getCommunesGeoJson (dep) {
-  return client.search({
-    index: 'es2_2016_geohisto_communes',
-    body: {
-      size: 1000,
-      _source: [
-        'Population',
-        'Commune',
-        'Code INSEE',
-        'Code Département',
-        'latitude',
-        'longitude'
-      ],
-      query: {
-        'constant_score': {
-          'filter': {
-            'bool': {
-              'must': [
-                {
-                  'bool': {
-                    'should': [
-                      {
-                        'term': {
-                          'Code Département': dep
-                        }
+  let query = {
+    size: 1000,
+    _source: [
+      'Population',
+      'Commune',
+      'Code INSEE',
+      'Code Département',
+      'latitude',
+      'longitude'
+    ],
+    query: {
+      'constant_score': {
+        'filter': {
+          'bool': {
+            'must': [
+              {
+                'bool': {
+                  'should': [
+                    {
+                      'term': {
+                        'Code Département': dep
                       }
-                    ]
-                  }
+                    }
+                  ]
                 }
-              ]
-            }
+              }
+            ]
           }
         }
       }
     }
-  }).then(function (resp) {
-    let features = []
-    let geoJson = {'type': 'FeatureCollection',
-      'features': features
-    }
-    for (let hit of resp.hits.hits) {
-      features.push({'type': 'Feature',
-        'geometry': {'type': 'Point', 'coordinates': [parseFloat(hit._source.longitude), parseFloat(hit._source.latitude)]},
-        'properties': {
-          'Population': hit._source.Population,
-          'Commune': hit._source.Commune,
-          'CodeINSEE': hit._source['Code INSEE'],
-          'CodeDepartement': hit._source['Code Département']
+  }
+  return searchAsGeoJson('commune', query, 'latitude', 'longitude', communesGeoJsonFields)
+}
+
+function searchSimpleFilter (type, field, ref) {
+  let term = {}
+  term[field] = ref
+  let query = {
+    size: 100,
+    query: {
+      constant_score: {
+        filter: {
+          bool: {
+            must: [
+              {
+                term: term
+              }
+            ]
+          }
         }
-      })
+      }
     }
-    return geoJson
-  })
+  }
+  return search(type, query)
 }

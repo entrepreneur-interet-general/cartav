@@ -1,8 +1,9 @@
 <template>
   <div id="app">
-      <filters></filters>
-      <carte></carte>
+    <filters id="sidebar" class="sidebar collapsed"></filters>
+    <carte class="sidebar-map"></carte>
   </div>
+</div>
 </template>
 
 <script>
