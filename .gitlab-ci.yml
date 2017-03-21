@@ -6,9 +6,5 @@ cache:
 
 build:
     script:
-        - npm install
+        - yarn
         - npm run build
-
-test:
-    script:
-        - npm run test
