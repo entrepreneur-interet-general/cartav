@@ -1,12 +1,13 @@
 <template>
     <div id="map2">
-        <legende :data="legendData"></legende>
+        <infoSidebar id="info-sidebar" :hover-info-data="hoverInfoData" class="sidebar collapsed"></infoSidebar>
     </div>
 </template>
 
 <script>
 import L from 'leaflet'
 import 'leaflet.markercluster'
+import 'leaflet.heat'
 import '../../node_modules/leaflet/dist/leaflet.css'
 import '../../node_modules/leaflet.markercluster/dist/MarkerCluster.css'
 import '../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css'
@@ -16,13 +17,20 @@ import es from '../store/modules/elastic_search'
 import '../../node_modules/font-awesome/css/font-awesome.min.css'
 // require('font-awesome/css/font-awesome.min.css')
 // import 'font-awesome'
-import legend from './legend'
+import infoSidebar from './info-sidebar'
 
 function styleAccidents (feature) {
   return {
     opacity: 0,
     fillOpacity: 0
   }
+}
+
+let zoomLevels = {
+  'région': 0,
+  'département': 7,
+  'commune': 9,
+  'local': 11
 }
 
 let vehiculesIcons = {
@@ -63,9 +71,26 @@ let levelsInfos = {
   }
 }
 
+function accidentIconCreateFunction (cluster) {
+  let n = cluster.getAllChildMarkers().length
+  let c = ' marker-cluster-'
+  if (n < 3) {
+    c += 'small'
+  } else if (n < 5) {
+    c += 'medium'
+  } else {
+    c += 'large'
+  }
+  return new L.DivIcon({
+    html: '<div><span>' + n + '</span></div>',
+    className: 'cluster-acc marker-cluster' + c,
+    iconSize: new L.Point(30, 30)
+  })
+}
+
 export default {
   components: {
-    legende: legend
+    infoSidebar
   },
   data () {
     return {
@@ -74,14 +99,18 @@ export default {
       geojsonFrontieres: null,
       clusterGroup: L.layerGroup(),
       cluster_Acc: null,
-      geojsonAcc: null,
-      legendData: {
+      geojsonAccLayer: null,
+      hoverInfoData: {
         areaMouseOver: '',
         ratio: '',
         accidentsN: '',
         pveN: ''
       },
-      levelsInfos: levelsInfos
+      levelsInfos: levelsInfos,
+      so6: this.setOpacity(0.6),
+      so3: this.setOpacity(0.3),
+      slcBlack: this.setLineColor('black'),
+      slcWhite: this.setLineColor('white')
     }
   },
   computed: {
@@ -111,9 +140,24 @@ export default {
     },
     divisor () {
       return this.$store.state.divisor
+    },
+    legendScale () {
+      return this.$store.getters.legendScale
+    },
+    localLevelDisplay () {
+      return this.$store.state.localLevelDisplay
+    },
+    colors () {
+      return this.$store.getters.colors
     }
   },
   watch: {
+    level () {
+      this.clusterGroup.clearLayers()
+    },
+    colors () {
+      this.colorMap()
+    },
     dividende () {
       this.colorMap()
     },
@@ -125,37 +169,68 @@ export default {
     },
     accidentsLocal () {
       // console.log(JSON.stringify(this.accidents_geojson))
+      // console.log('il faut mettre a jour le layer !')
       let vm = this
-      this.clusterGroup.clearLayers()
       this.geojsonFrontieres.setStyle({
-        fillOpacity: 0.1,
+        fillOpacity: 0.3,
         fillColor: 'black'})
 
       this.geojsonFrontieres.eachLayer(function (layer) {
-        layer.removeEventListener('mouseover')
-        layer.removeEventListener('mouseout')
+        layer.removeEventListener('mouseover', vm.so6)
+        layer.removeEventListener('mouseover', vm.slcBlack)
+        layer.removeEventListener('mouseout', vm.so3)
+        layer.removeEventListener('mouseout', vm.slcWhite)
         if (layer.geoId !== vm.$store.state.parent.id) {
           layer.on({
-            mouseover: vm.setOpacity(0.3),
-            mouseout: vm.setOpacity(0.1)
+            mouseover: vm.so6,
+            mouseout: vm.so3
           })
-        } else if (layer.getBounds().isValid()) {
-          vm.map.fitBounds(layer.getBounds())
+        } else {
+          layer.setStyle({fillOpacity: 0})
+          if (layer.getBounds().isValid()) {
+            vm.map.fitBounds(layer.getBounds())
+          }
         }
       })
-
-      this.createClusterLocal('acc')
-      this.clusterGroup.addLayer(this.cluster_Acc)
+      this.displayLocalLayer()
+    },
+    localLevelDisplay () {
+      this.displayLocalLayer()
     }
   },
   methods: {
+    displayLocalLayer () {
+      this.clusterGroup.clearLayers()
+      if (this.localLevelDisplay === 'cluster') {
+        this.createClusterLocal('acc')
+        this.clusterGroup.addLayer(this.cluster_Acc)
+      } else if (this.localLevelDisplay === 'heatmap') {
+        this.heatMap()
+      }
+    },
+    heatMap () {
+      // console.log(this.accidentsLocal)
+      let l = this.accidentsLocal.features.map(function (feature) {
+        return [
+          feature.geometry.coordinates[1],
+          feature.geometry.coordinates[0],
+          1
+        ]
+      })
+      // console.log(l)
+      L.heatLayer(l, {radius: 25, blur: 30, minOpacity: 0.5}).addTo(this.clusterGroup)
+    },
     colorMap () {
       this.frontiersGroup.clearLayers()
       let filter = this.level === 'département' ? this.$store.state.parent.id : ''
-      let colorOptions = { color: 'blue', dividende: this.$store.state.dividende, divisor: this.$store.state.divisor }
+      let colorOptions = { color: 'rgba(0,0,0,0.2)', dividende: this.$store.state.dividende, divisor: this.$store.state.divisor }
       this.add_contours_geojson(filter, this.setStyle(colorOptions), this.myOnEachFeature)
-      if (this.level !== 'région' && this.geojsonFrontieres.getBounds().isValid()) {
-        this.map.fitBounds(this.geojsonFrontieres.getBounds())
+      if (this.level !== 'région') {
+        if (this.geojsonFrontieres.getBounds().isValid()) {
+          this.map.fitBounds(this.geojsonFrontieres.getBounds())
+        }
+      } else {
+        this.map.setView([45.853459, 2.349312], 6)
       }
     },
     setCluster (type, cluster) {
@@ -184,12 +259,12 @@ export default {
     },
     createClusterLocal (type) {
       // cluster des accidents individuels
-      this.geojsonAcc = L.geoJson(this.accidentsLocal, {
+      this.geojsonAccLayer = L.geoJson(this.accidentsLocal, {
         onEachFeature: function (feature, layer) {
           layer.bindPopup()
           layer.on({
             click: function () {
-              console.log('click!')
+              // console.log('click!')
               let content = '<i class="fa fa-info-circle" aria-hidden="true"></i></br>'
               for (let p in feature.properties) {
                 if (!p.startsWith('_catv_')) {
@@ -239,10 +314,10 @@ export default {
       })
       let cluster = L.markerClusterGroup({
         maxClusterRadius: 30,
-        singleMarkerMode: false
-        // iconCreateFunction: accidentIconCreateFunction
+        singleMarkerMode: false,
+        iconCreateFunction: accidentIconCreateFunction
         // spiderfyDistanceMultiplier: 1
-      }).addLayer(this.geojsonAcc)
+      }).addLayer(this.geojsonAccLayer)
       this.setCluster(type, cluster)
     },
     setStyle (options) {
@@ -261,7 +336,7 @@ export default {
       if (type === 'habitants') {
         let idName = this.levelsInfos[this.level].id
         // console.log(source[type])
-        let res
+        let res = 0
         for (let f of source[type].features) {
           // console.log(f)
           if (id === f.properties[idName]) {
@@ -272,7 +347,7 @@ export default {
         return res
       } else {
         let agg = source[type]
-        let res
+        let res = 0
         for (let i = 0; i < agg.length; ++i) {
           if (id === agg[i].key) {
             res = agg[i].doc_count
@@ -290,37 +365,31 @@ export default {
       feature.countElements.accidents = this.count('accidents', id)
       feature.countElements.PVE = this.count('PVE', id)
       feature.countElements.habitants = this.count('habitants', id)
-      feature.countElements.ratioLegend = 'Nombre de ' + options.dividende + ' par ' + options.divisor
 
       // console.log(feature.countElements.pop)
 
-      if (feature.countElements[options.dividende] && feature.countElements[options.divisor]) {
+      if (feature.countElements[options.dividende] || feature.countElements[options.divisor]) {
         feature.countElements.ratio = feature.countElements[options.dividende] / feature.countElements[options.divisor]
+      } else {
+        feature.countElements.ratio = undefined
       }
 
       let fillColor = options.color
-      let fillOpacity = 0.3
-      if (feature.countElements.ratio) {
-        let c = this.$store.getters.countElements
-        let avg = c[options.dividende] / c[options.divisor]
-        console.log(avg)
-        if (feature.countElements.ratio > 1.1 * avg) {
-          fillOpacity = 0.3
-          fillColor = '#2EFF00'
-        } else if (feature.countElements.ratio > 1.0 * avg) {
-          fillOpacity = 0.3
-          fillColor = '#BBFF00'
-        } else if (feature.countElements.ratio > 0.9 * avg) {
-          fillOpacity = 0.3
-          fillColor = '#FFB700'
+      let fillOpacity = 1
+      if (feature.countElements.ratio !== undefined && !isNaN(feature.countElements.ratio)) {
+        if (feature.countElements.ratio < this.legendScale[0]) {
+          fillColor = this.colors[0]
+        } else if (feature.countElements.ratio < this.legendScale[1]) {
+          fillColor = this.colors[1]
+        } else if (feature.countElements.ratio < this.legendScale[2]) {
+          fillColor = this.colors[2]
         } else {
-          fillOpacity = 0.3
-          fillColor = '#FF4901'
+          fillColor = this.colors[3]
         }
       }
       return {
         color: 'white',
-        weight: 1,
+        weight: 2,
         opacity: 0.5,
         fillOpacity: fillOpacity,
         fillColor: fillColor
@@ -333,6 +402,14 @@ export default {
         })
       }
     },
+    setLineColor (color) {
+      return function (e) {
+        e.target.bringToFront()
+        e.target.setStyle({
+          color: color
+        })
+      }
+    },
     myOnEachFeature (feature, layer) {
       let vm = this
       let id = this.levelsInfos[this.level].id
@@ -341,32 +418,38 @@ export default {
       let displayName = this.levelsInfos[this.level].name
 
       layer.on({
-        mouseover: vm.setOpacity(0.6),
-        mouseout: vm.setOpacity(0.3)
+        mouseover: vm.slcBlack,
+        mouseout: vm.slcWhite
       })
       layer.geoId = feature.properties[id]
       layer.parentId = parentId ? feature.properties[parentId] : ''
       layer.displayName = feature.properties[displayName]
       layer.level = this.level
 
-      layer.on('mouseover', function (e) {
-        vm.legendData.areaMouseOver = layer.displayName
-        vm.legendData.ratio = feature.countElements.ratio
-        vm.legendData.accidentsN = feature.countElements.accidents
-        vm.legendData.pveN = feature.countElements.PVE
-        vm.legendData.ratioLegend = feature.countElements.ratioLegend
-      })
+      this.linkHoverInfoToLayer(feature, layer)
+
       if (vm.level !== 'local') {
         layer.on('click', function () {
           vm.map.closePopup()
           vm.$store.dispatch('set_level', {level: vm.levelsInfos[layer.level].child, parentLevel: layer.level, parentName: layer.displayName, parentId: layer.geoId})
         })
       }
+    },
+    linkHoverInfoToLayer (feature, layer) {
+      let vm = this
+      layer.on('mouseover', function (e) {
+        vm.hoverInfoData.areaMouseOver = layer.displayName
+        vm.hoverInfoData.ratio = feature.countElements.ratio
+        vm.hoverInfoData.accidentsN = feature.countElements.accidents
+        vm.hoverInfoData.pveN = feature.countElements.PVE
+      })
     }
   },
   mounted () {
     this.map = L.map('map2', {zoomControl: false}).setView([45.853459, 2.349312], 6)
     L.control.sidebar('sidebar').addTo(this.map)
+    let infoSidebar = L.control.sidebar('info-sidebar', {position: 'right'}).addTo(this.map)
+    infoSidebar.open('navigation')
 
     L.tileLayer(' http://osm.psi.minint.fr/{z}/{x}/{y}.png', {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
@@ -378,8 +461,10 @@ export default {
     this.$store.dispatch('set_level', {level: 'région'})
 
     this.map.on('zoomend', (e) => {
-      if (this.map.getZoom() < 6) {
-        this.$store.dispatch('set_level', {level: 'région'})
+      console.log('zoom actuel' + this.map.getZoom())
+      if (this.map.getZoom() < zoomLevels[this.level]) {
+        console.log('limite ' + zoomLevels[this.level])
+        this.$store.dispatch('restore_history')
       }
     })
   }
@@ -391,40 +476,59 @@ export default {
      height: 100%;
      width: auto;
 }
-.cluster-offset.marker-cluster {
-    margin-top: 0px !important;
-}
+
 /*ACCIDENTS*/
-.cluster-acc.marker-cluster {
-    background-color: rgba(186, 186, 186, 0.0);
+.cluster-acc.marker-cluster-small {
+    background-color: rgba(255, 81, 0, 0.3);
 }
-.cluster-acc.marker-cluster div{
-    background-color: rgba(186, 186, 186, 0.0);
+.cluster-acc.marker-cluster-small div{
+    background-color: rgba(255, 81, 0, 0.3);
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    text-shadow: 0px 0px 6px black;
+}
+.cluster-acc.marker-cluster-medium {
+    background-color: rgba(255, 81, 0, 0.3);
+}
+.cluster-acc.marker-cluster-medium div{
+    background-color: rgba(255, 81, 0, 0.5);
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    text-shadow: 0px 0px 6px black;
+}
+.cluster-acc.marker-cluster-large {
+    background-color: rgba(255, 81, 0, 0.8);
+}
+.cluster-acc.marker-cluster-large div{
+    background-color: rgba(255, 81, 0, 0.6);
     color: white;
     font-weight: bold;
     font-size: 16px;
     text-shadow: 0px 0px 6px black;
 }
 
-/*PVE*/
-.cluster-pve.marker-cluster {
-    background-color: rgba(186, 186, 186, 0.0);
-}
-.cluster-pve.marker-cluster div{
-    background-color: rgba(186, 186, 186, 0.0);
-    color: white;
-    font-weight: bold;
-    font-size: 16px;
-    text-shadow: 0px 0px 4px black;
-}
-.marker-cluster {
+.cluster-acc.marker-cluster {
     background-clip: padding-box;
+    border-radius: 25px;
 }
-.marker-cluster span {
-    line-height: 30px;
+.cluster-acc.marker-cluster div {
+    width: 24px;
+    height: 24px;
+    margin-left: 3px;
+    margin-top: 3px;
+
+    text-align: center;
+    border-radius: 12px;
+    /*font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;*/
 }
+.cluster-acc.marker-cluster span {
+    line-height: 25px;
+}
+
 .leaflet-tooltip {
-  background-color: rgba(255, 0, 0, 0.7) !important;
+  background-color: rgba(255, 81, 0, 0.8) !important;
   border-style: none !important;
   padding: 1px !important;
 }

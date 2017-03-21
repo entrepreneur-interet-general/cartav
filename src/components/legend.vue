@@ -1,32 +1,71 @@
 <template>
   <div id='legende'>
-    {{ level + ': '}} <strong>{{ data.areaMouseOver }}</strong> </br>
-    {{ data.ratioLegend + ': '}} <strong> {{ ratio }}</strong> </br>
-    {{ 'Nombre d\'accidents: ' }} <strong>{{ Math.round(data.accidentsN) }}</strong> </br>
-    {{ 'Nombre de pve: '}} <strong>{{ Math.round(data.pveN) }}</strong> </br>
+    <hr>
+    <span v-if='hasScale && !localLevel'>
+      <h4>{{ ratioLabel }}</h4>
+      <div> valeur moyenne: {{ ratioAverage }}</div>
+      <div v-for='(color, i) in colors'>
+        <span class='oneColor' v-bind:style="'background-color:'+color+';'"></span>
+        <span class='legendNumber'>{{ getRange(i) }}</span>
+      </div>
+    </span>
   </div>
 </template>
 
 <script>
+function niceDisplay (n) {
+  // Gère l'affichage des nombres dans les clusters
+  if (n > 1000000) {
+    n = Math.round(n / 10000) / 100 + 'm'
+  }
+  if (n > 10000) {
+    n = Math.round(n / 1000) + 'k'
+  }
+  if (n > 1000) {
+    n = Math.round(n / 100) / 10 + 'k'
+  }
+  if (n > 10) {
+    n = Math.round(n * 10) / 10
+  }
+  if (n > 1) {
+    n = Math.round(n * 100) / 100
+  }
+  if (n < 1) {
+    let k = Math.round(-Math.log(n))
+    n = Math.round(n * Math.pow(10, k)) / Math.pow(10, k)
+  }
+  return n
+}
+
 export default {
-  data () {
-    return {
-      msg: 'coucou !'
+  computed: {
+    legendScale () {
+      return this.$store.getters.legendScale
+    },
+    ratioAverage () {
+      return niceDisplay(this.$store.getters.ratioAverage)
+    },
+    colors () {
+      return this.$store.getters.colors
+    },
+    hasScale () {
+      return this.legendScale.length !== 0
+    },
+    localLevel () {
+      return this.$store.state.level === 'local'
+    },
+    ratioLabel () {
+      return this.$store.getters.ratioLabel
     }
   },
-  computed: {
-    level () {
-      return this.$store.state.level
-    },
-    levelAggregated () {
-      return this.$store.state.level !== 'local'
-    },
-    ratio () {
-      if (this.data.ratio > 10) {
-        return Math.round(this.data.ratio)
+  methods: {
+    getRange (i) {
+      if (i === 0) {
+        return '< ' + niceDisplay(this.legendScale[0])
+      } else if (i === niceDisplay(this.legendScale.length)) {
+        return '> ' + niceDisplay(this.legendScale[this.legendScale.length - 1])
       } else {
-        console.log(this.data.ratio)
-        return this.data.ratio
+        return niceDisplay(this.legendScale[i - 1]) + ' - ' + niceDisplay(this.legendScale[i])
       }
     }
   },
@@ -35,16 +74,22 @@ export default {
 </script>
 
 <style>
+#legende div {
+  padding-bottom: 10px;
+}
+#legende h4 {
+  font-size: 16px;
+}
+.oneColor {
+  padding: 10px 30px 0px 0px;
+  border: 1px solid grey;
+}
+.legendNumber {
+  padding-left: 10px;
+}
 #legende {
-  z-index: 1000;
-  position: fixed;
-  right: 10px;
-  top: 10px;
-  background-color: white;
-  padding: 5px;
-  border-radius: 3px;
-  font-size: 14px;
-
-
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
 }
 </style>

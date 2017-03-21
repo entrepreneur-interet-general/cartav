@@ -10,6 +10,7 @@ import _ from 'lodash'
 import regionsFrontieres from '../assets/json/regions_frontieres.json'
 import departementsFrontieres from '../assets/json/departements_frontieres.json'
 import $ from 'jquery'
+import colors from '../assets/json/colors.json'
 
 Vue.use(Vuex)
 
@@ -78,9 +79,10 @@ export default new Vuex.Store({
   },
   strict: process.env.NODE_ENV !== 'production',
   state: {
-    level: '',
-    criteria_list: criteriaList,
+    level: 'région',
     parent: {level: '', name: '', id: ''},
+    level_history: [],
+    criteria_list: criteriaList,
     accidents: {},
     verbalisations: {},
     level_geojson: {},
@@ -89,15 +91,35 @@ export default new Vuex.Store({
     pve_value_by_filter: {},
     accidents_geojson: {},
     pve_geojson: {},
-    dividende: 'accidents',
-    divisor: 'habitants'
+    dividende: 'PVE',
+    divisor: 'accidents',
+    localLevelDisplay: 'cluster',
+    colorScale: Object.keys(colors)[0],
+    colorScaleInverted: false
   },
   mutations: {
-    set_level (state, level) {
+    set_level (state, {level, recordHistory}) {
+      if (recordHistory) {
+        let prev = {level: state.level, parent: state.parent}
+        state.level_history.push(prev)
+      }
       state.level = level
+    },
+    pop_history (state) {
+      state.level_history.pop()
+    },
+    set_localLevelDisplay (state, localLevelDisplay) {
+      state.localLevelDisplay = localLevelDisplay
+    },
+    set_colorScale (state, colorScale) {
+      state.colorScale = colorScale
+    },
+    set_colorScaleInverted (state, colorScaleInverted) {
+      state.colorScaleInverted = colorScaleInverted
     },
     set_criteria (state, {criteriaPath, value}) {
       let cl = JSON.parse(JSON.stringify(state.criteria_list))
+      console.log('set!')
       _.set(cl, criteriaPath, value)
       state.criteria_list = cl
     },
@@ -143,6 +165,19 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    restore_history (context) {
+      if (context.state.level_history.length) {
+        let h = context.state.level_history.slice(-1).pop()
+        context.dispatch('set_level', {
+          level: h.level,
+          parentLevel: h.parent.level,
+          parentName: h.parent.name,
+          parentId: h.parent.id,
+          recordHistory: false
+        })
+        context.commit('pop_history')
+      }
+    },
     set_criteria (context, o) {
       context.commit('set_criteria', o)
 
@@ -159,14 +194,12 @@ export default new Vuex.Store({
       }
       context.dispatch('getAggregationByfilter')
     },
-    set_level (context, {level, parentLevel, parentName, parentId}) {
+    set_level (context, {level, parentLevel, parentName, parentId, recordHistory = true}) {
       let s = context.state
-      if (level !== s.level || parentLevel !== s.parent.level || parentName !== s.parent.name || parentId !== s.parent.id) {
-        context.commit('set_level', level)
-        // console.log(level)
-        // console.log(parentLevel)
-        // console.log(parentName)
-        // console.log(parentId)
+      if (level !== s.level) {
+        context.commit('set_level', {level: level, recordHistory: recordHistory})
+      }
+      if (parentLevel !== s.parent.level || parentName !== s.parent.name || parentId !== s.parent.id) {
         if (parentLevel && parentName && parentId) {
           context.commit('set_parent', {level: parentLevel, name: parentName, id: parentId})
         } else {
@@ -217,8 +250,9 @@ export default new Vuex.Store({
     },
     accidentsPoints (context) {
       let state = context.state
+      // console.log(state.criteria_list)
       let query = es.generateQuery(state.criteria_list, 'acc', state.parent)
-      // console.log(JSON.stringify(state.parent))
+      // console.log(JSON.stringify(query))
       es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields).then(function (res) {
         // console.log(JSON.stringify(res))
         context.commit('accidents_geojson', res)
@@ -233,22 +267,53 @@ export default new Vuex.Store({
   getters: {
     countElements (state) {
       let res = {}
-      let agg = state.accidents.aggregations.group_by.buckets
-      res['accidents'] = _(agg).map(x => x.doc_count).sum()
-
-      agg = state.verbalisations.aggregations.group_by.buckets
-      res['PVE'] = _(agg).map(x => x.doc_count).sum()
-
-      agg = state.level_shape_geojson.features
-
-      if (state.level === 'département') {
-        let filter = state.parent.id
-        res['habitants'] = _(agg).map(x => (x.properties['NOM_REG'] === filter) ? x.properties.population : 0).sum()
+      let agg = _.get(state.accidents, 'aggregations.group_by.buckets', undefined)
+      if (agg !== undefined) {
+        res['accidents'] = _(agg).map(x => x.doc_count).sum()
       } else {
-        res['habitants'] = _(agg).map(x => x.properties.population).sum()
+        res['accidents'] = undefined
+      }
+
+      agg = _.get(state.verbalisations, 'aggregations.group_by.buckets', undefined)
+      if (agg !== undefined) {
+        res['PVE'] = _(agg).map(x => x.doc_count).sum()
+      } else {
+        res['PVE'] = undefined
+      }
+
+      agg = _.get(state.level_shape_geojson, 'features', undefined)
+      if (agg !== undefined) {
+        if (state.level === 'département') {
+          let filter = state.parent.id
+          res['habitants'] = _(agg).map(x => (x.properties['NOM_REG'] === filter) ? x.properties.population : 0).sum()
+        } else {
+          res['habitants'] = _(agg).map(x => x.properties.population).sum()
+        }
+      } else {
+        res['habitants'] = undefined
       }
 
       return res
+    },
+    ratioAverage (state, getters) {
+      let c = getters.countElements
+      return c[state.dividende] / c[state.divisor]
+    },
+    legendScale (state, getters) {
+      let avg = getters.ratioAverage
+      if (isNaN(avg)) {
+        return []
+      } else {
+        return [0.9 * avg, avg, 1.1 * avg]
+      }
+    },
+    colors (state) {
+      let cs = colors[state.colorScale].slice()
+      if (state.colorScaleInverted) { cs.reverse() }
+      return cs
+    },
+    ratioLabel (state) {
+      return 'Nombre de ' + state.dividende + ' par ' + state.divisor
     }
   }
 })

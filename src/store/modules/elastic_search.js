@@ -64,16 +64,35 @@ function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
   let fieldName = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
   var must = []
 
+  // console.log('CL')
+  // console.log(criteriaList)
+
   for (let scopeName in criteriaList) {
     let scope = criteriaList[scopeName]
+    /* if (scopeName === 'Accidents' && ExceptThisfield === undefined) {
+      console.log('scope1')
+      console.log(scope)
+    } */
     for (let criteriaName in scope) {
       let criteria = scope[criteriaName]
+      /* if (scopeName === 'Accidents' && criteriaName === 'Heure' && ExceptThisfield === undefined) {
+        console.log('scope2')
+        console.log(scope)
+        console.log('criteria.values')
+        console.log(criteria.values)
+        console.log('scope.Heure.values')
+        console.log(scope.Heure.values)
+      } */
       if (fieldName in criteria) {
         let criteriaPath = scopeName + '.' + criteriaName
         if (criteriaPath !== ExceptThisfield) {
           let criteriaFilters = []
           for (let valueName in criteria.values) {
+            /* if (criteriaName === 'Heure' && ExceptThisfield === undefined) {
+              console.log(criteria.values[valueName])
+            } */
             if (criteria.values[valueName]) {
+              // console.log(criteria.values[valueName])
               let f = {}
               f[criteria[fieldName]] = valueName
               let filter = {
@@ -99,7 +118,6 @@ function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
       }
     }
   }
-
   return must
 }
 
