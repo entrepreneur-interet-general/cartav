@@ -8,9 +8,9 @@ build:
     script:
         - yarn
         - npm run build
-#    artifacts:
-#        paths:
-#            - dist/
+    artifacts:
+        paths:
+            - dist/
 
 deploy to test:
     stage: deploy
