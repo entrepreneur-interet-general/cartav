@@ -25,3 +25,18 @@ deploy to test:
         - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
         - scp -r dist/* grabenertr@10.237.4.62:/data/www/demo/carto-test
     environment: test
+
+deploy to production:
+    stage: deploy
+    only:
+        - master@mgmsic-eig/carto-accidents-verbalisations
+    script:
+        - sed -i "s|ASSETS_PUBLIC_PATH|/demo/carto|g" dist/index.html
+        - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+        - eval $(ssh-agent -s)
+        - ssh-add <(echo "$SSH_PRIVATE_KEY")
+        - mkdir -p ~/.ssh
+        - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+        - scp -r dist/* grabenertr@10.237.4.62:/data/www/demo/carto
+    environment: production
+    when: manual
