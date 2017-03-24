@@ -1,5 +1,23 @@
 image: node:6
 
+before_script:
+  # Install ssh-agent if not already installed, it is required by Docker.
+  # (change apt-get to yum if you use a CentOS-based image)
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+
+  # Run ssh-agent (inside the build environment)
+  - eval $(ssh-agent -s)
+
+  # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+  - ssh-add <(echo "$SSH_PRIVATE_KEY")
+
+  # For Docker builds disable host key checking. Be aware that by adding that
+  # you are suspectible to man-in-the-middle attacks.
+  # WARNING: Use this only with the Docker executor, if you use it with shell
+  # you will overwrite your user's SSH config.
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
 cache:
     paths:
         - node_modules
@@ -8,3 +26,18 @@ build:
     script:
         - yarn
         - npm run build
+	artifacts:
+		paths:
+			- dist/
+
+deploy to test:
+	stage: deploy
+	only:
+		- dev@mgmsic-eig/carto-accidents-verbalisations
+	script:
+		sed -i "s|ASSETS_PUBLIC_PATH|/demo/carto-test|g" dist/index.html
+		scp -r dist/* grabenertr@10.237.4.62:/data/www/demo/carto-test
+    environment:
+		name: test
+		url: grabenertr@10.237.7.16:/data/www/demo/carto-test
+
