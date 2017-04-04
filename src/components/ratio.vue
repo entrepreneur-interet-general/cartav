@@ -31,7 +31,6 @@
     </span>
     <input type="checkbox" id="colorsScaleInvert" v-model="colorScaleInverted">
     <label for="colorsScaleInvert"> ordre des couleurs inversé </label>
-
     <hr>
   </div>
   <div v-if='localLevel'>
@@ -43,12 +42,24 @@
     <input type="radio" id="heatMapType" value="heatmap" v-model="localLevelDisplay">
     <label for="two">Carte de chaleur (heatmap)</label>
     <br>
+    <input type="radio" id="aggregatedByRoadType" value="aggregatedByRoad" v-model="localLevelDisplay">
+    <label for="three">Routes</label>
+    <br>
   </div>
-  <button v-on:click="the24hShow()">24h show !</button>
+  <h4>Fonds de carte</h4>
+  <span v-for="(url, name) in basemaps">
+    <input type="radio" v-bind:value=url v-model="basemapUrl">
+    <label v-bind:for="url">
+      {{ name }}
+    </label>
+    <br>
+  </span>
+  </div>
 </template>
 
 <script>
 import colors from '../assets/json/colors.json'
+import criteriaList from '../assets/json/criteria_list_new.json'
 
 export default {
   data () {
@@ -58,12 +69,14 @@ export default {
       localLevelDisplay: this.$store.state.localLevelDisplay,
       colorScale: this.$store.state.colorScale,
       colors: colors,
-      colorScaleInverted: this.$store.state.colorScaleInverted
+      colorScaleInverted: this.$store.state.colorScaleInverted,
+      basemaps: criteriaList.basemaps,
+      basemapUrl: this.$store.state.basemapUrl
     }
   },
   computed: {
     localLevel () {
-      return this.$store.state.level === 'local'
+      return this.$store.state.level === 'commune'
     }
   },
   watch: {
@@ -74,31 +87,19 @@ export default {
       this.$store.commit('set_divisor', this.divisor)
     },
     localLevelDisplay () {
-      this.$store.commit('set_localLevelDisplay', this.localLevelDisplay)
+      this.$store.dispatch('set_localLevelDisplay', this.localLevelDisplay)
     },
     colorScale () {
       this.$store.commit('set_colorScale', this.colorScale)
     },
     colorScaleInverted () {
       this.$store.commit('set_colorScaleInverted', this.colorScaleInverted)
+    },
+    basemapUrl () {
+      this.$store.commit('set_basemapUrl', this.basemapUrl)
     }
   },
   methods: {
-    the24hShow () {
-      let vm = this
-      for (let i = 0; i < 24; ++i) {
-        this.$store.commit('set_criteria', {criteriaPath: 'Accidents.Heure.values.' + i, value: false})
-      }
-
-      for (let i = 0; i < 24; ++i) {
-        setTimeout(function () {
-          vm.$store.dispatch('set_criteria', {criteriaPath: 'Accidents.Heure.values.' + i, value: true})
-          setTimeout(function () {
-            vm.$store.dispatch('set_criteria', {criteriaPath: 'Accidents.Heure.values.' + i, value: false})
-          }, 2000)
-        }, 2400 * (i + 1))
-      }
-    }
   },
   mounted () {
     // this.$store.commit('set_dividende', 'accidents')

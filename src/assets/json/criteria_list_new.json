@@ -1,139 +1,136 @@
 {
-    "PVE et accidents" : {
-        "année" : {          
-          "field_name_pve": "ANNEE_INFRACTION",
-          "field_name_acc": "ANNEE",
+    "basemaps": {
+      "OSM couleur": "http://osm.psi.minint.fr/{z}/{x}/{y}.png",
+      "OSM noir & blanc": "https://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaXN0b3BvcG9raSIsImEiOiJjaW12eWw2ZHMwMGFxdzVtMWZ5NHcwOHJ4In0.VvZvyvK0UaxbFiAtak7aVw"
+    },
+    "filters": {
+      "PVE et accidents" : {
+          "année" : {          
+            "field_name_pve": "ANNEE_INFRACTION",
+            "field_name_acc": "ANNEE",
+            "values": {
+              "2015": true,
+              "2014": false,
+              "2013": false
+            }
+          },
+          "jour" : {
+            "field_name_pve": "LIBELLE_JOUR_INFRACTION",
+            "field_name_acc": "LIBELLE_JOUR",
+            "values": {
+              "lundi": true,
+              "mardi": true,
+              "mercredi": true,
+              "jeudi": true,
+              "vendredi": true,
+              "samedi": true,
+              "dimanche": true
+            }
+          }
+      },
+      "PVE" : {
+        "LIBELLE_FAMILLE" : {
+          "display_name": "Famille Infraction",
+          "field_name_pve": "LIBELLE_FAMILLE.LIBELLE_FAMILLE_facet",
           "values": {
-            "2015": true,
-            "2014": false,
-            "2013": false
+            "Règles administratives": true,
+            "Vitesse": true,
+            "Règles de conduite": true,
+            "Ceinture et casque": true,
+            "Priorité de passage - intersections": true,
+            "Etat ou équipement des utilisateurs et des véhicules": true,
+            "Alcool": true,
+            "Eclairage et signalisation": true,
+            "Croisements et dépassements": true,
+            "Autres infractions à la circulation routière": true
+          }
+        }
+      },
+      "Accidents" : {
+        "luminosité" : {
+          "field_name_acc": "lum.lum_facet",
+          "values": {
+            "plein jour": true,
+            "nuit avec éclairage public allumé": true,
+            "nuit sans éclairage public": true,
+            "crépuscule ou aube": true,
+            "nuit avec éclairage public non allumé": true
           }
         },
-        "jour" : {
-          "field_name_pve": "LIBELLE_JOUR_INFRACTION",
-          "field_name_acc": "LIBELLE_JOUR",
+        "Lieu" : {
+          "field_name_acc": "agg.agg_facet",
           "values": {
-            "lundi": true,
-            "mardi": true,
-            "mercredi": true,
-            "jeudi": true,
-            "vendredi": true,
-            "samedi": true,
-            "dimanche": true
+            "en agglomération": true,
+            "hors agglomération": true
           }
-        }
-    },
-    "PVE" : {
-      "LIBELLE_FAMILLE" : {
-        "display_name": "Famille Infraction",
-        "field_name_pve": "LIBELLE_FAMILLE.LIBELLE_FAMILLE_facet",
-        "values": {
-          "Règles administratives": true,
-          "Vitesse": true,
-          "Règles de conduite": true,
-          "Ceinture et casque": true,
-          "Priorité de passage - intersections": true,
-          "Etat ou équipement des utilisateurs et des véhicules": true,
-          "Alcool": true,
-          "Eclairage et signalisation": true,
-          "Croisements et dépassements": true,
-          "Autres infractions à la circulation routière": true
-        }
-      },
-      "LIBELLE_CORPS" : {
-        "display_name": "Corps",
-        "field_name_pve": "LIBELLE_CORPS.LIBELLE_CORPS_facet",
-        "values": {
-          "Gendarmerie Nationale": true,
-          "Police Nationale": true,
-          "CONCENTRATEUR PM": true
-        }
-      }
-    },
-    "Accidents" : {
-      "luminosité" : {
-        "field_name_acc": "lum.lum_facet",
-        "values": {
-          "plein jour": true,
-          "nuit avec éclairage public allumé": true,
-          "nuit sans éclairage public": true,
-          "crépuscule ou aube": true,
-          "nuit avec éclairage public non allumé": true
-        }
-      },
-      "Lieu" : {
-        "field_name_acc": "agg.agg_facet",
-        "values": {
-          "en agglomération": true,
-          "hors agglomération": true
-        }
-      },
-      "Intersection" : {
-        "field_name_acc": "int.int_facet",
-        "values": {
-          "hors intersection": true,
-          "intersection en X": true,
-          "intersection en T": true,
-          "giratoire": true,
-          "autre intersection": true,
-          "intersection en Y": true,
-          "place": true,
-          "place": true,
-          "passage à niveau": true
-        }
-      },
-      "Conditions météo" : {
-        "field_name_acc": "atm.atm_facet",
-        "values": {
-          "météo normale": true,
-          "pluie légère": true,
-          "temps couvert": true,
-          "pluie forte": true,
-          "temps éblouissant": true,
-          "neige - grêle": true,
-          "autre météo": true,
-          "vent fort - tempête": true
-        }
-      },
-      "Collisions" : {
-        "field_name_acc": "col.col_facet",
-        "values": {
-          "autre collision": true,
-          "2 véhicules côté": true,
-          "Sans collision": true,
-          "2 véhicules par l'arrière": true,
-          "2 véhicules frontal": true,
-          "3+ véhicules autre": true,
-          "3+ véhicules en chaîne": true
-        }
-      },
-      "Heure" : {
-        "field_name_acc": "HEURE.HEURE_facet",
-        "values": {
-          "0": true,
-          "1": true,
-          "2": true,
-          "3": true,
-          "4": true,
-          "5": true,
-          "6": true,
-          "7": true,
-          "8": true,
-          "9": true,
-          "10": true,
-          "11": true,
-          "12": true,
-          "13": true,
-          "14": true,
-          "15": true,
-          "16": true,
-          "17": true,
-          "18": true,
-          "19": true,
-          "20": true,
-          "21": true,
-          "22": true,
-          "23": true
+        },
+        "Intersection" : {
+          "field_name_acc": "int.int_facet",
+          "values": {
+            "hors intersection": true,
+            "intersection en X": true,
+            "intersection en T": true,
+            "giratoire": true,
+            "autre intersection": true,
+            "intersection en Y": true,
+            "place": true,
+            "place": true,
+            "passage à niveau": true
+          }
+        },
+        "Conditions météo" : {
+          "field_name_acc": "atm.atm_facet",
+          "values": {
+            "météo normale": true,
+            "pluie légère": true,
+            "temps couvert": true,
+            "pluie forte": true,
+            "temps éblouissant": true,
+            "neige - grêle": true,
+            "autre météo": true,
+            "vent fort - tempête": true
+          }
+        },
+        "Collisions" : {
+          "field_name_acc": "col.col_facet",
+          "values": {
+            "autre collision": true,
+            "2 véhicules côté": true,
+            "Sans collision": true,
+            "2 véhicules par l'arrière": true,
+            "2 véhicules frontal": true,
+            "3+ véhicules autre": true,
+            "3+ véhicules en chaîne": true
+          }
+        },
+        "Heure" : {
+          "field_name_acc": "HEURE.HEURE_facet",
+          "values": {
+            "0": true,
+            "1": true,
+            "2": true,
+            "3": true,
+            "4": true,
+            "5": true,
+            "6": true,
+            "7": true,
+            "8": true,
+            "9": true,
+            "10": true,
+            "11": true,
+            "12": true,
+            "13": true,
+            "14": true,
+            "15": true,
+            "16": true,
+            "17": true,
+            "18": true,
+            "19": true,
+            "20": true,
+            "21": true,
+            "22": true,
+            "23": true
+          }
         }
       }
     }

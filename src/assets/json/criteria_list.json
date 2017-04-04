@@ -1,4 +1,14 @@
 {
+  "basemaps": [
+    {
+      "name": "OSM couleur", 
+      "url": "http://osm.psi.minint.fr/{z}/{x}/{y}.png"
+    },
+    {
+      "name": "OSM noir & blanc",
+      "url": "https://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaXN0b3BvcG9raSIsImEiOiJjaW12eWw2ZHMwMGFxdzVtMWZ5NHcwOHJ4In0.VvZvyvK0UaxbFiAtak7aVw"
+    }
+  ],
   "criteria_list": [
     {
       "name": "PVE et accidents",

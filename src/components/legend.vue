@@ -13,29 +13,7 @@
 </template>
 
 <script>
-function niceDisplay (n) {
-  // Gère l'affichage des nombres dans les clusters
-  if (n > 1000000) {
-    n = Math.round(n / 10000) / 100 + 'm'
-  }
-  if (n > 10000) {
-    n = Math.round(n / 1000) + 'k'
-  }
-  if (n > 1000) {
-    n = Math.round(n / 100) / 10 + 'k'
-  }
-  if (n > 10) {
-    n = Math.round(n * 10) / 10
-  }
-  if (n > 1) {
-    n = Math.round(n * 100) / 100
-  }
-  if (n < 1) {
-    let k = Math.round(-Math.log(n))
-    n = Math.round(n * Math.pow(10, k)) / Math.pow(10, k)
-  }
-  return n
-}
+import nd from '../assets/js/niceDisplay'
 
 export default {
   computed: {
@@ -43,7 +21,7 @@ export default {
       return this.$store.getters.legendScale
     },
     ratioAverage () {
-      return niceDisplay(this.$store.getters.ratioAverage)
+      return nd.niceDisplay(this.$store.getters.ratioAverage)
     },
     colors () {
       return this.$store.getters.colors
@@ -61,11 +39,11 @@ export default {
   methods: {
     getRange (i) {
       if (i === 0) {
-        return '< ' + niceDisplay(this.legendScale[0])
-      } else if (i === niceDisplay(this.legendScale.length)) {
-        return '> ' + niceDisplay(this.legendScale[this.legendScale.length - 1])
+        return '< ' + nd.niceDisplay(this.legendScale[0])
+      } else if (i === nd.niceDisplay(this.legendScale.length)) {
+        return '> ' + nd.niceDisplay(this.legendScale[this.legendScale.length - 1])
       } else {
-        return niceDisplay(this.legendScale[i - 1]) + ' - ' + niceDisplay(this.legendScale[i])
+        return nd.niceDisplay(this.legendScale[i - 1]) + ' - ' + nd.niceDisplay(this.legendScale[i])
       }
     }
   },

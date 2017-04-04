@@ -36,7 +36,7 @@ function getLevelGeojson (level, dep) {
   let promise
   // console.log('yo')
   if (level === 'région' || level === 'département') {
-    let geojson = ''
+    let geojson = ''toMultiLineGeojson
     if (level === 'région') {
       geojson = regions
     } else if (level === 'département') {
@@ -82,7 +82,7 @@ export default new Vuex.Store({
     level: 'région',
     parent: {level: '', name: '', id: ''},
     level_history: [],
-    criteria_list: criteriaList,
+    criteria_list: criteriaList.filters,
     accidents: {},
     verbalisations: {},
     level_geojson: {},
@@ -90,12 +90,15 @@ export default new Vuex.Store({
     accidents_value_by_filter: {},
     pve_value_by_filter: {},
     accidents_geojson: {},
+    accidents_agg_by_road: {},
+    pve_agg_by_road: {},
     pve_geojson: {},
     dividende: 'PVE',
     divisor: 'accidents',
-    localLevelDisplay: 'cluster',
+    localLevelDisplay: 'aggregatedByRoad',
     colorScale: Object.keys(colors)[0],
-    colorScaleInverted: false
+    colorScaleInverted: false,
+    basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[0]]
   },
   mutations: {
     set_level (state, {level, recordHistory}) {
@@ -119,7 +122,7 @@ export default new Vuex.Store({
     },
     set_criteria (state, {criteriaPath, value}) {
       let cl = JSON.parse(JSON.stringify(state.criteria_list))
-      console.log('set!')
+      // console.log('set!')
       _.set(cl, criteriaPath, value)
       state.criteria_list = cl
     },
@@ -150,6 +153,12 @@ export default new Vuex.Store({
     accidents_geojson (state, geojson) {
       state.accidents_geojson = geojson
     },
+    accidents_agg_by_road (state, json) {
+      state.accidents_agg_by_road = json
+    },
+    pve_agg_by_road (state, json) {
+      state.pve_agg_by_road = json
+    },
     pve_geojson (state, geojson) {
       state.pve_geojson = geojson
     },
@@ -162,9 +171,16 @@ export default new Vuex.Store({
     },
     set_divisor (state, divisor) {
       state.divisor = divisor
+    },
+    set_basemapUrl (state, basemapUrl) {
+      state.basemapUrl = basemapUrl
     }
   },
   actions: {
+    set_localLevelDisplay (context, localLevelDisplay) {
+      context.commit('set_localLevelDisplay', localLevelDisplay)
+      context.dispatch('accidentsPoints')
+    },
     restore_history (context) {
       if (context.state.level_history.length) {
         let h = context.state.level_history.slice(-1).pop()
@@ -206,8 +222,9 @@ export default new Vuex.Store({
           context.commit('clear_parent')
         }
 
-        if (level === 'local') {
+        if (level === 'commune') {
           context.dispatch('accidentsPoints')
+          // context.dispatch('queryESPveLocal')
         } else {
           let promises = []
           // promises.push(getLevelGeojson(level, parentId))
@@ -225,7 +242,7 @@ export default new Vuex.Store({
             context.commit('verbalisations_data', values[2])
           })
         }
-        context.dispatch('getAggregationByfilter')
+        // context.dispatch('getAggregationByfilter')
       }
     },
     getAggregationByfilter (context) {
@@ -250,18 +267,26 @@ export default new Vuex.Store({
     },
     accidentsPoints (context) {
       let state = context.state
-      // console.log(state.criteria_list)
-      let query = es.generateQuery(state.criteria_list, 'acc', state.parent)
-      // console.log(JSON.stringify(query))
-      es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields).then(function (res) {
-        // console.log(JSON.stringify(res))
-        context.commit('accidents_geojson', res)
-      })
+
+      if (state.localLevelDisplay === 'aggregatedByRoad') {
+        let query = es.generateAggregatedQuery(state.criteria_list, 'acc', 'local', state.parent, 'geojson')
+        es.search('acc', query).then(res => {
+          // console.log(es.toMultiLineGeojson(res))
+          context.commit('accidents_agg_by_road', es.toMultiLineGeojson(res))
+        })
+      } else {
+        let query = es.generateQuery(state.criteria_list, 'acc', state.parent)
+        es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields).then(function (res) {
+          context.commit('accidents_geojson', res)
+        })
+      }
     },
     queryESPveLocal (context) {
       let state = context.state
-      let query = es.generateQuery(state.criteria_list, 'pve', state.parent)
-      return es.searchAsGeoJson('pve', query)
+      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', 'local', state.parent, 'geojson')
+      es.search('pve', query).then(res => {
+        context.commit('pve_agg_by_road', es.toMultiLineGeojson(res))
+      })
     }
   },
   getters: {

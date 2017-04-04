@@ -10,6 +10,8 @@
 </template>
 
 <script>
+import nd from '../assets/js/niceDisplay'
+
 export default {
   computed: {
     level () {
@@ -19,12 +21,7 @@ export default {
       return this.$store.state.level !== 'local'
     },
     ratio () {
-      if (this.data.ratio > 10) {
-        return Math.round(this.data.ratio)
-      } else {
-        // console.log(this.data.ratio)
-        return this.data.ratio
-      }
+      return nd.niceDisplay(this.data.ratio)
     },
     ratioLabel () {
       return this.$store.getters.ratioLabel
@@ -38,6 +35,5 @@ export default {
   props: ['data']
 }
 </script>
-
 <style>
 </style>

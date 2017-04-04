@@ -1,6 +1,6 @@
 <template>
     <div id="map2">
-        <infoSidebar id="info-sidebar" :hover-info-data="hoverInfoData" class="sidebar collapsed"></infoSidebar>
+        <infoSidebar id="info-sidebar" :hover-info-data="hoverInfoData" class=""></infoSidebar>
     </div>
 </template>
 
@@ -8,6 +8,7 @@
 import L from 'leaflet'
 import 'leaflet.markercluster'
 import 'leaflet.heat'
+import 'leaflet-polylineoffset'
 import '../../node_modules/leaflet/dist/leaflet.css'
 import '../../node_modules/leaflet.markercluster/dist/MarkerCluster.css'
 import '../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css'
@@ -23,6 +24,29 @@ function styleAccidents (feature) {
   return {
     opacity: 0,
     fillOpacity: 0
+  }
+}
+
+function styleAccidentsRoads (feature) {
+  let count = feature.properties.count
+  let opacity, weight
+  if (count >= 10) {
+    opacity = 1
+    weight = 6
+  } else if (count >= 5) {
+    opacity = 0.8
+    weight = 4
+  } else if (count >= 2) {
+    opacity = 0.7
+    weight = 2
+  } else {
+    opacity = 0.5
+    weight = 1
+  }
+  return {
+    color: 'rgb(255, 81, 0)',
+    opacity: opacity,
+    weight: weight
   }
 }
 
@@ -95,6 +119,7 @@ export default {
   data () {
     return {
       map: null,
+      tileLayer: null,
       frontiersGroup: L.layerGroup(),
       geojsonFrontieres: null,
       clusterGroup: L.layerGroup(),
@@ -110,7 +135,8 @@ export default {
       so6: this.setOpacity(0.6),
       so3: this.setOpacity(0.3),
       slcBlack: this.setLineColor('black'),
-      slcWhite: this.setLineColor('white')
+      slcWhite: this.setLineColor('white'),
+      keepLocalDataOnChange: false
     }
   },
   computed: {
@@ -135,6 +161,12 @@ export default {
     accidentsLocal () {
       return this.$store.state.accidents_geojson
     },
+    accidentsLocalAgg () {
+      return this.$store.state.accidents_agg_by_road
+    },
+    pveLocalAgg () {
+      return this.$store.state.pve_agg_by_road
+    },
     dividende () {
       return this.$store.state.dividende
     },
@@ -149,6 +181,9 @@ export default {
     },
     colors () {
       return this.$store.getters.colors
+    },
+    basemapUrl () {
+      return this.$store.state.basemapUrl
     }
   },
   watch: {
@@ -167,13 +202,30 @@ export default {
     accidents () {
       this.colorMap()
     },
+    accidentsLocalAgg () {
+      this.displayLocalLayer()
+    },
+    pveLocalAgg () {
+      this.aggByRoad('pve')
+    },
     accidentsLocal () {
-      // console.log(JSON.stringify(this.accidents_geojson))
-      // console.log('il faut mettre a jour le layer !')
+      this.displayLocalLayer()
+    },
+    localLevelDisplay () {
+      this.clusterGroup.clearLayers()
+    },
+    basemapUrl () {
+      this.tileLayer.setUrl(this.basemapUrl)
+    }
+  },
+  methods: {
+    setFrontieresPropertiesForLocal () {
       let vm = this
       this.geojsonFrontieres.setStyle({
-        fillOpacity: 0.3,
-        fillColor: 'black'})
+        fillOpacity: 0,
+        fillColor: 'black',
+        opacity: 1,
+        color: 'black'})
 
       this.geojsonFrontieres.eachLayer(function (layer) {
         layer.removeEventListener('mouseover', vm.so6)
@@ -182,31 +234,70 @@ export default {
         layer.removeEventListener('mouseout', vm.slcWhite)
         if (layer.geoId !== vm.$store.state.parent.id) {
           layer.on({
-            mouseover: vm.so6,
-            mouseout: vm.so3
+            // mouseover: vm.so6,
+            // mouseout: vm.so3
           })
         } else {
           layer.setStyle({fillOpacity: 0})
-          if (layer.getBounds().isValid()) {
+          if (layer.getBounds().isValid() && !vm.keepLocalDataOnChange) {
             vm.map.fitBounds(layer.getBounds())
           }
         }
       })
-      this.displayLocalLayer()
     },
-    localLevelDisplay () {
-      this.displayLocalLayer()
-    }
-  },
-  methods: {
     displayLocalLayer () {
-      this.clusterGroup.clearLayers()
+      this.setFrontieresPropertiesForLocal()
+
+      if (!this.keepLocalDataOnChange) {
+        this.clusterGroup.clearLayers()
+      }
+
       if (this.localLevelDisplay === 'cluster') {
         this.createClusterLocal('acc')
         this.clusterGroup.addLayer(this.cluster_Acc)
       } else if (this.localLevelDisplay === 'heatmap') {
         this.heatMap()
+      } else if (this.localLevelDisplay === 'aggregatedByRoad') {
+        this.aggByRoad('acc')
       }
+    },
+    aggByRoad (type) {
+      let vm = this
+      let data, styleFunction, popUpContent
+
+      if (type === 'acc') {
+        data = this.accidentsLocalAgg
+        styleFunction = styleAccidentsRoads
+        popUpContent = '</span> accidents'
+      } else {
+        data = this.pveLocalAgg
+        styleFunction = styleAccidentsRoads
+        popUpContent = '</span> pve'
+      }
+
+      let layer = L.geoJSON(data, {
+        style: styleFunction,
+        onEachFeature: function (feature, layer) {
+          // console.log(feature.geometry.coordinates)
+          let segmentCoords = L.GeoJSON.coordsToLatLngs(feature.geometry.coordinates, 1)
+          L.polyline(segmentCoords, {
+            offset: 5
+          }).addTo(vm.clusterGroup)
+
+          layer.on({
+            mouseover: function (event) {
+              L.popup()
+              .setContent('<strong>' + feature.properties.name + '</strong><br><span class="accHighlight">' + feature.properties.count + popUpContent)
+              .setLatLng(event.latlng)
+              .openOn(vm.map)
+            },
+            mouseout (event) {
+              vm.map.closePopup()
+            }
+          })
+        }
+      })
+      this.clusterGroup.addLayer(layer)
     },
     heatMap () {
       // console.log(this.accidentsLocal)
@@ -429,8 +520,9 @@ export default {
       this.linkHoverInfoToLayer(feature, layer)
 
       if (vm.level !== 'local') {
-        layer.on('click', function () {
+        layer.on('click', function (e) {
           vm.map.closePopup()
+          vm.keepLocalDataOnChange = e.originalEvent.ctrlKey
           vm.$store.dispatch('set_level', {level: vm.levelsInfos[layer.level].child, parentLevel: layer.level, parentName: layer.displayName, parentId: layer.geoId})
         })
       }
@@ -448,10 +540,10 @@ export default {
   mounted () {
     this.map = L.map('map2', {zoomControl: false}).setView([45.853459, 2.349312], 6)
     L.control.sidebar('sidebar').addTo(this.map)
-    let infoSidebar = L.control.sidebar('info-sidebar', {position: 'right'}).addTo(this.map)
-    infoSidebar.open('navigation')
+    // let infoSidebar = L.control.sidebar('info-sidebar', {position: 'right'}).addTo(this.map)
+    // infoSidebar.open('navigation')
 
-    L.tileLayer(' http://osm.psi.minint.fr/{z}/{x}/{y}.png', {
+    this.tileLayer = L.tileLayer(this.basemapUrl, {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
       maxZoom: 18
     }).addTo(this.map)
@@ -461,12 +553,17 @@ export default {
     this.$store.dispatch('set_level', {level: 'région'})
 
     this.map.on('zoomend', (e) => {
-      console.log('zoom actuel' + this.map.getZoom())
+      // console.log('zoom actuel' + this.map.getZoom())
       if (this.map.getZoom() < zoomLevels[this.level]) {
-        console.log('limite ' + zoomLevels[this.level])
+        // console.log('limite ' + zoomLevels[this.level])
         this.$store.dispatch('restore_history')
       }
     })
+
+    // avoid clicking and scrolling when the mouse is over the div
+    let div = L.DomUtil.get('info-sidebar')
+    L.DomEvent.disableScrollPropagation(div)
+    L.DomEvent.disableClickPropagation(div)
   }
 }
 </script>
@@ -534,5 +631,10 @@ export default {
 }
 .leaflet-tooltip > i {
   color: white;
+}
+
+.accHighlight {
+  color: rgba(255, 81, 0, 1.0);
+  font-weight: bold;
 }
 </style>

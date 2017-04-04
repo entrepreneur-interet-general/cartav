@@ -1,18 +1,21 @@
 import elasticsearch from 'elasticsearch'
+import _ from 'lodash'
 
-export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getFieldsMap, getCommunesGeoJson, searchSimpleFilter }
+export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getFieldsMap, getCommunesGeoJson, searchSimpleFilter, toMultiLineGeojson }
 
 function getFieldsMap () {
   return {
     'acc': {
       'région': 'NOM_REG.NOM_REG_facet',
       'département': 'dep',
-      'commune': 'current_city_code'
+      'commune': 'current_city_code',
+      'local': 'num_route_or_id.num_route_or_id_facet'
     },
     'pve': {
       'région': 'NOM_REG.NOM_REG_facet',
       'département': 'DEPARTEMENT_INFRACTION',
-      'commune': 'CODE_INSEE_INFRACTION'
+      'commune': 'CODE_INSEE_INFRACTION',
+      'local': 'num_route_or_id.num_route_or_id_facet'
     }
   }
 }
@@ -57,6 +60,37 @@ function searchAsGeoJson (type, query, latField, longField, propertyFields) {
       propertyFields
     )
   })
+}
+
+function toMultiLineGeojson (json) {
+  // console.log(json)
+  let buckets = json.aggregations.group_by.buckets
+  // console.log(buckets)
+  let features = []
+  buckets.forEach(function (bucket) {
+    // console.log(bucket.top_agg_hits.hits.hits[0]._source.geojson)
+    // console.log(JSON.parse(bucket.top_agg_hits.hits.hits[0]._source.geojson))
+    let geojsonString = _.get(bucket, 'top_agg_hits.hits.hits[0]._source.geojson', undefined)
+    if (geojsonString !== undefined) {
+      let geojson = JSON.parse(geojsonString)
+      let feature = {
+        type: 'Feature',
+        geometry: geojson,
+        properties: {
+          name: bucket.key,
+          count: bucket.doc_count
+        }
+      }
+      features.push(feature)
+    }
+  })
+  // console.log(features)
+  let geoJson = {
+    type: 'FeatureCollection',
+    features: features
+  }
+  // console.log(geoJson)
+  return geoJson
 }
 
 function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
@@ -121,13 +155,28 @@ function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
   return must
 }
 
-function generateAggs (type, fieldName, size) {
+function generateAggs (type, fieldName, size, sourceField = null) {
   // Génère le champ aggrégation de la requête ES
   let aggs = {
     group_by: {
       terms: {
         field: fieldName,
         size: size
+      }
+    }
+  }
+
+  if (sourceField) {
+    aggs.group_by.aggs = {
+      top_agg_hits: {
+        top_hits: {
+          _source: {
+            include: [
+              sourceField
+            ]
+          },
+          size: 1
+        }
       }
     }
   }
@@ -164,13 +213,13 @@ function addAdditionalFilters (must, type, crit) {
   }
 }
 
-function generateAggregatedQuery (criteriaList, type, level, additionalCriteria) {
+function generateAggregatedQuery (criteriaList, type, level, additionalCriteria, sourceField = null) {
   // Génération de la query ES
   let query = getQueryBase(0)
   let must = generateFilter(criteriaList, type)
   addAdditionalFilters(must, type, additionalCriteria)
   let aggKey = getFieldsMap()[type][level]
-  let aggs = generateAggs(type, aggKey, 1000)
+  let aggs = generateAggs(type, aggKey, 1000, sourceField)
 
   query.query.constant_score.filter.bool.must = must
   query.aggs = aggs
@@ -243,7 +292,7 @@ function generateGeoJson (hits, latField, longField, propertyFields) {
       })
     }
   }
-  console.log('fini !')
+  // console.log('fini !')
   return geoJson
 }
 
