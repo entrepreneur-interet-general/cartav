@@ -43,6 +43,7 @@ function styleAccidentsRoads (feature) {
     opacity = 0.5
     weight = 1
   }
+  weight = 2
   return {
     color: 'rgb(255, 81, 0)',
     opacity: opacity,
@@ -279,10 +280,10 @@ export default {
         style: styleFunction,
         onEachFeature: function (feature, layer) {
           // console.log(feature.geometry.coordinates)
-          let segmentCoords = L.GeoJSON.coordsToLatLngs(feature.geometry.coordinates, 1)
+          /* let segmentCoords = L.GeoJSON.coordsToLatLngs(feature.geometry.coordinates, 1)
           L.polyline(segmentCoords, {
-            offset: 5
-          }).addTo(vm.clusterGroup)
+            offset: 10
+          }).addTo(vm.clusterGroup) */
 
           layer.on({
             mouseover: function (event) {

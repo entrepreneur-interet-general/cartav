@@ -197,7 +197,7 @@ export default new Vuex.Store({
     set_criteria (context, o) {
       context.commit('set_criteria', o)
 
-      if (context.state.level === 'local') {
+      if (context.state.level === 'commune') {
         context.dispatch('accidentsPoints')
       } else {
         let promises = []
@@ -242,7 +242,7 @@ export default new Vuex.Store({
             context.commit('verbalisations_data', values[2])
           })
         }
-        // context.dispatch('getAggregationByfilter')
+        context.dispatch('getAggregationByfilter')
       }
     },
     getAggregationByfilter (context) {
