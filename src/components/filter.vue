@@ -171,6 +171,7 @@
 
 <script>
 import ratio from './ratio'
+import VueMarkdown from 'vue-markdown'
 
 function niceDisplay (n) {
   // Gère l'affichage des nombres dans les clusters
@@ -187,7 +188,8 @@ function niceDisplay (n) {
 
 export default {
   components: {
-    ratio: ratio
+    ratio: ratio,
+    VueMarkdown
   },
   computed: {
     criteria_list () {
