@@ -163,7 +163,85 @@
 
       <div class="sidebar-pane" id="help">
         <h1 class="sidebar-header">Aide<span class="sidebar-close"><i class="glyphicon glyphicon-triangle-left"></i></span></h1>
-          <div>Bon ici c'est l'aide.</div>
+        <vue-markdown>
+# Aide
+
+Cet outil d’aide à la décision permet d’observer les accidents et les verbalisations afin d’aider les forces de l’ordre à mieux cibler leurs actions.
+
+## Naviguer dans le territoire
+
+Un _click_ sur une région permet d’afficher tous les départements de la région.
+
+Un _click_ sur un département permet d’afficher les détails de ce département.
+
+Il est possible de cliquer sur un département voisin de la même région pour en afficher les détails.
+
+La molette de la souris permet de zoomer dans la carte.
+
+## Menu de droite
+
+### Navigation
+Pour remonter au niveau supérieur, utilisez le bouton disponible dans le menu de droite.
+
+### Légende
+
+Le menu de droite affiche les statistiques de la zone survolée ainsi que les valeurs correspondant aux couleurs affichées sur la carte.
+
+## Menu de gauche
+
+### Filtres temporels
+
+Le premier onglet de gauche permet de choisir la période d’étude.
+Il est possible de filtrer par année ou par jour de la semaine.
+
+Les chiffres en rouge indiquent le nombre d’accidents par catégorie et les chiffres en bleu le nombre de verbalisations.
+
+### Filtres accidents
+
+Cet onglet permet de filtrer les causes de l’accident.
+
+Le fichier BAAC (Bulletin des accidents corporels) ne contient pas la cause de l’accident. Il n’est donc pas possible de filtrer selon ce critère.
+
+Cette information sera disponible pour les accidents ayant eu lieu à partir de 2017.
+
+### Filtres verbalisation
+
+Les infractions peuvent être filtrées selon leur nature.
+
+### Paramètres d’affichages
+
+Cet onglet permet de choisir les rapports à afficher sur la carte. La légende à droite sera mise à jour automatiquement selon les nouveaux choix.
+
+Au niveau départemental, il est possible de choisir d’aggréger les les accidents selon :
+* Proximité géographique (_cluster_)
+* Carte de chaleur (_heatmap_)
+* Le linéaire de voirie
+
+La proximité géographique permet de descendre au niveau de l’accident individuel et d’en obtenir les informations en cliquant dessus.
+
+Le choix d’un fond de carte en noir et blanc aider à la visibilité, en particulier pour afficher les informations selon le linéaire de voirie.
+
+## Contacts
+
+Jusqu’à fin octobre 2017, les développeurs peuvent être contacter directement :
+
+* `francis.chabouis@interieur.gouv.fr`
+* `tristram.grabener@interieur.gouv.fr`
+
+Au delà de cette date, veuillez contacter `daniel.ansellem@interieur.gouv.fr`
+
+## Source des données
+
+* Accidents : base des accidents corporels (BAAC) en donnée ouverte
+* Verbalisation : base PVE (PV électronique)
+* Découpage administratif : données ouvertes IGN
+* Linéaire de voirie : OpenStreetMap
+* Fond de carte : OpenStreetMap
+
+## Contexte du prototype
+
+Ce projet est réalisé dans le cadre des [Entrepreneurs d’Intérêt Général](http://www.gouvernement.fr/entrepreneur-interet-general)
+        </vue-markdown>
       </div>
     </div>
   </div>
