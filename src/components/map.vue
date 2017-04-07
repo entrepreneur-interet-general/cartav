@@ -43,9 +43,33 @@ function styleAccidentsRoads (feature) {
     opacity = 0.5
     weight = 1
   }
-  weight = 2
   return {
     color: 'rgb(255, 81, 0)',
+    opacity: opacity,
+    weight: weight
+  }
+}
+
+function stylePveRoads (feature) {
+  let count = feature.properties.count
+  let opacity, weight
+  if (count >= 10) {
+    opacity = 1
+    weight = 6
+  } else if (count >= 5) {
+    opacity = 0.8
+    weight = 4
+  } else if (count >= 2) {
+    opacity = 0.7
+    weight = 2
+  } else {
+    opacity = 0.5
+    weight = 1
+  }
+  weight = 4
+  opacity = 1
+  return {
+    color: 'rgb(0, 0, 255)',
     opacity: opacity,
     weight: weight
   }
@@ -100,11 +124,19 @@ function accidentIconCreateFunction (cluster) {
   let n = cluster.getAllChildMarkers().length
   let c = ' marker-cluster-'
   if (n < 3) {
-    c += 'small'
+    c += 'size1'
   } else if (n < 5) {
-    c += 'medium'
+    c += 'size2'
+  } else if (n < 10) {
+    c += 'size3'
+  } else if (n < 20) {
+    c += 'size4'
+  } else if (n < 30) {
+    c += 'size5'
+  } else if (n < 50) {
+    c += 'size6'
   } else {
-    c += 'large'
+    c += 'size7'
   }
   return new L.DivIcon({
     html: '<div><span>' + n + '</span></div>',
@@ -272,7 +304,7 @@ export default {
         popUpContent = '</span> accidents'
       } else {
         data = this.pveLocalAgg
-        styleFunction = styleAccidentsRoads
+        styleFunction = stylePveRoads
         popUpContent = '</span> pve'
       }
 
@@ -299,6 +331,11 @@ export default {
         }
       })
       this.clusterGroup.addLayer(layer)
+      if (type === 'acc') {
+        layer.bringToFront()
+      } else {
+        layer.bringToBack()
+      }
     },
     heatMap () {
       // console.log(this.accidentsLocal)
@@ -359,10 +396,11 @@ export default {
               // console.log('click!')
               let content = '<i class="fa fa-info-circle" aria-hidden="true"></i></br>'
               for (let p in feature.properties) {
-                if (!p.startsWith('_catv_')) {
+                if (!p.startsWith('_catv_') && feature.properties[p]) {
                   content += p + ': ' + feature.properties[p] + '</br>'
                 }
               }
+              content += '<a target="_blank" href=http://10.237.27.129/demo/francis/streetview2.html?posLat=' + feature.geometry.coordinates[1] + '+&posLng=' + feature.geometry.coordinates[0] + '>voir dans streetview</a></br>'
               layer.bindPopup(content)
               es.searchSimpleFilter('acc_usagers', 'Num_Acc', feature.properties['numéro accident']).then(function (resp) {
                 content += '</br><i class="fa fa-users" aria-hidden="true"></i></br>'
@@ -400,7 +438,9 @@ export default {
               }
             }
           }
-          return L.circleMarker(latlng, null).bindTooltip(content, {permanent: true, direction: 'center'})
+          let myIcon = L.divIcon({className: 'my-div-icon', html: content, iconSize: null})
+          return L.marker(latlng, {icon: myIcon})
+          // return L.circleMarker(latlng, null).bindTooltip(content, {permanent: true, direction: 'center'})
         },
         style: styleAccidents
       })
@@ -576,35 +616,60 @@ export default {
 }
 
 /*ACCIDENTS*/
-.cluster-acc.marker-cluster-small {
-    background-color: rgba(255, 81, 0, 0.3);
-}
-.cluster-acc.marker-cluster-small div{
-    background-color: rgba(255, 81, 0, 0.3);
+.cluster-acc div{
     color: white;
     font-weight: bold;
     font-size: 16px;
     text-shadow: 0px 0px 6px black;
 }
-.cluster-acc.marker-cluster-medium {
+
+.cluster-acc.marker-cluster-size1 {
     background-color: rgba(255, 81, 0, 0.3);
 }
-.cluster-acc.marker-cluster-medium div{
+.cluster-acc.marker-cluster-size1 div{
+    background-color: rgba(255, 81, 0, 0.3);
+}
+
+.cluster-acc.marker-cluster-size2 {
+    background-color: rgba(255, 81, 0, 0.3);
+}
+.cluster-acc.marker-cluster-size2 div{
     background-color: rgba(255, 81, 0, 0.5);
-    color: white;
-    font-weight: bold;
-    font-size: 16px;
-    text-shadow: 0px 0px 6px black;
 }
-.cluster-acc.marker-cluster-large {
-    background-color: rgba(255, 81, 0, 0.8);
-}
-.cluster-acc.marker-cluster-large div{
+
+.cluster-acc.marker-cluster-size3 {
     background-color: rgba(255, 81, 0, 0.6);
-    color: white;
-    font-weight: bold;
-    font-size: 16px;
-    text-shadow: 0px 0px 6px black;
+}
+.cluster-acc.marker-cluster-size3 div{
+    background-color: rgba(255, 81, 0, 0.6);
+}
+
+.cluster-acc.marker-cluster-size4 {
+    background-color: rgba(255, 52, 1, 0.7);
+}
+.cluster-acc.marker-cluster-size4 div{
+    background-color: rgba(255, 52, 1, 0.7);
+}
+
+.cluster-acc.marker-cluster-size5 {
+    background-color: rgba(255, 38, 0, 0.8);
+}
+.cluster-acc.marker-cluster-size5 div{
+    background-color: rgba(255, 38, 0, 0.8);
+}
+
+.cluster-acc.marker-cluster-size6 {
+    background-color: rgba(204, 27, 0, 0.8);
+}
+.cluster-acc.marker-cluster-size6 div{
+    background-color: rgba(204, 27, 0, 0.8);
+}
+
+.cluster-acc.marker-cluster-size7 {
+    background-color: rgba(109, 10, 0, 0.8);
+}
+.cluster-acc.marker-cluster-size7 div{
+    background-color: rgba(109, 10, 0, 0.8);
 }
 
 .cluster-acc.marker-cluster {
@@ -632,6 +697,14 @@ export default {
 }
 .leaflet-tooltip > i {
   color: white;
+}
+
+.my-div-icon {
+  background-color: rgba(255, 81, 0, 0.8);
+  color: white;
+  white-space: nowrap;
+  padding: 0.5px;
+  border-radius: 3px;
 }
 
 .accHighlight {

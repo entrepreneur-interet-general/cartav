@@ -37,18 +37,18 @@
     <h4>Carte locale</h4>
 
     <input type="radio" id="clusterType" value="cluster" v-model="localLevelDisplay">
-    <label for="one">Nuage de points (cluster)</label>
+    <label for="clusterType">Nuage de points (cluster)</label>
     <br>
     <input type="radio" id="heatMapType" value="heatmap" v-model="localLevelDisplay">
-    <label for="two">Carte de chaleur (heatmap)</label>
+    <label for="heatMapType">Carte de chaleur (heatmap)</label>
     <br>
     <input type="radio" id="aggregatedByRoadType" value="aggregatedByRoad" v-model="localLevelDisplay">
-    <label for="three">Routes</label>
+    <label for="aggregatedByRoadType">Routes</label>
     <br>
   </div>
   <h4>Fonds de carte</h4>
   <span v-for="(url, name) in basemaps">
-    <input type="radio" v-bind:value=url v-model="basemapUrl">
+    <input type="radio" :id=url :value=url v-model="basemapUrl">
     <label v-bind:for="url">
       {{ name }}
     </label>

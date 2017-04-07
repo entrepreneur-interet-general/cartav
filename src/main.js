@@ -3,6 +3,10 @@
 import Vue from 'vue'
 import App from './components/App.vue'
 import store from './store'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-default/index.css'
+
+Vue.use(ElementUI)
 
 /* eslint-disable no-new */
 new Vue({

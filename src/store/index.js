@@ -16,6 +16,8 @@ Vue.use(Vuex)
 
 let accidentsFields = {
   'numéro accident': 'Num_Acc',
+  'adresse': 'adr',
+  'ville': 'current_name',
   'date': 'date_formated',
   'heure': 'heures_minutes',
   'luminosité': 'lum',
@@ -97,7 +99,7 @@ export default new Vuex.Store({
     divisor: 'accidents',
     localLevelDisplay: 'aggregatedByRoad',
     colorScale: Object.keys(colors)[0],
-    colorScaleInverted: false,
+    colorScaleInverted: true,
     basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[0]]
   },
   mutations: {
@@ -199,6 +201,7 @@ export default new Vuex.Store({
 
       if (context.state.level === 'commune') {
         context.dispatch('accidentsPoints')
+        // context.dispatch('queryESPveLocal')
       } else {
         let promises = []
         promises.push(context.dispatch('queryESAcc'))
@@ -285,6 +288,8 @@ export default new Vuex.Store({
       let state = context.state
       let query = es.generateAggregatedQuery(state.criteria_list, 'pve', 'local', state.parent, 'geojson')
       es.search('pve', query).then(res => {
+        console.log(JSON.stringify(query))
+        console.log(res)
         context.commit('pve_agg_by_road', es.toMultiLineGeojson(res))
       })
     }

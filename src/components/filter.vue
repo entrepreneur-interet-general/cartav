@@ -358,7 +358,8 @@ export default {
 .funkyradio input[type="checkbox"]:empty ~ label {
   position: relative;
   line-height: 2.5em;
-  text-indent: 3.25em;
+  /*text-indent: 3.25em;*/
+  padding-left: 3.25em;
   /*margin-top: 2em;*/
   cursor: pointer;
   -webkit-user-select: none;
@@ -375,38 +376,45 @@ export default {
   left: 0;
   content: '';
   width: 2.5em;
-  background: #D1D3D4;
+  background: white;
+  border-right: 0.5px solid #D1D3D4;
   border-radius: 3px 0 0 3px;
+  transition: transform 0.15s;
+  transform: scaleY(0);
 }
 
 .funkyradio input[type="checkbox"]:hover:not(:checked) ~ label {
-  color: #888;
+  color: rgb(51, 51, 51);
 }
 
 .funkyradio input[type="checkbox"]:hover:not(:checked) ~ label:before {
   content: '\2714';
   text-indent: .9em;
-  color: #C2C2C2;
+  color: rgb(51, 51, 51);
 }
 
 .funkyradio input[type="checkbox"]:checked ~ label {
-  color: #777;
+  color: rgb(51, 51, 51);
 }
 
 .funkyradio input[type="checkbox"]:checked ~ label:before {
   content: '\2714';
   text-indent: .9em;
-  color: #333;
-  background-color: #ccc;
 }
 
 .funkyradio input[type="checkbox"]:focus ~ label:before {
   box-shadow: 0 0 0 3px #999;
 }
 
+.funkyradio input[type="checkbox"] ~ label:hover {
+  border : 1px solid #979798;
+}
+
 .funkyradio-default input[type="checkbox"]:checked ~ label:before {
-  color: #333;
-  background-color: #ccc;
+  color: rgba(0, 116, 217, 1);
+  background-color: rgba(0, 116, 217, 0.2);
+  border-right: 0px;
+  transform: scaleY(1);
 }
 
 .funkyradio-primary input[type="checkbox"]:checked ~ label:before {

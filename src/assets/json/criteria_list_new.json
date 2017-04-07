@@ -47,6 +47,15 @@
         }
       },
       "Accidents" : {
+        "gravité" : {
+          "field_name_acc": "gravite_accident.gravite_accident_facet",
+          "values": {
+            "tué": true,
+            "hospitalisé": true,
+            "blessé léger": true,
+            "indemne": true
+          }
+        },
         "luminosité" : {
           "field_name_acc": "lum.lum_facet",
           "values": {

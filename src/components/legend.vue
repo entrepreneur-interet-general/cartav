@@ -30,7 +30,7 @@ export default {
       return this.legendScale.length !== 0
     },
     localLevel () {
-      return this.$store.state.level === 'local'
+      return this.$store.state.level === 'commune'
     },
     ratioLabel () {
       return this.$store.getters.ratioLabel

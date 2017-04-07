@@ -30,7 +30,7 @@ let communesGeoJsonFields = {
 function getIndex () {
   return {
     acc: 'es2_2005_2015_accidents',
-    pve: 'es2_2010_2015_pve_sr',
+    pve: 'es2_2010_2015_pve_sr2',
     commune: 'es2_2016_geohisto_communes_complete2',
     acc_usagers: 'es2_accidents_usagers',
     acc_vehicules: 'es2_accidents_vehicules'
@@ -229,7 +229,8 @@ function generateAggregatedQuery (criteriaList, type, level, additionalCriteria,
 
 function generateQuery (criteriaList, type, additionalCriteria) {
   // Génération de la query ES
-  let query = getQueryBase(1000)
+  let query = getQueryBase(10000)
+  console.log('coucou')
   let must = generateFilter(criteriaList, type)
   addAdditionalFilters(must, type, additionalCriteria)
 
