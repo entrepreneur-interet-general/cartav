@@ -26,6 +26,7 @@
     "sidebar-v2": "^0.3.1",
     "vue": "^2.1.0",
     "vue-markdown": "^2.1.3",
+    "vue-router": "^2.4.0",
     "vuex": "^2.1.1"
   },
   "devDependencies": {
