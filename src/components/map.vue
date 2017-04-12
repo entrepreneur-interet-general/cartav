@@ -594,10 +594,8 @@ export default {
     this.$store.dispatch('set_level', {level: 'région'})
 
     this.map.on('zoomend', (e) => {
-      // console.log('zoom actuel' + this.map.getZoom())
       if (this.map.getZoom() < zoomLevels[this.level]) {
-        // console.log('limite ' + zoomLevels[this.level])
-        this.$store.dispatch('restore_history')
+        this.$router.go(-1)
       }
     })
 

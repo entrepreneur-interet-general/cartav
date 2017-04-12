@@ -83,7 +83,6 @@ export default new Vuex.Store({
   state: {
     level: 'région',
     parent: {level: '', name: '', id: ''},
-    level_history: [],
     criteria_list: criteriaList.filters,
     accidents: {},
     verbalisations: {},
@@ -103,15 +102,8 @@ export default new Vuex.Store({
     basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[0]]
   },
   mutations: {
-    set_level (state, {level, recordHistory}) {
-      if (recordHistory) {
-        let prev = {level: state.level, parent: state.parent}
-        state.level_history.push(prev)
-      }
+    set_level (state, level) {
       state.level = level
-    },
-    pop_history (state) {
-      state.level_history.pop()
     },
     set_localLevelDisplay (state, localLevelDisplay) {
       state.localLevelDisplay = localLevelDisplay
@@ -183,19 +175,6 @@ export default new Vuex.Store({
       context.commit('set_localLevelDisplay', localLevelDisplay)
       context.dispatch('accidentsPoints')
     },
-    restore_history (context) {
-      if (context.state.level_history.length) {
-        let h = context.state.level_history.slice(-1).pop()
-        context.dispatch('set_level', {
-          level: h.level,
-          parentLevel: h.parent.level,
-          parentName: h.parent.name,
-          parentId: h.parent.id,
-          recordHistory: false
-        })
-        context.commit('pop_history')
-      }
-    },
     set_criteria (context, o) {
       context.commit('set_criteria', o)
 
@@ -213,10 +192,10 @@ export default new Vuex.Store({
       }
       context.dispatch('getAggregationByfilter')
     },
-    set_level (context, {level, parentLevel, parentName, parentId, recordHistory = true}) {
+    set_level (context, {level, parentLevel, parentName, parentId}) {
       let s = context.state
       if (level !== s.level) {
-        context.commit('set_level', {level: level, recordHistory: recordHistory})
+        context.commit('set_level', level)
       }
       if (parentLevel !== s.parent.level || parentName !== s.parent.name || parentId !== s.parent.id) {
         if (parentLevel && parentName && parentId) {
