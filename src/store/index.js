@@ -192,14 +192,14 @@ export default new Vuex.Store({
       }
       context.dispatch('getAggregationByfilter')
     },
-    set_level (context, {level, parentLevel, parentName, parentId}) {
+    set_level (context, {level, parentLevel, parentId}) {
       let s = context.state
       if (level !== s.level) {
         context.commit('set_level', level)
       }
-      if (parentLevel !== s.parent.level || parentName !== s.parent.name || parentId !== s.parent.id) {
-        if (parentLevel && parentName && parentId) {
-          context.commit('set_parent', {level: parentLevel, name: parentName, id: parentId})
+      if (parentLevel !== s.parent.level || parentId !== s.parent.id) {
+        if (parentLevel && parentId) {
+          context.commit('set_parent', {level: parentLevel, id: parentId})
         } else {
           context.commit('clear_parent')
         }

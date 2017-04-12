@@ -564,7 +564,8 @@ export default {
         layer.on('click', function (e) {
           vm.map.closePopup()
           vm.keepLocalDataOnChange = e.originalEvent.ctrlKey
-          vm.$store.dispatch('set_level', {level: vm.levelsInfos[layer.level].child, parentLevel: layer.level, parentName: layer.displayName, parentId: layer.geoId})
+          vm.$router.push({ name: 'sous-carte', params: { level: layer.level, id: layer.geoId } })
+          vm.$store.dispatch('set_level', {level: vm.levelsInfos[layer.level].child, parentLevel: layer.level, parentId: layer.geoId})
         })
       }
     },
