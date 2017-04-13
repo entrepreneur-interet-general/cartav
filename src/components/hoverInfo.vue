@@ -17,9 +17,6 @@ export default {
     level () {
       return this.$store.state.level
     },
-    levelAggregated () {
-      return this.$store.state.level !== 'local'
-    },
     ratio () {
       return nd.niceDisplay(this.data.ratio)
     },

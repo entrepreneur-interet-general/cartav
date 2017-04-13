@@ -12,12 +12,9 @@ import 'leaflet-polylineoffset'
 import '../../node_modules/leaflet/dist/leaflet.css'
 import '../../node_modules/leaflet.markercluster/dist/MarkerCluster.css'
 import '../../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css'
-// import _ from 'lodash'
 import '../../node_modules/sidebar-v2/js/leaflet-sidebar.js'
 import es from '../store/modules/elastic_search'
 import '../../node_modules/font-awesome/css/font-awesome.min.css'
-// require('font-awesome/css/font-awesome.min.css')
-// import 'font-awesome'
 import infoSidebar from './info-sidebar'
 
 function styleAccidents (feature) {
@@ -175,9 +172,6 @@ export default {
   computed: {
     level () {
       return this.$store.getters.parent.subLevel
-    },
-    level_geojson () {
-      return this.$store.state.level_geojson
     },
     level_shape_geojson () {
       return this.$store.state.level_shape_geojson

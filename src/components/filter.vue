@@ -295,13 +295,6 @@ export default {
 </script>
 
 <style>
-/*.sidebar-tabs > ul > li.active {
-  background-color: black;
-}*/
-
-
-
-
 .sidebar-tabs{
   border-right: 1px solid #bebebe;
 }
@@ -324,11 +317,7 @@ export default {
   font-weight: bold;
   font-size: 18px;
 }
-/*
-#filters > div {
-  margin-top: 30px;
-}
-*/
+
 .sidebar-content > .sidebar-pane > div {
   margin-top: 30px;
   padding-right: 40px;

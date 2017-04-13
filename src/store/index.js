@@ -5,8 +5,6 @@ import filters from '../components/filter'
 import es from './modules/elastic_search'
 import criteriaList from '../assets/json/criteria_list_new.json'
 import _ from 'lodash'
-// import departements from '../assets/json/departements_wgs84.json'
-// import regions from '../assets/json/regions_nouvelles_wgs84.json'
 import regionsFrontieres from '../assets/json/regions_frontieres.json'
 import departementsFrontieres from '../assets/json/departements_frontieres.json'
 import $ from 'jquery'
@@ -32,26 +30,6 @@ let accidentsFields = {
   '_catv_vehiculeautre_nb': 'vehiculeautre_nb',
   '_catv_pietons_nb': 'pietons_nb'
 }
-
-/*
-function getLevelGeojson (level, dep) {
-  let promise
-  if (level === 'région' || level === 'département') {
-    let geojson = ''toMultiLineGeojson
-    if (level === 'région') {
-      geojson = regions
-    } else if (level === 'département') {
-      geojson = departements
-    }
-    promise = new Promise(function (resolve, reject) {
-      resolve(geojson)
-    })
-    return promise
-  } else if (level === 'commune') {
-    return es.getCommunesGeoJson(dep)
-  }
-}
-*/
 
 function getLevelShapesGeojson (level, dep) {
   let promise
@@ -81,7 +59,6 @@ export default new Vuex.Store({
     criteria_list: criteriaList.filters,
     accidents: {},
     verbalisations: {},
-    level_geojson: {},
     level_shape_geojson: {},
     accidents_value_by_filter: {},
     pve_value_by_filter: {},
@@ -117,9 +94,6 @@ export default new Vuex.Store({
     verbalisations_data (state, response) {
       state.verbalisations = response
     },
-    // set_level_geojson (state, geojson) {
-    //  state.level_geojson = geojson
-    // },
     accidents_value_by_filter (state, val) {
       state.accidents_value_by_filter = val
     },
@@ -181,14 +155,12 @@ export default new Vuex.Store({
         // context.dispatch('queryESPveLocal')
       } else {
         let promises = [
-          // getLevelGeojson(level, parentId),
           getLevelShapesGeojson(parent.subLevel, parent.id),
           context.dispatch('queryESAcc'),
           context.dispatch('queryESPve')
         ]
 
         Promise.all(promises).then(function (values) {
-          // context.commit('set_level_geojson', values[0])
           context.commit('level_shape_geojson', values[0])
           context.commit('accidents_data', values[1])
           context.commit('verbalisations_data', values[2])
