@@ -1,6 +1,6 @@
 <template>
   <div id='ratio'>
-  <div v-if='!localLevel'> 
+  <div v-if='!localLevel'>
     <h4>Métrique utilisée pour colorer la carte :</h4>
     <div class="form-group">
       <label for="dividende">Nombre de</label>
@@ -76,7 +76,7 @@ export default {
   },
   computed: {
     localLevel () {
-      return this.$store.state.level === 'commune'
+      return this.$store.getters.parent.subLevel === 'local'
     }
   },
   watch: {

@@ -21,7 +21,7 @@
         <div>
           <span v-for="(category, categoryName) in criteria_list">
             <span v-if="categoryName === 'PVE et accidents'">
-              
+
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
                 <span v-for="(criteria, criteriaName) in category">
                   <h3>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h3>
@@ -34,13 +34,13 @@
                         </div>
                       <!--   <div class="checkbox">
                           <label>
-                            <input type="checkbox" value="criteriaName" v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val"> 
+                            <input type="checkbox" value="criteriaName" v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val">
                             {{valName }}
                           </label>
                         </div> -->
                       </div>
                       <div class="col-lg-2 agg_acc">
-                        <span v-if="agg_acc_value(categoryName, criteriaName, valName)"> 
+                        <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
                         {{ agg_acc_value(categoryName, criteriaName, valName) }}
                         </span>
                       </div>
@@ -69,7 +69,7 @@
         <div>
           <span v-for="(category, categoryName) in criteria_list">
             <span v-if="categoryName === 'Accidents'">
-              
+
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
                 <span v-for="(criteria, criteriaName) in category">
                   <h3>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h3>
@@ -82,13 +82,13 @@
                         </div>
                       <!--   <div class="checkbox">
                           <label>
-                            <input type="checkbox" value="criteriaName" v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val"> 
+                            <input type="checkbox" value="criteriaName" v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val">
                             {{valName }}
                           </label>
                         </div> -->
                       </div>
                       <div class="col-lg-2 agg_acc">
-                        <span v-if="agg_acc_value(categoryName, criteriaName, valName)"> 
+                        <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
                         {{ agg_acc_value(categoryName, criteriaName, valName) }}
                         </span>
                       </div>
@@ -117,7 +117,7 @@
         <div>
           <span v-for="(category, categoryName) in criteria_list">
             <span v-if="categoryName === 'PVE'">
-              
+
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
                 <span v-for="(criteria, criteriaName) in category">
                   <h3>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h3>
@@ -130,13 +130,13 @@
                         </div>
                       <!--   <div class="checkbox">
                           <label>
-                            <input type="checkbox" value="criteriaName" v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val"> 
+                            <input type="checkbox" value="criteriaName" v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val">
                             {{valName }}
                           </label>
                         </div> -->
                       </div>
                       <div class="col-lg-2 agg_acc">
-                        <span v-if="agg_acc_value(categoryName, criteriaName, valName)"> 
+                        <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
                         {{ agg_acc_value(categoryName, criteriaName, valName) }}
                         </span>
                       </div>
@@ -272,9 +272,6 @@ export default {
   computed: {
     criteria_list () {
       return this.$store.state.criteria_list
-    },
-    level () {
-      return this.$store.state.level
     },
     agg_acc () {
       return this.$store.state.accidents_value_by_filter

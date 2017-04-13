@@ -174,7 +174,7 @@ export default {
   },
   computed: {
     level () {
-      return this.$store.state.level
+      return this.$store.getters.parent.subLevel
     },
     level_geojson () {
       return this.$store.state.level_geojson
@@ -565,7 +565,7 @@ export default {
           vm.map.closePopup()
           vm.keepLocalDataOnChange = e.originalEvent.ctrlKey
           vm.$router.push({ name: 'sous-carte', params: { level: layer.level, id: layer.geoId } })
-          vm.$store.dispatch('set_level', vm.levelsInfos[layer.level].child)
+          vm.$store.dispatch('set_level')
         })
       }
     },
@@ -592,11 +592,11 @@ export default {
 
     this.map.addLayer(this.frontiersGroup)
     this.map.addLayer(this.clusterGroup)
-    this.$store.dispatch('set_level', 'région')
+    this.$store.dispatch('set_level')
 
     this.map.on('zoomend', (e) => {
       if (this.map.getZoom() < zoomLevels[this.level]) {
-        this.$router.go(-1)
+        // this.$router.go(-1)
       }
     })
 
