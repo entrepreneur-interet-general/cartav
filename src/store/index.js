@@ -82,7 +82,6 @@ export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     level: 'région',
-    parent: {level: '', name: '', id: ''},
     criteria_list: criteriaList.filters,
     accidents: {},
     verbalisations: {},
@@ -119,12 +118,6 @@ export default new Vuex.Store({
       // console.log('set!')
       _.set(cl, criteriaPath, value)
       state.criteria_list = cl
-    },
-    set_parent (state, {level, name, id}) {
-      state.parent = {level: level, name: name, id: id}
-    },
-    clear_parent (state) {
-      state.parent = {level: '', name: '', id: ''}
     },
     accidents_data (state, response) {
       // console.log(response)
@@ -192,45 +185,38 @@ export default new Vuex.Store({
       }
       context.dispatch('getAggregationByfilter')
     },
-    set_level (context, {level, parentLevel, parentId}) {
+    set_level (context, level) {
       let s = context.state
       if (level !== s.level) {
         context.commit('set_level', level)
       }
-      if (parentLevel !== s.parent.level || parentId !== s.parent.id) {
-        if (parentLevel && parentId) {
-          context.commit('set_parent', {level: parentLevel, id: parentId})
-        } else {
-          context.commit('clear_parent')
-        }
 
-        if (level === 'commune') {
-          context.dispatch('accidentsPoints')
-          // context.dispatch('queryESPveLocal')
-        } else {
-          let promises = []
-          // promises.push(getLevelGeojson(level, parentId))
-          promises.push(getLevelShapesGeojson(level, parentId))
-          promises.push(context.dispatch('queryESAcc'))
-          promises.push(context.dispatch('queryESPve'))
+      if (level === 'commune') {
+        context.dispatch('accidentsPoints')
+        // context.dispatch('queryESPveLocal')
+      } else {
+        let promises = []
+        // promises.push(getLevelGeojson(level, parentId))
+        promises.push(getLevelShapesGeojson(level, context.getters.parent.id))
+        promises.push(context.dispatch('queryESAcc'))
+        promises.push(context.dispatch('queryESPve'))
 
-          Promise.all(promises).then(function (values) {
-            // context.commit('set_level_geojson', values[0])
-            /* if (level === 'commune') {
-              console.log(values[0])
-            } */
-            context.commit('level_shape_geojson', values[0])
-            context.commit('accidents_data', values[1])
-            context.commit('verbalisations_data', values[2])
-          })
-        }
-        context.dispatch('getAggregationByfilter')
+        Promise.all(promises).then(function (values) {
+          // context.commit('set_level_geojson', values[0])
+          /* if (level === 'commune') {
+            console.log(values[0])
+          } */
+          context.commit('level_shape_geojson', values[0])
+          context.commit('accidents_data', values[1])
+          context.commit('verbalisations_data', values[2])
+        })
       }
+      context.dispatch('getAggregationByfilter')
     },
     getAggregationByfilter (context) {
       Promise.all([
-        es.generateAggregatedQueryByFilter(context.state.criteria_list, 'acc', context.state.parent),
-        es.generateAggregatedQueryByFilter(context.state.criteria_list, 'pve', context.state.parent)
+        es.generateAggregatedQueryByFilter(context.state.criteria_list, 'acc', context.getters.parent),
+        es.generateAggregatedQueryByFilter(context.state.criteria_list, 'pve', context.getters.parent)
       ]).then(res => {
         context.commit('accidents_value_by_filter', res[0])
         context.commit('pve_value_by_filter', res[1])
@@ -238,26 +224,26 @@ export default new Vuex.Store({
     },
     queryESAcc (context) {
       let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, 'acc', state.level, state.parent)
+      let query = es.generateAggregatedQuery(state.criteria_list, 'acc', state.level, context.getters.parent)
 
       return es.search('acc', query)
     },
     queryESPve (context) {
       let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', state.level, state.parent)
+      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', state.level, context.getters.parent)
       return es.search('pve', query)
     },
     accidentsPoints (context) {
       let state = context.state
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
-        let query = es.generateAggregatedQuery(state.criteria_list, 'acc', 'local', state.parent, 'geojson')
+        let query = es.generateAggregatedQuery(state.criteria_list, 'acc', 'local', context.getters.parent, 'geojson')
         es.search('acc', query).then(res => {
           // console.log(es.toMultiLineGeojson(res))
           context.commit('accidents_agg_by_road', es.toMultiLineGeojson(res))
         })
       } else {
-        let query = es.generateQuery(state.criteria_list, 'acc', state.parent)
+        let query = es.generateQuery(state.criteria_list, 'acc', context.getters.parent)
         es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields).then(function (res) {
           context.commit('accidents_geojson', res)
         })
@@ -265,7 +251,7 @@ export default new Vuex.Store({
     },
     queryESPveLocal (context) {
       let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', 'local', state.parent, 'geojson')
+      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', 'local', context.getters.parent, 'geojson')
       es.search('pve', query).then(res => {
         console.log(JSON.stringify(query))
         console.log(res)
@@ -274,7 +260,15 @@ export default new Vuex.Store({
     }
   },
   getters: {
-    countElements (state) {
+    // Quand on s’intéresse aux données des départemnts en ÎdF,
+    // le level sera 'région', et id 'Île de France'
+    parent (state) {
+      return {
+        level: state.route.params.level,
+        id: state.route.params.id
+      }
+    },
+    countElements (state, getters) {
       let res = {}
       let agg = _.get(state.accidents, 'aggregations.group_by.buckets', undefined)
       if (agg !== undefined) {
@@ -293,7 +287,7 @@ export default new Vuex.Store({
       agg = _.get(state.level_shape_geojson, 'features', undefined)
       if (agg !== undefined) {
         if (state.level === 'département') {
-          let filter = state.parent.id
+          let filter = getters.parent.id
           res['habitants'] = _(agg).map(x => (x.properties['NOM_REG'] === filter) ? x.properties.population : 0).sum()
         } else {
           res['habitants'] = _(agg).map(x => x.properties.population).sum()

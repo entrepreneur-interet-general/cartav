@@ -201,7 +201,7 @@ function getQueryBase (size) {
 }
 
 function addAdditionalFilters (must, type, crit) {
-  if (crit.level && crit.name) {
+  if (crit.level && crit.id) {
     let filterName = getFieldsMap()[type][crit.level]
     let f = {}
     f[filterName] = crit.id

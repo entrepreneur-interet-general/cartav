@@ -265,7 +265,7 @@ export default {
         layer.removeEventListener('mouseover', vm.slcBlack)
         layer.removeEventListener('mouseout', vm.so3)
         layer.removeEventListener('mouseout', vm.slcWhite)
-        if (layer.geoId !== vm.$store.state.parent.id) {
+        if (layer.geoId !== vm.$store.getters.parent.id) {
           layer.on({
             // mouseover: vm.so6,
             // mouseout: vm.so3
@@ -351,7 +351,7 @@ export default {
     },
     colorMap () {
       this.frontiersGroup.clearLayers()
-      let filter = this.level === 'département' ? this.$store.state.parent.id : ''
+      let filter = this.level === 'département' ? this.$store.getters.parent.id : ''
       let colorOptions = { color: 'rgba(0,0,0,0.2)', dividende: this.$store.state.dividende, divisor: this.$store.state.divisor }
       this.add_contours_geojson(filter, this.setStyle(colorOptions), this.myOnEachFeature)
       if (this.level !== 'région') {
@@ -565,7 +565,7 @@ export default {
           vm.map.closePopup()
           vm.keepLocalDataOnChange = e.originalEvent.ctrlKey
           vm.$router.push({ name: 'sous-carte', params: { level: layer.level, id: layer.geoId } })
-          vm.$store.dispatch('set_level', {level: vm.levelsInfos[layer.level].child, parentLevel: layer.level, parentId: layer.geoId})
+          vm.$store.dispatch('set_level', vm.levelsInfos[layer.level].child)
         })
       }
     },
@@ -592,7 +592,7 @@ export default {
 
     this.map.addLayer(this.frontiersGroup)
     this.map.addLayer(this.clusterGroup)
-    this.$store.dispatch('set_level', {level: 'région'})
+    this.$store.dispatch('set_level', 'région')
 
     this.map.on('zoomend', (e) => {
       if (this.map.getZoom() < zoomLevels[this.level]) {
