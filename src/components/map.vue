@@ -79,7 +79,7 @@ let zoomLevels = {
   'région': 0,
   'département': 7,
   'commune': 9,
-  'local': 11
+  'local': 9
 }
 
 let vehiculesIcons = {
@@ -220,9 +220,6 @@ export default {
     }
   },
   watch: {
-    level () {
-      this.clusterGroup.clearLayers()
-    },
     colors () {
       this.colorMap()
     },
@@ -249,6 +246,10 @@ export default {
     },
     basemapUrl () {
       this.tileLayer.setUrl(this.basemapUrl)
+    },
+    '$route' (to, from) {
+      this.clusterGroup.clearLayers()
+      this.$store.dispatch('set_level')
     }
   },
   methods: {
@@ -564,8 +565,17 @@ export default {
         layer.on('click', function (e) {
           vm.map.closePopup()
           vm.keepLocalDataOnChange = e.originalEvent.ctrlKey
-          vm.$router.push({ name: 'sous-carte', params: { level: layer.level, id: layer.geoId } })
-          vm.$store.dispatch('set_level')
+          let route = {
+            name: 'sous-carte',
+            params: { level: layer.level, id: layer.geoId }
+          }
+          // Si on choisit une zone équivalente, on la remplace dans l’historique
+          // En faisant « arrière », on remonte d’un niveau
+          if (vm.level === layer.subLevel) {
+            vm.$router.replace(route)
+          } else {
+            vm.$router.push(route)
+          }
         })
       }
     },
@@ -592,11 +602,14 @@ export default {
 
     this.map.addLayer(this.frontiersGroup)
     this.map.addLayer(this.clusterGroup)
+
+    // On met l’état initial dans l’historique
+    this.$router.push(this.$route.path)
     this.$store.dispatch('set_level')
 
     this.map.on('zoomend', (e) => {
       if (this.map.getZoom() < zoomLevels[this.level]) {
-        // this.$router.go(-1)
+        this.$router.go(-1)
       }
     })
 
