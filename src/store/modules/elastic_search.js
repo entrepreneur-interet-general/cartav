@@ -44,7 +44,6 @@ let client = new elasticsearch.Client({
 
 function search (type, query) {
   let index = getIndex()[type]
-  // console.log(query)
   return client.search({
     index: index,
     body: query
@@ -63,13 +62,9 @@ function searchAsGeoJson (type, query, latField, longField, propertyFields) {
 }
 
 function toMultiLineGeojson (json) {
-  // console.log(json)
   let buckets = json.aggregations.group_by.buckets
-  // console.log(buckets)
   let features = []
   buckets.forEach(function (bucket) {
-    // console.log(bucket.top_agg_hits.hits.hits[0]._source.geojson)
-    // console.log(JSON.parse(bucket.top_agg_hits.hits.hits[0]._source.geojson))
     let geojsonString = _.get(bucket, 'top_agg_hits.hits.hits[0]._source.geojson', undefined)
     if (geojsonString !== undefined) {
       let geojson = JSON.parse(geojsonString)
@@ -84,12 +79,10 @@ function toMultiLineGeojson (json) {
       features.push(feature)
     }
   })
-  // console.log(features)
   let geoJson = {
     type: 'FeatureCollection',
     features: features
   }
-  // console.log(geoJson)
   return geoJson
 }
 
@@ -98,35 +91,16 @@ function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
   let fieldName = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
   var must = []
 
-  // console.log('CL')
-  // console.log(criteriaList)
-
   for (let scopeName in criteriaList) {
     let scope = criteriaList[scopeName]
-    /* if (scopeName === 'Accidents' && ExceptThisfield === undefined) {
-      console.log('scope1')
-      console.log(scope)
-    } */
     for (let criteriaName in scope) {
       let criteria = scope[criteriaName]
-      /* if (scopeName === 'Accidents' && criteriaName === 'Heure' && ExceptThisfield === undefined) {
-        console.log('scope2')
-        console.log(scope)
-        console.log('criteria.values')
-        console.log(criteria.values)
-        console.log('scope.Heure.values')
-        console.log(scope.Heure.values)
-      } */
       if (fieldName in criteria) {
         let criteriaPath = scopeName + '.' + criteriaName
         if (criteriaPath !== ExceptThisfield) {
           let criteriaFilters = []
           for (let valueName in criteria.values) {
-            /* if (criteriaName === 'Heure' && ExceptThisfield === undefined) {
-              console.log(criteria.values[valueName])
-            } */
             if (criteria.values[valueName]) {
-              // console.log(criteria.values[valueName])
               let f = {}
               f[criteria[fieldName]] = valueName
               let filter = {
@@ -230,7 +204,6 @@ function generateAggregatedQuery (criteriaList, type, additionalCriteria, source
 function generateQuery (criteriaList, type, additionalCriteria) {
   // Génération de la query ES
   let query = getQueryBase(10000)
-  console.log('coucou')
   let must = generateFilter(criteriaList, type)
   addAdditionalFilters(must, type, additionalCriteria)
 
@@ -278,7 +251,6 @@ function generateGeoJson (hits, latField, longField, propertyFields) {
   let geoJson = {'type': 'FeatureCollection',
     'features': features
   }
-  console.log('je geojsonne')
   for (let hit of hits) {
     let long = parseFloat(hit._source[longField])
     let lat = parseFloat(hit._source[latField])
@@ -293,7 +265,6 @@ function generateGeoJson (hits, latField, longField, propertyFields) {
       })
     }
   }
-  // console.log('fini !')
   return geoJson
 }
 

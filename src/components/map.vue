@@ -312,7 +312,6 @@ export default {
       let layer = L.geoJSON(data, {
         style: styleFunction,
         onEachFeature: function (feature, layer) {
-          // console.log(feature.geometry.coordinates)
           /* let segmentCoords = L.GeoJSON.coordsToLatLngs(feature.geometry.coordinates, 1)
           L.polyline(segmentCoords, {
             offset: 10
@@ -339,7 +338,6 @@ export default {
       }
     },
     heatMap () {
-      // console.log(this.accidentsLocal)
       let l = this.accidentsLocal.features.map(function (feature) {
         return [
           feature.geometry.coordinates[1],
@@ -347,7 +345,6 @@ export default {
           1
         ]
       })
-      // console.log(l)
       L.heatLayer(l, {radius: 25, blur: 30, minOpacity: 0.5}).addTo(this.clusterGroup)
     },
     colorMap () {
@@ -394,7 +391,6 @@ export default {
           layer.bindPopup()
           layer.on({
             click: function () {
-              // console.log('click!')
               let content = '<i class="fa fa-info-circle" aria-hidden="true"></i></br>'
               for (let p in feature.properties) {
                 if (!p.startsWith('_catv_') && feature.properties[p]) {
@@ -468,10 +464,8 @@ export default {
 
       if (type === 'habitants') {
         let idName = this.levelsInfos[this.level].id
-        // console.log(source[type])
         let res = 0
         for (let f of source[type].features) {
-          // console.log(f)
           if (id === f.properties[idName]) {
             res = f.properties.population
             break
@@ -498,8 +492,6 @@ export default {
       feature.countElements.accidents = this.count('accidents', id)
       feature.countElements.PVE = this.count('PVE', id)
       feature.countElements.habitants = this.count('habitants', id)
-
-      // console.log(feature.countElements.pop)
 
       if (feature.countElements[options.dividende] || feature.countElements[options.divisor]) {
         feature.countElements.ratio = feature.countElements[options.dividende] / feature.countElements[options.divisor]

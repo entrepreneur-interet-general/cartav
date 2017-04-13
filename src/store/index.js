@@ -36,7 +36,6 @@ let accidentsFields = {
 /*
 function getLevelGeojson (level, dep) {
   let promise
-  // console.log('yo')
   if (level === 'région' || level === 'département') {
     let geojson = ''toMultiLineGeojson
     if (level === 'région') {
@@ -44,13 +43,11 @@ function getLevelGeojson (level, dep) {
     } else if (level === 'département') {
       geojson = departements
     }
-    // console.log(geojson)
     promise = new Promise(function (resolve, reject) {
       resolve(geojson)
     })
     return promise
   } else if (level === 'commune') {
-    console.log('get communes points')
     return es.getCommunesGeoJson(dep)
   }
 }
@@ -111,23 +108,19 @@ export default new Vuex.Store({
     },
     set_criteria (state, {criteriaPath, value}) {
       let cl = JSON.parse(JSON.stringify(state.criteria_list))
-      // console.log('set!')
       _.set(cl, criteriaPath, value)
       state.criteria_list = cl
     },
     accidents_data (state, response) {
-      // console.log(response)
       state.accidents = response
     },
     verbalisations_data (state, response) {
-      // console.log(response)
       state.verbalisations = response
     },
     // set_level_geojson (state, geojson) {
     //  state.level_geojson = geojson
     // },
     accidents_value_by_filter (state, val) {
-      // console.log(val)
       state.accidents_value_by_filter = val
     },
     pve_value_by_filter (state, val) {
@@ -146,7 +139,6 @@ export default new Vuex.Store({
       state.pve_geojson = geojson
     },
     level_shape_geojson (state, geojson) {
-      // console.log('level shape geojson setté')
       state.level_shape_geojson = geojson
     },
     set_dividende (state, dividende) {
@@ -230,7 +222,6 @@ export default new Vuex.Store({
       if (state.localLevelDisplay === 'aggregatedByRoad') {
         let query = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.parent, 'geojson')
         es.search('acc', query).then(res => {
-          // console.log(es.toMultiLineGeojson(res))
           context.commit('accidents_agg_by_road', es.toMultiLineGeojson(res))
         })
       } else {
@@ -244,8 +235,6 @@ export default new Vuex.Store({
       let state = context.state
       let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.parent, 'geojson')
       es.search('pve', query).then(res => {
-        console.log(JSON.stringify(query))
-        console.log(res)
         context.commit('pve_agg_by_road', es.toMultiLineGeojson(res))
       })
     }
