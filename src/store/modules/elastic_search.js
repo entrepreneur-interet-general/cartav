@@ -201,7 +201,7 @@ function getQueryBase (size) {
 }
 
 function addAdditionalFilters (must, type, crit) {
-  if (crit.level && crit.name) {
+  if (crit.level && crit.id) {
     let filterName = getFieldsMap()[type][crit.level]
     let f = {}
     f[filterName] = crit.id
@@ -213,12 +213,12 @@ function addAdditionalFilters (must, type, crit) {
   }
 }
 
-function generateAggregatedQuery (criteriaList, type, level, additionalCriteria, sourceField = null) {
+function generateAggregatedQuery (criteriaList, type, additionalCriteria, sourceField = null) {
   // Génération de la query ES
   let query = getQueryBase(0)
   let must = generateFilter(criteriaList, type)
   addAdditionalFilters(must, type, additionalCriteria)
-  let aggKey = getFieldsMap()[type][level]
+  let aggKey = getFieldsMap()[type][additionalCriteria.subLevel]
   let aggs = generateAggs(type, aggKey, 1000, sourceField)
 
   query.query.constant_score.filter.bool.must = must

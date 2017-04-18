@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     restore () {
-      this.$store.dispatch('restore_history')
+      this.$router.go(-1)
     }
   },
   props: ['data']
