@@ -73,20 +73,20 @@ function stylePveRoads (feature) {
 }
 
 let zoomLevels = {
-  'région': 0,
-  'département': 7,
-  'commune': 9,
-  'local': 9
+  région: 0,
+  département: 7,
+  commune: 9,
+  local: 9
 }
 
 let vehiculesIcons = {
-  '_catv_voiture_nb': 'car',
-  '_catv_utilitaire_nb': 'car',
-  '_catv_deuxrouesmotorises_nb': 'motorcycle',
-  '_catv_velo_nb': 'bicycle',
-  '_catv_poidslourd_nb': 'truck',
-  '_catv_vehiculeautre_nb': 'car',
-  '_catv_pietons_nb': 'male'
+  _catv_voiture_nb: 'car',
+  _catv_utilitaire_nb: 'car',
+  _catv_deuxrouesmotorises_nb: 'motorcycle',
+  _catv_velo_nb: 'bicycle',
+  _catv_poidslourd_nb: 'truck',
+  _catv_vehiculeautre_nb: 'car',
+  _catv_pietons_nb: 'male'
 }
 
 let levelsInfos = {
@@ -95,7 +95,6 @@ let levelsInfos = {
     child: 'département',
     id: 'NOM_REG',
     name: 'NOM_REG'
-
   },
   département: {
     parent: 'région',
@@ -253,7 +252,8 @@ export default {
         fillOpacity: 0,
         fillColor: 'black',
         opacity: 1,
-        color: 'black'})
+        color: 'black'
+      })
 
       this.geojsonFrontieres.eachLayer(function (layer) {
         layer.removeEventListener('mouseover', vm.so6)
@@ -344,7 +344,11 @@ export default {
     colorMap () {
       this.frontiersGroup.clearLayers()
       let filter = this.level === 'département' ? this.$store.getters.parent.id : ''
-      let colorOptions = { color: 'rgba(0,0,0,0.2)', dividende: this.$store.state.dividende, divisor: this.$store.state.divisor }
+      let colorOptions = {
+        color: 'rgba(0,0,0,0.2)',
+        dividende: this.$store.state.dividende,
+        divisor: this.$store.state.divisor
+      }
       this.add_contours_geojson(filter, this.setStyle(colorOptions), this.myOnEachFeature)
       if (this.level !== 'région') {
         if (this.geojsonFrontieres.getBounds().isValid()) {
