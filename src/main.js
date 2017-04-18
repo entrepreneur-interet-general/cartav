@@ -12,6 +12,7 @@ Vue.use(ElementUI)
 Vue.use(VueRouter)
 
 const routes = [
+  { path: '/', component: App },
   { path: '/carte', component: App },
   { name: 'sous-carte', path: '/carte/:level/:id', component: App }
 ]
