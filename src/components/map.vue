@@ -571,7 +571,7 @@ export default {
           }
           // Si on choisit une zone équivalente, on la remplace dans l’historique
           // En faisant « arrière », on remonte d’un niveau
-          if (vm.level === layer.subLevel) {
+          if (vm.$store.getters.parent.level === layer.level) {
             vm.$router.replace(route)
           } else {
             vm.$router.push(route)
