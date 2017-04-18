@@ -14,21 +14,21 @@ Vue.use(Vuex)
 
 let accidentsFields = {
   'numéro accident': 'Num_Acc',
-  'adresse': 'adr',
-  'ville': 'current_name',
-  'date': 'date_formated',
-  'heure': 'heures_minutes',
-  'luminosité': 'lum',
+  adresse: 'adr',
+  ville: 'current_name',
+  date: 'date_formated',
+  heure: 'heures_minutes',
+  luminosité: 'lum',
   'type d\'intersection': 'int',
   'conditions météo': 'atm',
-  'collision': 'col',
-  '_catv_voiture_nb': 'voiture_nb',
-  '_catv_utilitaire_nb': 'utilitaire_nb',
-  '_catv_deuxrouesmotorises_nb': 'deuxrouesmotorises_nb',
-  '_catv_velo_nb': 'velo_nb',
-  '_catv_poidslourd_nb': 'poidslourd_nb',
-  '_catv_vehiculeautre_nb': 'vehiculeautre_nb',
-  '_catv_pietons_nb': 'pietons_nb'
+  collision: 'col',
+  _catv_voiture_nb: 'voiture_nb',
+  _catv_utilitaire_nb: 'utilitaire_nb',
+  _catv_deuxrouesmotorises_nb: 'deuxrouesmotorises_nb',
+  _catv_velo_nb: 'velo_nb',
+  _catv_poidslourd_nb: 'poidslourd_nb',
+  _catv_vehiculeautre_nb: 'vehiculeautre_nb',
+  _catv_pietons_nb: 'pietons_nb'
 }
 
 function getLevelShapesGeojson (level, dep) {
@@ -216,10 +216,10 @@ export default new Vuex.Store({
     // le level sera 'région', et id 'Île de France'
     parent (state) {
       let subLevels = {
-        'france': 'région',
-        'région': 'département',
-        'département': 'local',
-        'commune': 'local'
+        france: 'région',
+        région: 'département',
+        département: 'local',
+        commune: 'local'
       }
       let level = state.route.params.level || 'france'
       return {
