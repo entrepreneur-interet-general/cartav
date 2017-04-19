@@ -59,7 +59,7 @@
 
 <script>
 import colors from '../assets/json/colors.json'
-import criteriaList from '../assets/json/criteria_list_new.json'
+import criteriaList from '../assets/json/config.json'
 
 export default {
   data () {
