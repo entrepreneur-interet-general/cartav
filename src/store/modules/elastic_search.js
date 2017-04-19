@@ -38,7 +38,7 @@ function getIndex () {
 }
 
 let client = new elasticsearch.Client({
-  host: 'http://10.237.27.129:80',
+  host: process.env.ES_HOST,
   apiVersion: '2.2'
 })
 
