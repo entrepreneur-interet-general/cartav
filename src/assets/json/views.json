@@ -1,0 +1,56 @@
+{
+    "france": {
+        "description": "vue d'une métrique sur la France entière, découpée par régions",
+        "contour": {
+            "decoupage": "régional",
+            "filter": {
+                "activated": false
+            }
+        },
+        "data": {
+            "group_by": "régional",
+            "filter": {
+                "activated": null
+            }
+        },
+        "content": "metric",
+        "linksTo": "région"
+    },
+    "région": {
+        "description": "vue d'une métrique sur une région, découpée par départements",
+        "contour": {
+            "decoupage": "départemental",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "régional"
+            }
+        },
+        "data": {
+            "group_by": "départemental",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "régional"
+            }
+        },
+        "content": "metric",
+        "linksTo": "département"
+    },
+    "département": {
+        "description": "vue détaillée d'un département",
+        "contour": {
+            "decoupage": "départemental",
+            "filter": {
+                "activated": false
+            }
+        },
+        "data": {
+            "group_by": "routier",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "départemental"
+            }
+        },
+        "content": "detailedContent",
+        "linksTo": "département"
+    }
+}
