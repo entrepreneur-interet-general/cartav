@@ -5,8 +5,6 @@ import filters from '../components/filter'
 import es from './modules/elastic_search'
 import criteriaList from '../assets/json/config.json'
 import _ from 'lodash'
-// import departements from '../assets/json/departements_wgs84.json'
-// import regions from '../assets/json/regions_nouvelles_wgs84.json'
 import regionsFrontieres from '../assets/json/regions_frontieres.json'
 import departementsFrontieres from '../assets/json/departements_frontieres.json'
 import $ from 'jquery'
@@ -16,45 +14,22 @@ Vue.use(Vuex)
 
 let accidentsFields = {
   'numéro accident': 'Num_Acc',
-  'adresse': 'adr',
-  'ville': 'current_name',
-  'date': 'date_formated',
-  'heure': 'heures_minutes',
-  'luminosité': 'lum',
+  adresse: 'adr',
+  ville: 'current_name',
+  date: 'date_formated',
+  heure: 'heures_minutes',
+  luminosité: 'lum',
   'type d\'intersection': 'int',
   'conditions météo': 'atm',
-  'collision': 'col',
-  '_catv_voiture_nb': 'voiture_nb',
-  '_catv_utilitaire_nb': 'utilitaire_nb',
-  '_catv_deuxrouesmotorises_nb': 'deuxrouesmotorises_nb',
-  '_catv_velo_nb': 'velo_nb',
-  '_catv_poidslourd_nb': 'poidslourd_nb',
-  '_catv_vehiculeautre_nb': 'vehiculeautre_nb',
-  '_catv_pietons_nb': 'pietons_nb'
+  collision: 'col',
+  _catv_voiture_nb: 'voiture_nb',
+  _catv_utilitaire_nb: 'utilitaire_nb',
+  _catv_deuxrouesmotorises_nb: 'deuxrouesmotorises_nb',
+  _catv_velo_nb: 'velo_nb',
+  _catv_poidslourd_nb: 'poidslourd_nb',
+  _catv_vehiculeautre_nb: 'vehiculeautre_nb',
+  _catv_pietons_nb: 'pietons_nb'
 }
-
-/*
-function getLevelGeojson (level, dep) {
-  let promise
-  // console.log('yo')
-  if (level === 'région' || level === 'département') {
-    let geojson = ''toMultiLineGeojson
-    if (level === 'région') {
-      geojson = regions
-    } else if (level === 'département') {
-      geojson = departements
-    }
-    // console.log(geojson)
-    promise = new Promise(function (resolve, reject) {
-      resolve(geojson)
-    })
-    return promise
-  } else if (level === 'commune') {
-    console.log('get communes points')
-    return es.getCommunesGeoJson(dep)
-  }
-}
-*/
 
 function getLevelShapesGeojson (level, dep) {
   let promise
@@ -84,7 +59,6 @@ export default new Vuex.Store({
     criteria_list: criteriaList.filters,
     accidents: {},
     verbalisations: {},
-    level_geojson: {},
     level_shape_geojson: {},
     accidents_value_by_filter: {},
     pve_value_by_filter: {},
@@ -111,23 +85,16 @@ export default new Vuex.Store({
     },
     set_criteria (state, {criteriaPath, value}) {
       let cl = JSON.parse(JSON.stringify(state.criteria_list))
-      // console.log('set!')
       _.set(cl, criteriaPath, value)
       state.criteria_list = cl
     },
     accidents_data (state, response) {
-      // console.log(response)
       state.accidents = response
     },
     verbalisations_data (state, response) {
-      // console.log(response)
       state.verbalisations = response
     },
-    // set_level_geojson (state, geojson) {
-    //  state.level_geojson = geojson
-    // },
     accidents_value_by_filter (state, val) {
-      // console.log(val)
       state.accidents_value_by_filter = val
     },
     pve_value_by_filter (state, val) {
@@ -146,7 +113,6 @@ export default new Vuex.Store({
       state.pve_geojson = geojson
     },
     level_shape_geojson (state, geojson) {
-      // console.log('level shape geojson setté')
       state.level_shape_geojson = geojson
     },
     set_dividende (state, dividende) {
@@ -189,14 +155,12 @@ export default new Vuex.Store({
         // context.dispatch('queryESPveLocal')
       } else {
         let promises = [
-          // getLevelGeojson(level, parentId),
           getLevelShapesGeojson(parent.subLevel, parent.id),
           context.dispatch('queryESAcc'),
           context.dispatch('queryESPve')
         ]
 
         Promise.all(promises).then(function (values) {
-          // context.commit('set_level_geojson', values[0])
           context.commit('level_shape_geojson', values[0])
           context.commit('accidents_data', values[1])
           context.commit('verbalisations_data', values[2])
@@ -230,7 +194,6 @@ export default new Vuex.Store({
       if (state.localLevelDisplay === 'aggregatedByRoad') {
         let query = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.parent, 'geojson')
         es.search('acc', query).then(res => {
-          // console.log(es.toMultiLineGeojson(res))
           context.commit('accidents_agg_by_road', es.toMultiLineGeojson(res))
         })
       } else {
@@ -244,8 +207,6 @@ export default new Vuex.Store({
       let state = context.state
       let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.parent, 'geojson')
       es.search('pve', query).then(res => {
-        console.log(JSON.stringify(query))
-        console.log(res)
         context.commit('pve_agg_by_road', es.toMultiLineGeojson(res))
       })
     }
@@ -255,10 +216,10 @@ export default new Vuex.Store({
     // le level sera 'région', et id 'Île de France'
     parent (state) {
       let subLevels = {
-        'france': 'région',
-        'région': 'département',
-        'département': 'local',
-        'commune': 'local'
+        france: 'région',
+        région: 'département',
+        département: 'local',
+        commune: 'local'
       }
       let level = state.route.params.level || 'france'
       return {

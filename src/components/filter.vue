@@ -29,15 +29,9 @@
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
                         <div class="funkyradio-default">
-                            <input type="checkbox" name="checkbox" v-bind:id=valName v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val"/>
-                            <label v-bind:for=valName>{{valName }}</label>
+                            <input type="checkbox" name="checkbox" v-bind:id=valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
+                            <label v-bind:for=valName>{{ valName }}</label>
                         </div>
-                      <!--   <div class="checkbox">
-                          <label>
-                            <input type="checkbox" value="criteriaName" v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val">
-                            {{valName }}
-                          </label>
-                        </div> -->
                       </div>
                       <div class="col-lg-2 agg_acc">
                         <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
@@ -77,15 +71,9 @@
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
                         <div class="funkyradio-default">
-                            <input type="checkbox" name="checkbox" v-bind:id=valName v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val"/>
-                            <label v-bind:for=valName>{{valName }}</label>
+                            <input type="checkbox" name="checkbox" v-bind:id=valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
+                            <label v-bind:for=valName>{{ valName }}</label>
                         </div>
-                      <!--   <div class="checkbox">
-                          <label>
-                            <input type="checkbox" value="criteriaName" v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val">
-                            {{valName }}
-                          </label>
-                        </div> -->
                       </div>
                       <div class="col-lg-2 agg_acc">
                         <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
@@ -125,15 +113,9 @@
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
                         <div class="funkyradio-default">
-                            <input type="checkbox" name="checkbox" v-bind:id=valName v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val"/>
-                            <label v-bind:for=valName>{{valName }}</label>
+                            <input type="checkbox" name="checkbox" v-bind:id=valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
+                            <label v-bind:for=valName>{{ valName }}</label>
                         </div>
-                      <!--   <div class="checkbox">
-                          <label>
-                            <input type="checkbox" value="criteriaName" v-on:click="set_criteria(categoryName+'.'+criteriaName+'.values.'+valName, !val)" :checked="val">
-                            {{valName }}
-                          </label>
-                        </div> -->
                       </div>
                       <div class="col-lg-2 agg_acc">
                         <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
@@ -250,19 +232,7 @@ Ce projet est réalisé dans le cadre des [Entrepreneurs d’Intérêt Général
 <script>
 import ratio from './ratio'
 import VueMarkdown from 'vue-markdown'
-
-function niceDisplay (n) {
-  // Gère l'affichage des nombres dans les clusters
-  if (n > 1000000) {
-    n = Math.round(n / 10000) / 100 + 'm'
-  }
-  if (n > 10000) {
-    n = Math.round(n / 1000) + 'k'
-  } else if (n > 1000) {
-    n = Math.round(n / 100) / 10 + 'k'
-  }
-  return n
-}
+import nd from '../assets/js/niceDisplay'
 
 export default {
   components: {
@@ -281,27 +251,21 @@ export default {
     }
   },
   methods: {
-    set_criteria (criteriaPath, value) {
+    set_criteria (categoryName, criteriaName, valName, value) {
+      let criteriaPath = `${categoryName}.${criteriaName}.values.${valName}`
       this.$store.dispatch('set_criteria', {criteriaPath: criteriaPath, value: value})
     },
     agg_pve_value (categoryName, criteriaName, valName) {
-      return niceDisplay(this.agg_pve[categoryName + '.' + criteriaName + '.' + valName])
+      return nd.niceDisplay(this.agg_pve[categoryName + '.' + criteriaName + '.' + valName])
     },
     agg_acc_value (categoryName, criteriaName, valName) {
-      return niceDisplay(this.agg_acc[categoryName + '.' + criteriaName + '.' + valName])
+      return nd.niceDisplay(this.agg_acc[categoryName + '.' + criteriaName + '.' + valName])
     }
   }
 }
 </script>
 
 <style>
-/*.sidebar-tabs > ul > li.active {
-  background-color: black;
-}*/
-
-
-
-
 .sidebar-tabs{
   border-right: 1px solid #bebebe;
 }
@@ -324,11 +288,7 @@ export default {
   font-weight: bold;
   font-size: 18px;
 }
-/*
-#filters > div {
-  margin-top: 30px;
-}
-*/
+
 .sidebar-content > .sidebar-pane > div {
   margin-top: 30px;
   padding-right: 40px;

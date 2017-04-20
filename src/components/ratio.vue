@@ -98,14 +98,7 @@ export default {
     basemapUrl () {
       this.$store.commit('set_basemapUrl', this.basemapUrl)
     }
-  },
-  methods: {
-  },
-  mounted () {
-    // this.$store.commit('set_dividende', 'accidents')
-    // this.$store.commit('set_divisor', 'habitants')
-  },
-  props: []
+  }
 }
 </script>
 
