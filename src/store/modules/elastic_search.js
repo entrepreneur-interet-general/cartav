@@ -1,22 +1,8 @@
 import elasticsearch from 'elasticsearch'
 import _ from 'lodash'
+import aggregationLevelsInfos from '../../assets/json/aggregationLevelsInfos'
 
 export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getCommunesGeoJson, searchSimpleFilter, toMultiLineGeojson }
-
-let fieldsMap = {
-  acc: {
-    région: 'NOM_REG.NOM_REG_facet',
-    département: 'dep',
-    commune: 'current_city_code',
-    local: 'num_route_or_id.num_route_or_id_facet'
-  },
-  pve: {
-    région: 'NOM_REG.NOM_REG_facet',
-    département: 'DEPARTEMENT_INFRACTION',
-    commune: 'CODE_INSEE_INFRACTION',
-    local: 'num_route_or_id.num_route_or_id_facet'
-  }
-}
 
 let communesGeoJsonFields = {
   Population: 'Population',
@@ -164,11 +150,11 @@ function getQueryBase (size) {
   }
 }
 
-function addAdditionalFilters (must, type, crit) {
-  if (crit.level && crit.id) {
-    let filterName = fieldsMap[type][crit.level]
+function addAdditionalFilters (must, type, view) {
+  if (view.data.filter.activated) {
+    let filterName = aggregationLevelsInfos.data[type][view.data.filter.filterCriteria]
     let f = {}
-    f[filterName] = crit.id
+    f[filterName] = view.data.filter.value
     must.push({
       bool: {
         should: [{term: f}]
@@ -177,12 +163,12 @@ function addAdditionalFilters (must, type, crit) {
   }
 }
 
-function generateAggregatedQuery (criteriaList, type, additionalCriteria, sourceField = null) {
+function generateAggregatedQuery (criteriaList, type, view, sourceField = null) {
   // Génération de la query ES
   let query = getQueryBase(0)
   let must = generateFilter(criteriaList, type)
-  addAdditionalFilters(must, type, additionalCriteria)
-  let aggKey = fieldsMap[type][additionalCriteria.subLevel]
+  addAdditionalFilters(must, type, view)
+  let aggKey = aggregationLevelsInfos.data[type][view.data.group_by]
   let aggs = generateAggs(type, aggKey, 1000, sourceField)
 
   query.query.constant_score.filter.bool.must = must
@@ -191,18 +177,18 @@ function generateAggregatedQuery (criteriaList, type, additionalCriteria, source
   return query
 }
 
-function generateQuery (criteriaList, type, additionalCriteria) {
+function generateQuery (criteriaList, type, view) {
   // Génération de la query ES
   let query = getQueryBase(10000)
   let must = generateFilter(criteriaList, type)
-  addAdditionalFilters(must, type, additionalCriteria)
+  addAdditionalFilters(must, type, view)
 
   query.query.constant_score.filter.bool.must = must
 
   return query
 }
 
-function generateAggregatedQueryByFilter (criteriaList, type, additionalCriteria) {
+function generateAggregatedQueryByFilter (criteriaList, type, view) {
   let promises = []
   let criteriaPaths = []
   let fieldNameType = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
@@ -217,7 +203,7 @@ function generateAggregatedQueryByFilter (criteriaList, type, additionalCriteria
         let fieldName = criteria[fieldNameType]
         let aggs = generateAggs(type, fieldName, 150)
 
-        addAdditionalFilters(must, type, additionalCriteria)
+        addAdditionalFilters(must, type, view)
         query.query.constant_score.filter.bool.must = must
         query.aggs = aggs
         promises.push(search(type, query))

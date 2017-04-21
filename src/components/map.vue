@@ -89,33 +89,6 @@ let vehiculesIcons = {
   _catv_pietons_nb: 'male'
 }
 
-let levelsInfos = {
-  région: {
-    parent: '',
-    child: 'département',
-    id: 'NOM_REG',
-    name: 'NOM_REG'
-  },
-  département: {
-    parent: 'région',
-    child: 'commune',
-    id: 'CODE_DEPT',
-    name: 'NOM_DEPT'
-  },
-  commune: {
-    parent: 'département',
-    child: 'local',
-    id: 'code',
-    name: 'nom'
-  },
-  local: {
-    parent: 'commune',
-    child: '',
-    id: '',
-    name: ''
-  }
-}
-
 function accidentIconCreateFunction (cluster) {
   let n = cluster.getAllChildMarkers().length
   let c = ' marker-cluster-'
@@ -149,10 +122,10 @@ export default {
     return {
       map: null,
       tileLayer: null,
-      frontiersGroup: L.layerGroup(),
-      geojsonFrontieres: null,
-      clusterGroup: L.layerGroup(),
-      cluster_Acc: null,
+      contourLayerGroup: L.layerGroup(),
+      contourLayer: null,
+      detailedContentLayerGroup: L.layerGroup(),
+      detailedContentLayer: null,
       geojsonAccLayer: null,
       hoverInfoData: {
         areaMouseOver: '',
@@ -160,7 +133,6 @@ export default {
         accidentsN: '',
         pveN: ''
       },
-      levelsInfos: levelsInfos,
       so6: this.setOpacity(0.6),
       so3: this.setOpacity(0.3),
       slcBlack: this.setLineColor('black'),
@@ -169,11 +141,11 @@ export default {
     }
   },
   computed: {
-    level () {
-      return this.$store.getters.parent.subLevel
+    view () {
+      return this.$store.getters.view
     },
-    level_shape_geojson () {
-      return this.$store.state.level_shape_geojson
+    contour () {
+      return this.$store.state.contour
     },
     accidents () {
       return this.$store.state.accidents
@@ -235,59 +207,57 @@ export default {
       this.displayLocalLayer()
     },
     localLevelDisplay () {
-      this.clusterGroup.clearLayers()
+      this.detailedContentLayerGroup.clearLayers()
     },
     basemapUrl () {
       this.tileLayer.setUrl(this.basemapUrl)
     },
     '$route' (to, from) {
-      this.clusterGroup.clearLayers()
-      this.$store.dispatch('set_level')
+      this.detailedContentLayerGroup.clearLayers()
+      this.$store.dispatch('set_view')
     }
   },
   methods: {
-    setFrontieresPropertiesForLocal () {
+    displayContours (styleFunction = null, onEachFeatureFunction = null) {
       let vm = this
-      this.geojsonFrontieres.setStyle({
-        fillOpacity: 0,
-        fillColor: 'black',
-        opacity: 1,
-        color: 'black'
-      })
+      let idName = this.$store.getters.contourFilterFieldName
 
-      this.geojsonFrontieres.eachLayer(function (layer) {
-        layer.removeEventListener('mouseover', vm.so6)
-        layer.removeEventListener('mouseover', vm.slcBlack)
-        layer.removeEventListener('mouseout', vm.so3)
-        layer.removeEventListener('mouseout', vm.slcWhite)
-        if (layer.geoId !== vm.$store.getters.parent.id) {
-          layer.on({
-            // mouseover: vm.so6,
-            // mouseout: vm.so3
-          })
-        } else {
-          layer.setStyle({fillOpacity: 0})
-          if (layer.getBounds().isValid() && !vm.keepLocalDataOnChange) {
-            vm.map.fitBounds(layer.getBounds())
+      let layer = L.geoJson(this.contour, {
+        style: styleFunction,
+        onEachFeature: onEachFeatureFunction,
+        filter (feature, layer) {
+          if (vm.view.contour.filter.activated) {
+            return feature.properties[idName] === vm.view.contour.filter.value
+          } else {
+            return true
           }
         }
       })
+      this.contourLayerGroup.addLayer(layer)
     },
     displayLocalLayer () {
-      this.setFrontieresPropertiesForLocal()
-
-      if (!this.keepLocalDataOnChange) {
-        this.clusterGroup.clearLayers()
+      this.contourLayerGroup.clearLayers()
+      let style = {
+        color: 'white',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0
       }
+      /*
+      if (!this.keepLocalDataOnChange) {
+        this.detailedContentLayerGroup.clearLayers()
+      } */
 
       if (this.localLevelDisplay === 'cluster') {
         this.createClusterLocal('acc')
-        this.clusterGroup.addLayer(this.cluster_Acc)
+        this.detailedContentLayerGroup.addLayer(this.detailedContentLayer)
       } else if (this.localLevelDisplay === 'heatmap') {
         this.heatMap()
       } else if (this.localLevelDisplay === 'aggregatedByRoad') {
         this.aggByRoad('acc')
       }
+      this.zoomBounds(this.detailedContentLayerGroup.getLayers()[0])
+      this.displayContours(() => { return style }, this.myOnEachFeature)
     },
     aggByRoad (type) {
       let vm = this
@@ -309,7 +279,7 @@ export default {
           /* let segmentCoords = L.GeoJSON.coordsToLatLngs(feature.geometry.coordinates, 1)
           L.polyline(segmentCoords, {
             offset: 10
-          }).addTo(vm.clusterGroup) */
+          }).addTo(vm.detailedContentLayerGroup) */
 
           layer.on({
             mouseover: function (event) {
@@ -324,7 +294,9 @@ export default {
           })
         }
       })
-      this.clusterGroup.addLayer(layer)
+      this.detailedContentLayerGroup.addLayer(layer)
+      // this.zoomBounds(layer)
+
       if (type === 'acc') {
         layer.bringToFront()
       } else {
@@ -339,52 +311,40 @@ export default {
           1
         ]
       })
-      L.heatLayer(l, {radius: 25, blur: 30, minOpacity: 0.5}).addTo(this.clusterGroup)
+      this.detailedContentLayer = L.heatLayer(l, {radius: 25, blur: 30, minOpacity: 0.5})
+      this.detailedContentLayer.addTo(this.detailedContentLayerGroup)
+    },
+    zoomBounds (layer) {
+      if (layer) {
+        if (this.view.contour.decoupage !== 'régional') {
+          if (layer.getBounds().isValid()) {
+            this.map.fitBounds(layer.getBounds())
+          }
+        } else {
+          this.map.setView([45.853459, 2.349312], 6)
+        }
+      }
     },
     colorMap () {
-      this.frontiersGroup.clearLayers()
-      let filter = this.level === 'département' ? this.$store.getters.parent.id : ''
+      this.contourLayerGroup.clearLayers()
       let colorOptions = {
         color: 'rgba(0,0,0,0.2)',
         dividende: this.$store.state.dividende,
         divisor: this.$store.state.divisor
       }
-      this.add_contours_geojson(filter, this.setStyle(colorOptions), this.myOnEachFeature)
-      if (this.level !== 'région') {
-        if (this.geojsonFrontieres.getBounds().isValid()) {
-          this.map.fitBounds(this.geojsonFrontieres.getBounds())
-        }
-      } else {
-        this.map.setView([45.853459, 2.349312], 6)
-      }
+      this.displayContours(this.setStyle(colorOptions), this.myOnEachFeature)
+      this.zoomBounds(this.contourLayerGroup.getLayers()[0])
     },
     setCluster (type, cluster) {
       if (type === 'acc') {
-        this.cluster_Acc = cluster
+        this.detailedContentLayer = cluster
       } else if (type === 'pve') {
         this.cluster_Pve = cluster
       }
     },
-    add_contours_geojson (filter, styleFunction, onEachFeatureFunction) {
-      let parentLevel = this.levelsInfos[this.level].parent
-      let parentId = parentLevel ? this.levelsInfos[parentLevel].id : ''
-
-      this.geojsonFrontieres = L.geoJson(this.level_shape_geojson, {
-        style: styleFunction,
-        onEachFeature: onEachFeatureFunction,
-        filter (feature, layer) {
-          if (filter) {
-            return feature.properties[parentId] === filter
-          } else {
-            return true
-          }
-        }
-      })
-      this.frontiersGroup.addLayer(this.geojsonFrontieres)
-    },
     createClusterLocal (type) {
       // cluster des accidents individuels
-      this.geojsonAccLayer = L.geoJson(this.accidentsLocal, {
+      this.detailedContentLayer = L.geoJson(this.accidentsLocal, {
         onEachFeature: function (feature, layer) {
           layer.bindPopup()
           layer.on({
@@ -435,7 +395,6 @@ export default {
           }
           let myIcon = L.divIcon({className: 'my-div-icon', html: content, iconSize: null})
           return L.marker(latlng, {icon: myIcon})
-          // return L.circleMarker(latlng, null).bindTooltip(content, {permanent: true, direction: 'center'})
         },
         style: styleAccidents
       })
@@ -444,7 +403,7 @@ export default {
         singleMarkerMode: false,
         iconCreateFunction: accidentIconCreateFunction
         // spiderfyDistanceMultiplier: 1
-      }).addLayer(this.geojsonAccLayer)
+      }).addLayer(this.detailedContentLayer)
       this.setCluster(type, cluster)
     },
     setStyle (options) {
@@ -457,11 +416,11 @@ export default {
       let source = {
         'accidents': this.accidents.aggregations.group_by.buckets,
         'PVE': this.verbalisations.aggregations.group_by.buckets,
-        'habitants': this.level_shape_geojson
+        'habitants': this.contour
       }
 
       if (type === 'habitants') {
-        let idName = this.levelsInfos[this.level].id
+        let idName = this.$store.getters.contourIdFieldName
         let res = 0
         for (let f of source[type].features) {
           if (id === f.properties[idName]) {
@@ -483,7 +442,7 @@ export default {
       }
     },
     customStyle (feature, options) {
-      let idName = this.levelsInfos[this.level].id
+      let idName = this.$store.getters.contourIdFieldName
       let id = feature.properties[idName]
 
       feature.countElements = {}
@@ -535,70 +494,63 @@ export default {
     },
     myOnEachFeature (feature, layer) {
       let vm = this
-      let id = this.levelsInfos[this.level].id
-      let parentLevel = this.levelsInfos[this.level].parent
-      let parentId = parentLevel ? this.levelsInfos[parentLevel].id : ''
-      let displayName = this.levelsInfos[this.level].name
+      let id = this.$store.getters.contourIdFieldName
+      let displayName = this.$store.getters.contourDisplayFieldName
 
       layer.on({
         mouseover: vm.slcBlack,
         mouseout: vm.slcWhite
       })
       layer.geoId = feature.properties[id]
-      layer.parentId = parentId ? feature.properties[parentId] : ''
       layer.displayName = feature.properties[displayName]
-      layer.level = this.level
 
       this.linkHoverInfoToLayer(feature, layer)
 
-      if (vm.level !== 'local') {
-        layer.on('click', function (e) {
-          vm.map.closePopup()
-          vm.keepLocalDataOnChange = e.originalEvent.ctrlKey
-          let route = {
-            name: 'sous-carte',
-            params: { level: layer.level, id: layer.geoId }
-          }
-          // Si on choisit une zone équivalente, on la remplace dans l’historique
-          // En faisant « arrière », on remonte d’un niveau
-          if (vm.$store.getters.parent.level === layer.level) {
-            vm.$router.replace(route)
-          } else {
-            vm.$router.push(route)
-          }
-        })
-      }
+      layer.on('click', function (e) {
+        vm.map.closePopup()
+        let linksTo = vm.view.linksTo
+        let route = {
+          name: 'sous-carte',
+          params: { view: linksTo, id: layer.geoId }
+        }
+
+        // Si on choisit une zone équivalente, on la remplace dans l’historique
+        // En faisant « arrière », on remonte d’un niveau
+        if (vm.$store.getters.viewLinksToItself) {
+          vm.$router.replace(route)
+        } else {
+          vm.$router.push(route)
+        }
+      })
     },
     linkHoverInfoToLayer (feature, layer) {
       let vm = this
       layer.on('mouseover', function (e) {
         vm.hoverInfoData.areaMouseOver = layer.displayName
-        vm.hoverInfoData.ratio = feature.countElements.ratio
-        vm.hoverInfoData.accidentsN = feature.countElements.accidents
-        vm.hoverInfoData.pveN = feature.countElements.PVE
+        vm.hoverInfoData.ratio = feature.countElements ? feature.countElements.ratio : ''
+        vm.hoverInfoData.accidentsN = feature.countElements ? feature.countElements.accidents : ''
+        vm.hoverInfoData.pveN = feature.countElements ? feature.countElements.PVE : ''
       })
     }
   },
   mounted () {
     this.map = L.map('map2', {zoomControl: false}).setView([45.853459, 2.349312], 6)
     L.control.sidebar('sidebar').addTo(this.map)
-    // let infoSidebar = L.control.sidebar('info-sidebar', {position: 'right'}).addTo(this.map)
-    // infoSidebar.open('navigation')
 
     this.tileLayer = L.tileLayer(this.basemapUrl, {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
       maxZoom: 18
     }).addTo(this.map)
 
-    this.map.addLayer(this.frontiersGroup)
-    this.map.addLayer(this.clusterGroup)
+    this.map.addLayer(this.contourLayerGroup)
+    this.map.addLayer(this.detailedContentLayerGroup)
 
     // On met l’état initial dans l’historique
     this.$router.push(this.$route.path)
-    this.$store.dispatch('set_level')
+    this.$store.dispatch('set_view')
 
     this.map.on('zoomend', (e) => {
-      if (this.map.getZoom() < zoomLevels[this.level]) {
+      if (this.map.getZoom() < zoomLevels[this.view.contour.decoupage]) {
         this.$router.go(-1)
       }
     })
