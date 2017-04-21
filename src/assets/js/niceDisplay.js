@@ -1,7 +1,14 @@
 export default { niceDisplay }
 
+function isNumber (n) {
+  return !isNaN(parseFloat(n)) && isFinite(n)
+}
+
 function niceDisplay (n) {
   // Gère l'affichage des nombres dans les clusters
+  if (!isNumber(n)) {
+    return n
+  }
   if (n > 1000000) {
     n = Math.round(n / 10000) / 100 + 'm'
   }
@@ -17,7 +24,7 @@ function niceDisplay (n) {
   if (n > 1) {
     n = Math.round(n * 100) / 100
   }
-  if (n < 1) {
+  if (n < 1 && n >= 0) {
     let k = Math.round(-Math.log(n))
     n = Math.round(n * Math.pow(10, k)) / Math.pow(10, k)
   }
