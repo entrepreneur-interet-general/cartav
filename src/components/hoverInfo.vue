@@ -2,10 +2,10 @@
   <div id='hoverInfo'>
     <button type="button" class="btn btn-default" v-on:click='restore'><i class="fa fa-level-up"></i> Niveau supérieur</button>
     <hr>
-    {{ level }}: <strong>{{ data.areaMouseOver }}</strong> </br>
+    {{ decoupage }}: <strong>{{ data.areaMouseOver }}</strong> </br>
     {{ ratioLabel }}: <strong> {{ ratio }}</strong> </br>
-    Nombre d’accidents: <strong>{{ Math.round(data.accidentsN) }}</strong> </br>
-    Nombre de pve: <strong>{{ Math.round(data.pveN) }}</strong> </br>
+    Nombre d’accidents: <strong>{{ accidentsN }}</strong> </br>
+    Nombre de pve: <strong>{{ pveN }}</strong> </br>
   </div>
 </template>
 
@@ -14,11 +14,17 @@ import nd from '../assets/js/niceDisplay'
 
 export default {
   computed: {
-    level () {
-      return this.$store.getters.parent.level
+    decoupage () {
+      return this.$store.getters.view.contour.decoupage
     },
     ratio () {
       return nd.niceDisplay(this.data.ratio)
+    },
+    accidentsN () {
+      return nd.niceDisplay(this.data.accidentsN)
+    },
+    pveN () {
+      return nd.niceDisplay(this.data.pveN)
     },
     ratioLabel () {
       return this.$store.getters.ratioLabel

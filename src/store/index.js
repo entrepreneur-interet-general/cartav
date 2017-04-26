@@ -9,6 +9,8 @@ import regionsFrontieres from '../assets/json/regions_frontieres.json'
 import departementsFrontieres from '../assets/json/departements_frontieres.json'
 import $ from 'jquery'
 import colors from '../assets/json/colors.json'
+import views from '../assets/json/views.json'
+import aggregationLevelsInfos from '../assets/json/aggregationLevelsInfos'
 
 Vue.use(Vuex)
 
@@ -31,20 +33,20 @@ let accidentsFields = {
   _catv_pietons_nb: 'pietons_nb'
 }
 
-function getLevelShapesGeojson (level, dep) {
+function getLevelShapesGeojson (decoupage, dep) {
   let promise
-  if (level === 'région' || level === 'département') {
+  if (decoupage === 'régional' || decoupage === 'départemental') {
     let geojson = ''
-    if (level === 'région') {
+    if (decoupage === 'régional') {
       geojson = regionsFrontieres
-    } else if (level === 'département') {
+    } else if (decoupage === 'départemental') {
       geojson = departementsFrontieres
     }
     promise = new Promise(function (resolve, reject) {
       resolve(geojson)
     })
     return promise
-  } else if (level === 'commune') {
+  } else if (decoupage === 'communal') {
     return $.getJSON('http://10.237.27.129/data/communes/' + dep + '/communes.geojson')
   }
 }
@@ -59,7 +61,7 @@ export default new Vuex.Store({
     criteria_list: criteriaList.filters,
     accidents: {},
     verbalisations: {},
-    level_shape_geojson: {},
+    contour: {},
     accidents_value_by_filter: {},
     pve_value_by_filter: {},
     accidents_geojson: {},
@@ -112,8 +114,8 @@ export default new Vuex.Store({
     pve_geojson (state, geojson) {
       state.pve_geojson = geojson
     },
-    level_shape_geojson (state, geojson) {
-      state.level_shape_geojson = geojson
+    contour (state, geojson) {
+      state.contour = geojson
     },
     set_dividende (state, dividende) {
       state.dividende = dividende
@@ -133,7 +135,7 @@ export default new Vuex.Store({
     set_criteria (context, o) {
       context.commit('set_criteria', o)
 
-      if (context.getters.parent.subLevel === 'local') {
+      if (context.getters.view.content === 'detailedContent') {
         context.dispatch('accidentsPoints')
         // context.dispatch('queryESPveLocal')
       } else {
@@ -148,20 +150,22 @@ export default new Vuex.Store({
       }
       context.dispatch('getAggregationByfilter')
     },
-    set_level (context) {
-      let parent = context.getters.parent
-      if (parent.subLevel === 'local') {
+    set_view (context) {
+      let view = context.getters.view
+
+      if (view.content === 'detailedContent') {
         context.dispatch('accidentsPoints')
+        getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value).then(res => context.commit('contour', res))
         // context.dispatch('queryESPveLocal')
-      } else {
+      } else if (view.content === 'metric') {
         let promises = [
-          getLevelShapesGeojson(parent.subLevel, parent.id),
+          getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value),
           context.dispatch('queryESAcc'),
           context.dispatch('queryESPve')
         ]
 
         Promise.all(promises).then(function (values) {
-          context.commit('level_shape_geojson', values[0])
+          context.commit('contour', values[0])
           context.commit('accidents_data', values[1])
           context.commit('verbalisations_data', values[2])
         })
@@ -170,8 +174,8 @@ export default new Vuex.Store({
     },
     getAggregationByfilter (context) {
       Promise.all([
-        es.generateAggregatedQueryByFilter(context.state.criteria_list, 'acc', context.getters.parent),
-        es.generateAggregatedQueryByFilter(context.state.criteria_list, 'pve', context.getters.parent)
+        es.generateAggregatedQueryByFilter(context.state.criteria_list, 'acc', context.getters.view),
+        es.generateAggregatedQueryByFilter(context.state.criteria_list, 'pve', context.getters.view)
       ]).then(res => {
         context.commit('accidents_value_by_filter', res[0])
         context.commit('pve_value_by_filter', res[1])
@@ -179,25 +183,25 @@ export default new Vuex.Store({
     },
     queryESAcc (context) {
       let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.parent)
+      let query = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view)
 
       return es.search('acc', query)
     },
     queryESPve (context) {
       let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.parent)
+      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view)
       return es.search('pve', query)
     },
     accidentsPoints (context) {
       let state = context.state
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
-        let query = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.parent, 'geojson')
+        let query = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view, 'geojson')
         es.search('acc', query).then(res => {
           context.commit('accidents_agg_by_road', es.toMultiLineGeojson(res))
         })
       } else {
-        let query = es.generateQuery(state.criteria_list, 'acc', context.getters.parent)
+        let query = es.generateQuery(state.criteria_list, 'acc', context.getters.view)
         es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields).then(function (res) {
           context.commit('accidents_geojson', res)
         })
@@ -205,28 +209,52 @@ export default new Vuex.Store({
     },
     queryESPveLocal (context) {
       let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.parent, 'geojson')
+      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view, 'geojson')
       es.search('pve', query).then(res => {
         context.commit('pve_agg_by_road', es.toMultiLineGeojson(res))
       })
     }
   },
   getters: {
-    // Quand on s’intéresse aux données des départemnts en ÎdF,
-    // le level sera 'région', et id 'Île de France'
-    parent (state) {
-      let subLevels = {
-        france: 'région',
-        région: 'département',
-        département: 'local',
-        commune: 'local'
+    // Renvoie la view décrite dans views.json correspondant à l'url de la page
+    view (state) {
+      let viewName = state.route.params.view || 'france'
+      let id = state.route.params.id || null
+      let view = views[viewName]
+
+      if (id) {
+        if (view.contour.filter.activated) {
+          view.contour.filter.value = id
+        }
+        if (view.data.filter.activated) {
+          view.data.filter.value = id
+        }
       }
-      let level = state.route.params.level || 'france'
-      return {
-        level: level,
-        id: state.route.params.id,
-        subLevel: subLevels[level]
+
+      return view
+    },
+    viewName (state) {
+      return state.route.params.view || 'france'
+    },
+    contourIdFieldName (state, getters) {
+      let decoupage = getters.view.contour.decoupage
+      return aggregationLevelsInfos.contour[decoupage].id
+    },
+    contourDisplayFieldName (state, getters) {
+      let decoupage = getters.view.contour.decoupage
+      return aggregationLevelsInfos.contour[decoupage].name
+    },
+    contourFilterFieldName (state, getters) {
+      let filterCriteria = getters.view.contour.filter.filterCriteria
+      if (filterCriteria) {
+        return aggregationLevelsInfos.contour[filterCriteria].id
+      } else {
+        return null
       }
+    },
+    viewLinksToItself (state, getters) {
+      let linksTo = getters.view.linksTo
+      return linksTo === getters.viewName
     },
     countElements (state, getters) {
       let res = {}
@@ -244,11 +272,12 @@ export default new Vuex.Store({
         res['PVE'] = undefined
       }
 
-      agg = _.get(state.level_shape_geojson, 'features', undefined)
+      agg = _.get(state.contour, 'features', undefined)
       if (agg !== undefined) {
-        if (getters.parent.level === 'région') {
-          let filter = getters.parent.id
-          res['habitants'] = _(agg).map(x => (x.properties['NOM_REG'] === filter) ? x.properties.population : 0).sum()
+        if (getters.view.data.filter.activated) {
+          let filter = getters.view.contour.filter.value
+          let field = getters.contourIdFieldName
+          res['habitants'] = _(agg).map(x => (x.properties[field] === filter) ? x.properties.population : 0).sum()
         } else {
           res['habitants'] = _(agg).map(x => x.properties.population).sum()
         }

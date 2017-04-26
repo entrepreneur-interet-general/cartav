@@ -76,7 +76,7 @@ export default {
   },
   computed: {
     localLevel () {
-      return this.$store.getters.parent.subLevel === 'local'
+      return this.$store.getters.view.content === 'detailedContent'
     }
   },
   watch: {

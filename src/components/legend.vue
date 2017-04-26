@@ -30,7 +30,7 @@ export default {
       return this.legendScale.length !== 0
     },
     localLevel () {
-      return this.$store.getters.parent.subLevel === 'local'
+      return this.$store.getters.view.content === 'detailedContent'
     },
     ratioLabel () {
       return this.$store.getters.ratioLabel

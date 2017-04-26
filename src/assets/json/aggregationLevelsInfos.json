@@ -1,0 +1,26 @@
+{
+    "contour": {
+        "régional": {
+            "id": "NOM_REG",
+            "name": "NOM_REG"
+        },
+        "départemental": {
+            "id": "CODE_DEPT",
+            "name": "NOM_DEPT"
+        }
+    },
+    "data": {
+        "acc": {
+            "régional": "NOM_REG.NOM_REG_facet",
+            "départemental": "dep",
+            "routier": "num_route_or_id.num_route_or_id_facet",
+            "communal": "current_city_code"
+        },
+        "pve": {
+            "régional": "NOM_REG.NOM_REG_facet",
+            "départemental": "DEPARTEMENT_INFRACTION",
+            "routier": "num_route_or_id.num_route_or_id_facet",
+            "communal": "CODE_INSEE_INFRACTION"
+        }
+    }
+}

@@ -14,7 +14,7 @@ Vue.use(VueRouter)
 const routes = [
   { path: '/', component: App },
   { path: '/carte', component: App },
-  { name: 'sous-carte', path: '/carte/:level/:id', component: App }
+  { name: 'sous-carte', path: '/carte/:view/:id', component: App }
 ]
 
 const router = new VueRouter({
