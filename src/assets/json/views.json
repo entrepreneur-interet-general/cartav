@@ -14,7 +14,8 @@
             }
         },
         "content": "metric",
-        "linksTo": "région"
+        "linksTo": "région",
+        "zoomLimit": 0
     },
     "région": {
         "description": "vue d'une métrique sur une région, découpée par départements",
@@ -33,7 +34,8 @@
             }
         },
         "content": "metric",
-        "linksTo": "département"
+        "linksTo": "département",
+        "zoomLimit": 6
     },
     "département": {
         "description": "vue détaillée d'un département",
@@ -51,6 +53,7 @@
             }
         },
         "content": "detailedContent",
-        "linksTo": "département"
+        "linksTo": "département",
+        "zoomLimit": 8
     }
 }
