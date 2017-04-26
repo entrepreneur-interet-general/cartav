@@ -72,13 +72,6 @@ function stylePveRoads (feature) {
   }
 }
 
-let zoomLevels = {
-  région: 0,
-  département: 7,
-  commune: 9,
-  local: 9
-}
-
 let vehiculesIcons = {
   _catv_voiture_nb: 'car',
   _catv_utilitaire_nb: 'car',
@@ -234,6 +227,7 @@ export default {
         }
       })
       this.contourLayerGroup.addLayer(layer)
+      layer.bringToBack()
     },
     displayLocalLayer () {
       this.contourLayerGroup.clearLayers()
@@ -275,14 +269,15 @@ export default {
 
       let layer = L.geoJSON(data, {
         style: styleFunction,
-        onEachFeature: function (feature, layer) {
+        onEachFeature: function (feature, lay) {
           /* let segmentCoords = L.GeoJSON.coordsToLatLngs(feature.geometry.coordinates, 1)
           L.polyline(segmentCoords, {
             offset: 10
           }).addTo(vm.detailedContentLayerGroup) */
 
-          layer.on({
+          lay.on({
             mouseover: function (event) {
+              lay.setStyle({ weight: 15 })
               L.popup()
               .setContent('<strong>' + feature.properties.name + '</strong><br><span class="accHighlight">' + feature.properties.count + popUpContent)
               .setLatLng(event.latlng)
@@ -290,12 +285,13 @@ export default {
             },
             mouseout (event) {
               vm.map.closePopup()
+              layer.resetStyle(lay)
             }
           })
         }
       })
       this.detailedContentLayerGroup.addLayer(layer)
-      // this.zoomBounds(layer)
+      layer.bringToFront()
 
       if (type === 'acc') {
         layer.bringToFront()
@@ -497,12 +493,15 @@ export default {
       let id = this.$store.getters.contourIdFieldName
       let displayName = this.$store.getters.contourDisplayFieldName
 
-      layer.on({
-        mouseover: vm.slcBlack,
-        mouseout: vm.slcWhite
-      })
       layer.geoId = feature.properties[id]
       layer.displayName = feature.properties[displayName]
+      if (vm.view.content !== 'detailedContent' || vm.view.data.filter.value !== layer.geoId) {
+        // disable mouseover effect on the current administrative shape when displaying detailedContent
+        layer.on({
+          mouseover: vm.slcBlack,
+          mouseout: vm.slcWhite
+        })
+      }
 
       this.linkHoverInfoToLayer(feature, layer)
 
@@ -550,7 +549,7 @@ export default {
     this.$store.dispatch('set_view')
 
     this.map.on('zoomend', (e) => {
-      if (this.map.getZoom() < zoomLevels[this.view.contour.decoupage]) {
+      if (this.map.getZoom() < this.view.zoomLimit) {
         this.$router.go(-1)
       }
     })
