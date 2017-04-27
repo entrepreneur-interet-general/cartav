@@ -199,9 +199,6 @@ export default {
     accidentsLocal () {
       this.displayLocalLayer()
     },
-    localLevelDisplay () {
-      this.detailedContentLayerGroup.clearLayers()
-    },
     basemapUrl () {
       this.tileLayer.setUrl(this.basemapUrl)
     },
@@ -231,6 +228,7 @@ export default {
     },
     displayLocalLayer () {
       this.contourLayerGroup.clearLayers()
+      this.detailedContentLayerGroup.clearLayers()
       let style = {
         color: 'white',
         weight: 2,
@@ -250,7 +248,9 @@ export default {
       } else if (this.localLevelDisplay === 'aggregatedByRoad') {
         this.aggByRoad('acc')
       }
-      this.zoomBounds(this.detailedContentLayerGroup.getLayers()[0])
+      if (this.$store.state.zoomActive) {
+        this.zoomBounds(this.detailedContentLayerGroup.getLayers()[0])
+      }
       this.displayContours(() => { return style }, this.myOnEachFeature)
     },
     aggByRoad (type) {
