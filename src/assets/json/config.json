@@ -52,8 +52,7 @@
           "values": {
             "tué": true,
             "hospitalisé": true,
-            "blessé léger": true,
-            "indemne": true
+            "blessé léger": true
           }
         },
         "luminosité" : {
