@@ -12,16 +12,16 @@ let communesGeoJsonFields = {
 }
 
 let index = {
-  acc: 'es2_2005_2015_accidents',
-  pve: 'es2_2010_2015_pve_sr2',
-  commune: 'es2_2016_geohisto_communes_complete2',
-  acc_usagers: 'es2_accidents_usagers',
-  acc_vehicules: 'es2_accidents_vehicules'
+  acc: 'es5_2005_2015_accidents',
+  pve: 'es5_2010_2015_pve_sr2',
+  commune: 'es5_2016_geohisto_communes_complete2',
+  acc_usagers: 'es5_accidents_usagers',
+  acc_vehicules: 'es5_accidents_vehicules'
 }
 
 let client = new elasticsearch.Client({
   host: process.env.ES_HOST,
-  apiVersion: '2.2'
+  apiVersion: '5.x'
 })
 
 function search (type, query) {
