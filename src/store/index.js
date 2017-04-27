@@ -71,6 +71,7 @@ export default new Vuex.Store({
     dividende: 'PVE',
     divisor: 'accidents',
     localLevelDisplay: 'aggregatedByRoad',
+    zoomActive: true,
     colorScale: Object.keys(colors)[0],
     colorScaleInverted: true,
     basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[0]]
@@ -78,6 +79,9 @@ export default new Vuex.Store({
   mutations: {
     set_localLevelDisplay (state, localLevelDisplay) {
       state.localLevelDisplay = localLevelDisplay
+    },
+    set_zoomActive (state, zoomActive) {
+      state.zoomActive = zoomActive
     },
     set_colorScale (state, colorScale) {
       state.colorScale = colorScale
@@ -130,13 +134,13 @@ export default new Vuex.Store({
   actions: {
     set_localLevelDisplay (context, localLevelDisplay) {
       context.commit('set_localLevelDisplay', localLevelDisplay)
-      context.dispatch('accidentsPoints')
+      context.dispatch('accidentsPoints', {zoomActive: false})
     },
     set_criteria (context, o) {
       context.commit('set_criteria', o)
 
       if (context.getters.view.content === 'detailedContent') {
-        context.dispatch('accidentsPoints')
+        context.dispatch('accidentsPoints', {zoomActive: false})
         // context.dispatch('queryESPveLocal')
       } else {
         let promises = [
@@ -154,7 +158,7 @@ export default new Vuex.Store({
       let view = context.getters.view
 
       if (view.content === 'detailedContent') {
-        context.dispatch('accidentsPoints')
+        context.dispatch('accidentsPoints', {zoomActive: true})
         getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value).then(res => context.commit('contour', res))
         // context.dispatch('queryESPveLocal')
       } else if (view.content === 'metric') {
@@ -192,8 +196,9 @@ export default new Vuex.Store({
       let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view)
       return es.search('pve', query)
     },
-    accidentsPoints (context) {
+    accidentsPoints (context, options) {
       let state = context.state
+      context.commit('set_zoomActive', options.zoomActive)
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
         let query = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view, 'geojson')
