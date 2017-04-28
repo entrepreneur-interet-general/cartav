@@ -44,6 +44,8 @@ function styleAccidentsRoads (feature) {
     color: 'rgb(255, 81, 0)',
     opacity: opacity,
     weight: weight
+    // dashArray: [10, 10],
+    // lineCap: 'butt'
   }
 }
 
@@ -68,7 +70,10 @@ function stylePveRoads (feature) {
   return {
     color: 'rgb(0, 0, 255)',
     opacity: opacity,
-    weight: weight
+    weight: weight,
+    dashArray: [10, 10],
+    lineCap: 'butt',
+    dashOffset: 10
   }
 }
 
@@ -296,7 +301,7 @@ export default {
       if (type === 'acc') {
         layer.bringToFront()
       } else {
-        layer.bringToBack()
+        // layer.bringToBack()
       }
     },
     heatMap () {
