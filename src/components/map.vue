@@ -24,34 +24,68 @@ function styleAccidents (feature) {
   }
 }
 
-function styleAccidentsRoads (feature) {
-  let count = feature.properties.count
-  let opacity, weight
-  if (count >= 10) {
-    opacity = 1
-    weight = 6
-  } else if (count >= 5) {
-    opacity = 0.8
-    weight = 4
-  } else if (count >= 2) {
-    opacity = 0.7
-    weight = 2
-  } else {
-    opacity = 0.5
-    weight = 1
-  }
-  return {
-    color: 'rgb(255, 81, 0)',
-    opacity: opacity,
-    weight: weight
-    // dashArray: [10, 10],
-    // lineCap: 'butt'
+function styleAccidentsRoads (count) {
+  return function () {
+    let opacity, weight
+    if (count >= 10) {
+      opacity = 1
+      weight = 6
+    } else if (count >= 5) {
+      opacity = 0.8
+      weight = 4
+    } else if (count >= 2) {
+      opacity = 0.7
+      weight = 2
+    } else {
+      opacity = 0.5
+      weight = 1
+    }
+    return {
+      color: 'rgb(255, 81, 0)',
+      opacity: opacity,
+      weight: weight
+    }
   }
 }
 
-function stylePveRoads (feature) {
-  let count = feature.properties.count
+function styleAccidentsRoadsDashed (count, dashed) {
+  return function () {
+    let res = {
+      color: 'rgb(255, 81, 0)',
+      opacity: 0.8,
+      weight: 3
+    }
+    if (dashed) {
+      res.dashArray = [20, 20]
+      res.lineCap = 'butt'
+    }
+    return res
+  }
+}
+
+function stylePveRoadsDashed (count, dashed) {
+  return function () {
+    let res = {
+      color: 'rgb(0, 0, 255)',
+      opacity: 0.8,
+      weight: 3
+    }
+    if (dashed) {
+      res.dashArray = [20, 20]
+      res.lineCap = 'butt'
+      res.dashOffset = 20
+    }
+    return res
+  }
+}
+
+function stylePveRoads (count) {
   let opacity, weight
+
+  if (count >= 50) {
+    opacity = 1
+    weight = 10
+  }
   if (count >= 10) {
     opacity = 1
     weight = 6
@@ -65,15 +99,10 @@ function stylePveRoads (feature) {
     opacity = 0.5
     weight = 1
   }
-  weight = 4
-  opacity = 1
   return {
     color: 'rgb(0, 0, 255)',
     opacity: opacity,
-    weight: weight,
-    dashArray: [10, 10],
-    lineCap: 'butt',
-    dashOffset: 10
+    weight: weight
   }
 }
 
@@ -122,7 +151,7 @@ export default {
       tileLayer: null,
       contourLayerGroup: L.layerGroup(),
       contourLayer: null,
-      detailedContentLayerGroup: L.layerGroup(),
+      detailedContentLayerGroup: L.featureGroup(),
       detailedContentLayer: null,
       geojsonAccLayer: null,
       hoverInfoData: {
@@ -175,6 +204,9 @@ export default {
     localLevelDisplay () {
       return this.$store.state.localLevelDisplay
     },
+    localLevelData () {
+      return this.$store.state.localLevelData
+    },
     colors () {
       return this.$store.getters.colors
     },
@@ -195,11 +227,11 @@ export default {
     accidents () {
       this.colorMap()
     },
-    accidentsLocalAgg () {
+    localLevelData () {
       this.displayLocalLayer()
     },
-    pveLocalAgg () {
-      this.aggByRoad('pve')
+    accidentsLocalAgg () {
+      this.displayLocalLayer()
     },
     accidentsLocal () {
       this.displayLocalLayer()
@@ -251,57 +283,82 @@ export default {
       } else if (this.localLevelDisplay === 'heatmap') {
         this.heatMap()
       } else if (this.localLevelDisplay === 'aggregatedByRoad') {
-        this.aggByRoad('acc')
+        this.aggByRoad()
       }
       if (this.$store.state.zoomActive) {
-        this.zoomBounds(this.detailedContentLayerGroup.getLayers()[0])
+        this.map.fitBounds(this.detailedContentLayerGroup.getBounds())
       }
       this.displayContours(() => { return style }, this.myOnEachFeature)
     },
     aggByRoad (type) {
       let vm = this
-      let data, styleFunction, popUpContent
+      let dataAcc = this.accidentsLocalAgg
+      let dataPve = this.pveLocalAgg
 
-      if (type === 'acc') {
-        data = this.accidentsLocalAgg
-        styleFunction = styleAccidentsRoads
-        popUpContent = '</span> accidents'
-      } else {
-        data = this.pveLocalAgg
-        styleFunction = stylePveRoads
-        popUpContent = '</span> pve'
+      let options = {
+        accidentsOnly: {showAcc: true, styleAcc: styleAccidentsRoads, showPve: false},
+        pveOnly: {showAcc: false, showPve: true, stylePve: stylePveRoads},
+        accidentsAndPve: {showAcc: true, styleAcc: styleAccidentsRoadsDashed, showPve: true, stylePve: stylePveRoadsDashed},
+        accidentsNoPve: {showAcc: true, styleAcc: styleAccidentsRoads, showPve: false},
+        pveNoAccidents: {showAcc: false, showPve: true, stylePve: stylePveRoads}
       }
 
-      let layer = L.geoJSON(data, {
-        style: styleFunction,
-        onEachFeature: function (feature, lay) {
-          /* let segmentCoords = L.GeoJSON.coordsToLatLngs(feature.geometry.coordinates, 1)
-          L.polyline(segmentCoords, {
-            offset: 10
-          }).addTo(vm.detailedContentLayerGroup) */
+      let opt = options[vm.localLevelData]
 
-          lay.on({
-            mouseover: function (event) {
-              lay.setStyle({ weight: 15 })
-              L.popup()
-              .setContent('<strong>' + feature.properties.name + '</strong><br><span class="accHighlight">' + feature.properties.count + popUpContent)
-              .setLatLng(event.latlng)
-              .openOn(vm.map)
-            },
-            mouseout (event) {
-              vm.map.closePopup()
-              layer.resetStyle(lay)
-            }
-          })
+      if (opt.showAcc) {
+        for (let roadId of Object.keys(dataAcc)) {
+          let road = dataAcc[roadId]
+          let hasPve = dataPve[roadId] !== undefined
+
+          if (vm.localLevelData !== 'accidentsNoPve' || !hasPve) {
+            let layer = L.geoJson(road.geometry, {
+              style: opt.styleAcc(road.count, hasPve),
+              onEachFeature: function (feature, lay) {
+                lay.on({
+                  mouseover: function (event) {
+                    lay.setStyle({ weight: 10 })
+                    L.popup()
+                    .setContent('<strong>' + roadId + '</strong><br><span class="accHighlight">' + road.count + '</span> accidents')
+                    .setLatLng(event.latlng)
+                    .openOn(vm.map)
+                  },
+                  mouseout (event) {
+                    vm.map.closePopup()
+                    layer.resetStyle(lay)
+                  }
+                })
+              }
+            }).addTo(this.detailedContentLayerGroup).bringToFront()
+          }
         }
-      })
-      this.detailedContentLayerGroup.addLayer(layer)
-      layer.bringToFront()
+      }
 
-      if (type === 'acc') {
-        layer.bringToFront()
-      } else {
-        // layer.bringToBack()
+      if (opt.showPve) {
+        for (let roadId of Object.keys(dataPve)) {
+          let road = dataPve[roadId]
+          let hasAcc = dataAcc[roadId] !== undefined
+
+          if (vm.localLevelData !== 'pveNoAccidents' || !hasAcc) {
+            let layer = L.geoJson(road.geometry, {
+              style: opt.stylePve(road.count, hasAcc),
+              onEachFeature: function (feature, lay) {
+                lay.on({
+                  mouseover: function (event) {
+                    lay.setStyle({ weight: 10 })
+                    L.popup()
+                    .setContent('<strong>' + roadId + '</strong><br><span class="pveHighlight">' + road.count + '</span> pve')
+                    .setLatLng(event.latlng)
+                    .openOn(vm.map)
+                  },
+                  mouseout (event) {
+                    vm.map.closePopup()
+                    layer.resetStyle(lay)
+                  }
+                })
+              }
+            }).addTo(this.detailedContentLayerGroup).bringToFront()
+          }
+        }
       }
     },
     heatMap () {
@@ -667,6 +724,10 @@ export default {
 
 .accHighlight {
   color: rgba(255, 81, 0, 1.0);
+  font-weight: bold;
+}
+.pveHighlight {
+  color: rgb(0, 0, 255);
   font-weight: bold;
 }
 </style>

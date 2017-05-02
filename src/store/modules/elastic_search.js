@@ -2,7 +2,7 @@ import elasticsearch from 'elasticsearch'
 import _ from 'lodash'
 import aggregationLevelsInfos from '../../assets/json/aggregationLevelsInfos'
 
-export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getCommunesGeoJson, searchSimpleFilter, toMultiLineGeojson }
+export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getCommunesGeoJson, searchSimpleFilter, toRoadsDict }
 
 let communesGeoJsonFields = {
   Population: 'Population',
@@ -42,29 +42,20 @@ function searchAsGeoJson (type, query, latField, longField, propertyFields) {
   })
 }
 
-function toMultiLineGeojson (json) {
+function toRoadsDict (json) {
+  let dict = {}
   let buckets = json.aggregations.group_by.buckets
-  let features = []
   buckets.forEach(function (bucket) {
-    let geojsonString = _.get(bucket, 'top_agg_hits.hits.hits[0]._source.geojson', undefined)
-    if (geojsonString !== undefined) {
-      let geojson = JSON.parse(geojsonString)
-      let feature = {
-        type: 'Feature',
-        geometry: geojson,
-        properties: {
-          name: bucket.key,
-          count: bucket.doc_count
-        }
+    let geometryString = _.get(bucket, 'top_agg_hits.hits.hits[0]._source.geojson', undefined)
+    if (geometryString !== undefined) {
+      let geometry = JSON.parse(geometryString)
+      dict[bucket.key] = {
+        geometry: geometry,
+        count: bucket.doc_count
       }
-      features.push(feature)
     }
   })
-  let geoJson = {
-    type: 'FeatureCollection',
-    features: features
-  }
-  return geoJson
+  return dict
 }
 
 function generateFilter (criteriaList, type, ExceptThisfield = undefined) {

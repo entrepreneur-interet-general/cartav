@@ -71,6 +71,7 @@ export default new Vuex.Store({
     dividende: 'PVE',
     divisor: 'accidents',
     localLevelDisplay: 'aggregatedByRoad',
+    localLevelData: 'accidentsOnly',
     zoomActive: true,
     colorScale: Object.keys(colors)[0],
     colorScaleInverted: true,
@@ -79,6 +80,9 @@ export default new Vuex.Store({
   mutations: {
     set_localLevelDisplay (state, localLevelDisplay) {
       state.localLevelDisplay = localLevelDisplay
+    },
+    set_localLevelData (state, localLevelData) {
+      state.localLevelData = localLevelData
     },
     set_zoomActive (state, zoomActive) {
       state.zoomActive = zoomActive
@@ -134,14 +138,20 @@ export default new Vuex.Store({
   actions: {
     set_localLevelDisplay (context, localLevelDisplay) {
       context.commit('set_localLevelDisplay', localLevelDisplay)
-      context.dispatch('accidentsPoints', {zoomActive: false})
+      if (localLevelDisplay !== 'aggregatedByRoad') {
+        context.commit('set_localLevelData', 'accidentsOnly')
+      }
+      context.dispatch('getLocalData', {zoomActive: false})
+    },
+    set_localLevelData (context, localLevelData) {
+      context.commit('set_zoomActive', false)
+      context.commit('set_localLevelData', localLevelData)
     },
     set_criteria (context, o) {
       context.commit('set_criteria', o)
 
       if (context.getters.view.content === 'detailedContent') {
-        context.dispatch('accidentsPoints', {zoomActive: false})
-        // context.dispatch('queryESPveLocal')
+        context.dispatch('getLocalData', {zoomActive: false})
       } else {
         let promises = [
           context.dispatch('queryESAcc'),
@@ -158,9 +168,8 @@ export default new Vuex.Store({
       let view = context.getters.view
 
       if (view.content === 'detailedContent') {
-        context.dispatch('accidentsPoints', {zoomActive: true})
+        context.dispatch('getLocalData', {zoomActive: true})
         getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value).then(res => context.commit('contour', res))
-        // context.dispatch('queryESPveLocal')
       } else if (view.content === 'metric') {
         let promises = [
           getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value),
@@ -196,14 +205,20 @@ export default new Vuex.Store({
       let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view)
       return es.search('pve', query)
     },
-    accidentsPoints (context, options) {
+    getLocalData (context, options) {
       let state = context.state
       context.commit('set_zoomActive', options.zoomActive)
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
-        let query = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view, 'geojson')
-        es.search('acc', query).then(res => {
-          context.commit('accidents_agg_by_road', es.toMultiLineGeojson(res))
+        let queryAcc = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view, 'geojson')
+        let queryPve = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view, 'geojson')
+        let promises = [
+          es.search('acc', queryAcc),
+          es.search('pve', queryPve)
+        ]
+        Promise.all(promises).then(values => {
+          context.commit('accidents_agg_by_road', es.toRoadsDict(values[0]))
+          context.commit('pve_agg_by_road', es.toRoadsDict(values[1]))
         })
       } else {
         let query = es.generateQuery(state.criteria_list, 'acc', context.getters.view)
@@ -211,13 +226,6 @@ export default new Vuex.Store({
           context.commit('accidents_geojson', res)
         })
       }
-    },
-    queryESPveLocal (context) {
-      let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view, 'geojson')
-      es.search('pve', query).then(res => {
-        context.commit('pve_agg_by_road', es.toMultiLineGeojson(res))
-      })
     }
   },
   getters: {

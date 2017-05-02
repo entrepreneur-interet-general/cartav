@@ -34,7 +34,7 @@
     <hr>
   </div>
   <div v-if='localLevel'>
-    <h4>Carte locale</h4>
+    <h4>Représentation</h4>
 
     <input type="radio" id="clusterType" value="cluster" v-model="localLevelDisplay">
     <label for="clusterType">Nuage de points (cluster)</label>
@@ -45,6 +45,25 @@
     <input type="radio" id="aggregatedByRoadType" value="aggregatedByRoad" v-model="localLevelDisplay">
     <label for="aggregatedByRoadType">Routes</label>
     <br>
+
+    <h4>Données représentées</h4>
+    <input type="radio" id="accidentsOnly" value="accidentsOnly" v-model="localLevelData">
+    <label for="accidentsOnly">Accidents</label>
+    <br>
+    <div v-if='localLevelDisplay === "aggregatedByRoad"'>
+      <input type="radio" id="pveOnly" value="pveOnly" v-model="localLevelData">
+      <label for="pveOnly">PVE</label>
+      <br>
+      <input type="radio" id="accidentsAndPve" value="accidentsAndPve" v-model="localLevelData">
+      <label for="accidentsAndPve">Accidents et PVE</label>
+      <br>
+      <input type="radio" id="accidentsNoPve" value="accidentsNoPve" v-model="localLevelData">
+      <label for="accidentsNoPve">Axes avec accidents, sans PVE</label>
+      <br>
+      <input type="radio" id="pveNoAccidents" value="pveNoAccidents" v-model="localLevelData">
+      <label for="pveNoAccidents">Axes avec PVE, sans accidents</label>
+      <br>
+    </div>
   </div>
   <h4>Fonds de carte</h4>
   <span v-for="(url, name) in basemaps">
@@ -67,6 +86,7 @@ export default {
       dividende: this.$store.state.dividende,
       divisor: this.$store.state.divisor,
       localLevelDisplay: this.$store.state.localLevelDisplay,
+      localLevelData: this.$store.state.localLevelData,
       colorScale: this.$store.state.colorScale,
       colors: colors,
       colorScaleInverted: this.$store.state.colorScaleInverted,
@@ -77,6 +97,12 @@ export default {
   computed: {
     localLevel () {
       return this.$store.getters.view.content === 'detailedContent'
+    },
+    aggregatedByRoad () {
+      return this.$store.getters.view.content === 'detailedContent'
+    },
+    localLevelDataStore () {
+      return this.$store.state.localLevelData
     }
   },
   watch: {
@@ -88,6 +114,12 @@ export default {
     },
     localLevelDisplay () {
       this.$store.dispatch('set_localLevelDisplay', this.localLevelDisplay)
+    },
+    localLevelData () {
+      this.$store.dispatch('set_localLevelData', this.localLevelData)
+    },
+    localLevelDataStore () {
+      this.localLevelData = this.localLevelDataStore
     },
     colorScale () {
       this.$store.commit('set_colorScale', this.colorScale)
