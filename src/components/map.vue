@@ -35,10 +35,10 @@ function styleAccidentsRoads (count) {
       weight = 4
     } else if (count >= 2) {
       opacity = 0.7
-      weight = 2
+      weight = 3
     } else {
       opacity = 0.5
-      weight = 1
+      weight = 2
     }
     return {
       color: 'rgb(255, 81, 0)',
@@ -82,22 +82,21 @@ function stylePveRoadsDashed (count, dashed) {
 function stylePveRoads (count) {
   let opacity, weight
 
-  if (count >= 50) {
+  if (count >= 200) {
     opacity = 1
-    weight = 10
-  }
-  if (count >= 10) {
-    opacity = 1
+    weight = 8
+  } else if (count >= 100) {
+    opacity = 0.9
     weight = 6
-  } else if (count >= 5) {
+  } else if (count >= 50) {
     opacity = 0.8
     weight = 4
-  } else if (count >= 2) {
+  } else if (count >= 20) {
     opacity = 0.7
-    weight = 2
+    weight = 3
   } else {
     opacity = 0.5
-    weight = 1
+    weight = 2
   }
   return {
     color: 'rgb(0, 0, 255)',
