@@ -144,8 +144,10 @@ export default new Vuex.Store({
       context.dispatch('getLocalData', {zoomActive: false})
     },
     set_localLevelData (context, localLevelData) {
-      context.commit('set_zoomActive', false)
-      context.commit('set_localLevelData', localLevelData)
+      if (context.state.localLevelData !== localLevelData) {
+        context.commit('set_zoomActive', false)
+        context.commit('set_localLevelData', localLevelData)
+      }
     },
     set_criteria (context, o) {
       context.commit('set_criteria', o)
@@ -226,6 +228,11 @@ export default new Vuex.Store({
           context.commit('accidents_geojson', res)
         })
       }
+    },
+    getPVEGraphData (context, roadId) {
+      let state = context.state
+      let query = es.generateGraphAgg(state.criteria_list, 'pve', context.getters.view, roadId, 'LIBELLE_FAMILLE.LIBELLE_FAMILLE_facet')
+      return es.search('pve', query)
     }
   },
   getters: {

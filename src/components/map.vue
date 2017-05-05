@@ -1,6 +1,6 @@
 <template>
     <div id="map2">
-        <infoSidebar id="info-sidebar" :hover-info-data="hoverInfoData" class=""></infoSidebar>
+        <infoSidebar id="info-sidebar" :infoSidebarData="infoSidebarData" class=""></infoSidebar>
     </div>
 </template>
 
@@ -153,11 +153,15 @@ export default {
       detailedContentLayerGroup: L.featureGroup(),
       detailedContentLayer: null,
       geojsonAccLayer: null,
-      hoverInfoData: {
-        areaMouseOver: '',
-        ratio: '',
-        accidentsN: '',
-        pveN: ''
+      infoSidebarData: {
+        hoverInfoData: {
+          areaMouseOver: '',
+          ratio: '',
+          accidentsN: '',
+          pveN: ''
+        },
+        showGraph: true,
+        graphData: {}
       },
       so6: this.setOpacity(0.6),
       so3: this.setOpacity(0.3),
@@ -227,9 +231,13 @@ export default {
       this.colorMap()
     },
     localLevelData () {
-      this.displayLocalLayer()
+      this.infoSidebarData.showGraph = false
+      if (this.localLevelDisplay === 'aggregatedByRoad') {
+        this.displayLocalLayer()
+      }
     },
     accidentsLocalAgg () {
+      this.infoSidebarData.showGraph = false
       this.displayLocalLayer()
     },
     accidentsLocal () {
@@ -352,6 +360,27 @@ export default {
                   mouseout (event) {
                     vm.map.closePopup()
                     layer.resetStyle(lay)
+                  },
+                  click: function (event) {
+                    vm.$store.dispatch('getPVEGraphData', roadId).then(function (res) {
+                      let aggs = res.aggregations.group_by.buckets
+                      let g = {
+                        labels: [],
+                        datasets: [
+                          {
+                            label: 'PVE par famille d\'infractions',
+                            backgroundColor: ['#FF0505', '#FFFF05', '#FF8205', '#05FFFF', '#0505FF', '#05FF82', '#FF05FF'],
+                            data: []
+                          }
+                        ]
+                      }
+                      for (let agg of aggs) {
+                        g.labels.push(agg.key)
+                        g.datasets[0].data.push(agg.doc_count)
+                      }
+                      vm.infoSidebarData.graphData = g
+                    })
+                    vm.infoSidebarData.showGraph = true
                   }
                 })
               }
@@ -383,6 +412,7 @@ export default {
       }
     },
     colorMap () {
+      this.infoSidebarData.showGraph = false
       this.contourLayerGroup.clearLayers()
       let colorOptions = {
         color: 'rgba(0,0,0,0.2)',
@@ -586,10 +616,10 @@ export default {
     linkHoverInfoToLayer (feature, layer) {
       let vm = this
       layer.on('mouseover', function (e) {
-        vm.hoverInfoData.areaMouseOver = layer.displayName
-        vm.hoverInfoData.ratio = feature.countElements ? feature.countElements.ratio : ''
-        vm.hoverInfoData.accidentsN = feature.countElements ? feature.countElements.accidents : ''
-        vm.hoverInfoData.pveN = feature.countElements ? feature.countElements.PVE : ''
+        vm.infoSidebarData.hoverInfoData.areaMouseOver = layer.displayName
+        vm.infoSidebarData.hoverInfoData.ratio = feature.countElements ? feature.countElements.ratio : ''
+        vm.infoSidebarData.hoverInfoData.accidentsN = feature.countElements ? feature.countElements.accidents : ''
+        vm.infoSidebarData.hoverInfoData.pveN = feature.countElements ? feature.countElements.PVE : ''
       })
     }
   },

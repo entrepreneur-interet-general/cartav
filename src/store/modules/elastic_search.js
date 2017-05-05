@@ -2,7 +2,7 @@ import elasticsearch from 'elasticsearch'
 import _ from 'lodash'
 import aggregationLevelsInfos from '../../assets/json/aggregationLevelsInfos'
 
-export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getCommunesGeoJson, searchSimpleFilter, toRoadsDict }
+export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getCommunesGeoJson, searchSimpleFilter, toRoadsDict, generateGraphAgg }
 
 let communesGeoJsonFields = {
   Population: 'Population',
@@ -96,7 +96,7 @@ function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
   return must
 }
 
-function generateAggs (type, fieldName, size, sourceField = null) {
+function generateAggs (type, fieldName, size, topAgghitsField = null) {
   // Génère le champ aggrégation de la requête ES
   let aggs = {
     group_by: {
@@ -107,13 +107,13 @@ function generateAggs (type, fieldName, size, sourceField = null) {
     }
   }
 
-  if (sourceField) {
+  if (topAgghitsField) {
     aggs.group_by.aggs = {
       top_agg_hits: {
         top_hits: {
           _source: {
             include: [
-              sourceField
+              topAgghitsField
             ]
           },
           size: 1
@@ -144,24 +144,40 @@ function getQueryBase (size) {
 function addAdditionalFilters (must, type, view) {
   if (view.data.filter.activated) {
     let filterName = aggregationLevelsInfos.data[type][view.data.filter.filterCriteria]
-    let f = {}
-    f[filterName] = view.data.filter.value
-    must.push({
-      bool: {
-        should: [{term: f}]
-      }
-    })
+    addFilter(must, filterName, view.data.filter.value)
   }
 }
 
-function generateAggregatedQuery (criteriaList, type, view, sourceField = null) {
+function addFilter (must, field, value) {
+  let f = {}
+  f[field] = value
+  must.push({
+    bool: {
+      should: [{term: f}]
+    }
+  })
+}
+
+function generateAggregatedQuery (criteriaList, type, view, topAgghitsField = null) {
   // Génération de la query ES
   let query = getQueryBase(0)
   let must = generateFilter(criteriaList, type)
   addAdditionalFilters(must, type, view)
   let aggKey = aggregationLevelsInfos.data[type][view.data.group_by]
-  let aggs = generateAggs(type, aggKey, 1000, sourceField)
+  let aggs = generateAggs(type, aggKey, 1000, topAgghitsField)
 
+  query.query.constant_score.filter.bool.must = must
+  query.aggs = aggs
+
+  return query
+}
+
+function generateGraphAgg (criteriaList, type, view, roadID, aggKey) {
+  let query = getQueryBase(0)
+  let must = generateFilter(criteriaList, type)
+  addAdditionalFilters(must, type, view)
+  addFilter(must, aggregationLevelsInfos.data[type][view.data.group_by], roadID)
+  let aggs = generateAggs(type, aggKey, 100)
   query.query.constant_score.filter.bool.must = must
   query.aggs = aggs
 
