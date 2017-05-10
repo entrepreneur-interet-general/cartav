@@ -5,7 +5,7 @@
     },
     "filters": {
       "PVE et accidents" : {
-          "année" : {          
+          "année" : {
             "field_name_pve": "ANNEE_INFRACTION",
             "field_name_acc": "ANNEE",
             "values": {
@@ -15,16 +15,16 @@
             }
           },
           "jour" : {
-            "field_name_pve": "LIBELLE_JOUR_INFRACTION",
-            "field_name_acc": "LIBELLE_JOUR",
+            "field_name_pve": "LIBELLE_JOUR_INFRACTION.LIBELLE_JOUR_INFRACTION_facet",
+            "field_name_acc": "LIBELLE_JOUR.LIBELLE_JOUR_facet",
             "values": {
-              "lundi": true,
-              "mardi": true,
-              "mercredi": true,
-              "jeudi": true,
-              "vendredi": true,
-              "samedi": true,
-              "dimanche": true
+              "Lundi": true,
+              "Mardi": true,
+              "Mercredi": true,
+              "Jeudi": true,
+              "Vendredi": true,
+              "Samedi": true,
+              "Dimanche": true
             }
           }
       },
