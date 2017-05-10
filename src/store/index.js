@@ -75,7 +75,7 @@ export default new Vuex.Store({
     zoomActive: true,
     colorScale: Object.keys(colors)[0],
     colorScaleInverted: true,
-    basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[0]]
+    basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]]
   },
   mutations: {
     set_localLevelDisplay (state, localLevelDisplay) {
