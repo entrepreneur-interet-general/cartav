@@ -442,7 +442,7 @@ export default {
                   content += p + ': ' + feature.properties[p] + '</br>'
                 }
               }
-              content += '<a target="_blank" href=http://10.237.27.129/demo/francis/streetview2.html?posLat=' + feature.geometry.coordinates[1] + '+&posLng=' + feature.geometry.coordinates[0] + '>voir dans streetview</a></br>'
+              content += '<a target="_blank" href=http://beta.datalab.mi/av/streetview2.html?posLat=' + feature.geometry.coordinates[1] + '+&posLng=' + feature.geometry.coordinates[0] + '>voir dans streetview</a></br>'
               layer.bindPopup(content)
               es.searchSimpleFilter('acc_usagers', 'Num_Acc', feature.properties['numéro accident']).then(function (resp) {
                 content += '</br><i class="fa fa-users" aria-hidden="true"></i></br>'
