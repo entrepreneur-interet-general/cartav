@@ -18,7 +18,7 @@
         <option>habitants</option>
       </select>
     </div>
-    <hr>
+    <br>
     <h4>Palette</h4>
     <span v-for="(colorsList, scaleName) in colors">
     <input type="radio" v-bind:value=scaleName v-model="colorScale">
@@ -31,7 +31,9 @@
     </span>
     <input type="checkbox" id="colorsScaleInvert" v-model="colorScaleInverted">
     <label for="colorsScaleInvert"> ordre des couleurs inversé </label>
-    <hr>
+    <br>
+    <br>
+    <br>
   </div>
   <div v-if='localLevel'>
     <h4>Représentation</h4>
@@ -44,6 +46,7 @@
     <br>
     <input type="radio" id="aggregatedByRoadType" value="aggregatedByRoad" v-model="localLevelDisplay">
     <label for="aggregatedByRoadType">Routes</label>
+    <br>
     <br>
 
     <h4>Données représentées</h4>
@@ -62,6 +65,7 @@
       <br>
       <input type="radio" id="pveNoAccidents" value="pveNoAccidents" v-model="localLevelData">
       <label for="pveNoAccidents">Axes avec PVE, sans accidents</label>
+      <br>
       <br>
     </div>
   </div>
@@ -135,4 +139,7 @@ export default {
 </script>
 
 <style>
+h4 {
+  color: #0074d9;
+}
 </style>
