@@ -41,7 +41,7 @@ function styleAccidentsRoads (count) {
       weight = 2
     }
     return {
-      color: 'rgb(255, 81, 0)',
+      color: 'rgb(255, 0, 0)',
       opacity: opacity,
       weight: weight
     }
@@ -51,7 +51,7 @@ function styleAccidentsRoads (count) {
 function styleAccidentsRoadsDashed (count, dashed) {
   return function () {
     let res = {
-      color: 'rgb(255, 81, 0)',
+      color: 'rgb(255, 0, 0)',
       opacity: 0.8,
       weight: 3
     }
@@ -668,52 +668,52 @@ export default {
 }
 
 .cluster-acc.marker-cluster-size1 {
-    background-color: rgba(255, 81, 0, 0.3);
+    background-color: rgba(255, 0, 0, 0.3);
 }
 .cluster-acc.marker-cluster-size1 div{
-    background-color: rgba(255, 81, 0, 0.3);
+    background-color: rgba(255, 0, 0, 0.3);
 }
 
 .cluster-acc.marker-cluster-size2 {
-    background-color: rgba(255, 81, 0, 0.3);
+    background-color: rgba(255, 0, 0, 0.3);
 }
 .cluster-acc.marker-cluster-size2 div{
-    background-color: rgba(255, 81, 0, 0.5);
+    background-color: rgba(255, 0, 0, 0.5);
 }
 
 .cluster-acc.marker-cluster-size3 {
-    background-color: rgba(255, 81, 0, 0.6);
+    background-color: rgba(225, 0, 0, 0.6);
 }
 .cluster-acc.marker-cluster-size3 div{
-    background-color: rgba(255, 81, 0, 0.6);
+    background-color: rgba(225, 0, 0, 0.6);
 }
 
 .cluster-acc.marker-cluster-size4 {
-    background-color: rgba(255, 52, 1, 0.7);
+    background-color: rgba(200, 0, 0, 0.7);
 }
 .cluster-acc.marker-cluster-size4 div{
-    background-color: rgba(255, 52, 1, 0.7);
+    background-color: rgba(200, 0, 0, 0.7);
 }
 
 .cluster-acc.marker-cluster-size5 {
-    background-color: rgba(255, 38, 0, 0.8);
+    background-color: rgba(165, 0, 0, 0.8);
 }
 .cluster-acc.marker-cluster-size5 div{
-    background-color: rgba(255, 38, 0, 0.8);
+    background-color: rgba(165, 0, 0, 0.8);
 }
 
 .cluster-acc.marker-cluster-size6 {
-    background-color: rgba(204, 27, 0, 0.8);
+    background-color: rgba(100, 0, 0, 0.8);
 }
 .cluster-acc.marker-cluster-size6 div{
-    background-color: rgba(204, 27, 0, 0.8);
+    background-color: rgba(100, 0, 0, 0.8);
 }
 
 .cluster-acc.marker-cluster-size7 {
-    background-color: rgba(109, 10, 0, 0.8);
+    background-color: rgba(50, 0, 0, 0.8);
 }
 .cluster-acc.marker-cluster-size7 div{
-    background-color: rgba(109, 10, 0, 0.8);
+    background-color: rgba(50, 0, 0, 0.8);
 }
 
 .cluster-acc.marker-cluster {
@@ -735,7 +735,7 @@ export default {
 }
 
 .leaflet-tooltip {
-  background-color: rgba(255, 81, 0, 0.8) !important;
+  background-color: rgba(255, 0, 0, 0.8) !important;
   border-style: none !important;
   padding: 1px !important;
 }
@@ -744,7 +744,7 @@ export default {
 }
 
 .my-div-icon {
-  background-color: rgba(255, 81, 0, 0.8);
+  background-color: rgba(255, 0, 0, 0.8);
   color: white;
   white-space: nowrap;
   padding: 0.5px;
@@ -752,7 +752,7 @@ export default {
 }
 
 .accHighlight {
-  color: rgba(255, 81, 0, 1.0);
+  color: rgba(255, 0, 0, 1.0);
   font-weight: bold;
 }
 .pveHighlight {
