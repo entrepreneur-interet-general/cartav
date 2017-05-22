@@ -102,7 +102,8 @@ function generateAggs (type, fieldName, size, topAgghitsField = null) {
     group_by: {
       terms: {
         field: fieldName,
-        size: size
+        size: size,
+        collect_mode: 'breadth_first'
       }
     }
   }
