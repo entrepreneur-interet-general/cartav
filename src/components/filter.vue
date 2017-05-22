@@ -3,9 +3,9 @@
     <div class="sidebar-tabs">
       <ul role="tablist">
         <li><a href="#timeFilters" role="tab"><i class="fa fa-clock-o"></i></a></li>
-        <li><a href="#accidentsFilters" role="tab"><i class="fa fa-car"></i><i class="glyphicon glyphicon-fire"></i></a></li>
-        <li><a href="#pveFilters" role="tab"><i class="glyphicon glyphicon-eye-open"></i> <i class="fa fa-exclamation"></i></a></li>
-        <li><a href="#ratio" role="tab"><i class="fa fa-paint-brush"></i></a></li>
+        <li><a href="#accidentsFilters" role="tab"><i class="fa fa-car fa-rotate-90"></i><i class="fa fa-male"></i></a></li>
+        <li><a href="#pveFilters" role="tab"><strong>PVE</strong></a></li>
+        <li><a href="#ratio" role="tab"><i class="fa fa-sliders"></i></a></li>
         <li><a href="#help" role="tab"><i class="glyphicon glyphicon-question-sign"></i></a></li>
       </ul>
     </div>
@@ -24,7 +24,16 @@
 
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
                 <span v-for="(criteria, criteriaName) in category">
-                  <h3>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h3>
+
+                <div class="row s-rows">
+                  <div class="col-lg-11">
+                    <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h4>
+                  </div>
+                  <div class="col-lg-1">
+                    <abbr v-if=criteria.description class="description-info-circle" v-bind:title=criteria.description><i class='fa fa-info-circle'></i></abbr>
+                  </div>
+                </div>
+
                   <span v-for="(val, valName) in criteria.values">
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
@@ -35,12 +44,12 @@
                       </div>
                       <div class="col-lg-2 agg_acc">
                         <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
-                        {{ agg_acc_value(categoryName, criteriaName, valName) }}
+                        <abbr v-bind:title="valName + ' : ' + agg_acc_value(categoryName, criteriaName, valName, false) + ' accidents'">{{ agg_acc_value(categoryName, criteriaName, valName) }}</abbr>
                         </span>
                       </div>
                       <div class="col-lg-2 agg_pve">
                         <span v-if="agg_pve_value(categoryName, criteriaName, valName)">
-                        {{ agg_pve_value(categoryName, criteriaName, valName) }}
+                        <abbr v-bind:title="valName + ' : ' + agg_pve_value(categoryName, criteriaName, valName, false) + ' PVE'">{{ agg_pve_value(categoryName, criteriaName, valName) }}</abbr>
                         </span>
                       </div>
                       <br>
@@ -66,7 +75,16 @@
 
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
                 <span v-for="(criteria, criteriaName) in category">
-                  <h3>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h3>
+
+                <div class="row s-rows">
+                  <div class="col-lg-11">
+                    <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h4>
+                  </div>
+                  <div class="col-lg-1">
+                    <abbr v-if=criteria.description class="description-info-circle" v-bind:title=criteria.description><i class='fa fa-info-circle'></i></abbr>
+                  </div>
+
+                </div>
                   <span v-for="(val, valName) in criteria.values">
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
@@ -77,17 +95,18 @@
                       </div>
                       <div class="col-lg-2 agg_acc">
                         <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
-                        {{ agg_acc_value(categoryName, criteriaName, valName) }}
+                        <abbr v-bind:title="valName + ' : ' + agg_acc_value(categoryName, criteriaName, valName, false) + ' accidents'">{{ agg_acc_value(categoryName, criteriaName, valName) }}</abbr>
                         </span>
                       </div>
                       <div class="col-lg-2 agg_pve">
                         <span v-if="agg_pve_value(categoryName, criteriaName, valName)">
-                        {{ agg_pve_value(categoryName, criteriaName, valName) }}
+                        <abbr v-bind:title="valName + ' : ' + agg_pve_value(categoryName, criteriaName, valName, false) + ' PVE'">{{ agg_pve_value(categoryName, criteriaName, valName) }}</abbr>
                         </span>
                       </div>
                       <br>
                     </div>
                   </span>
+                  <br>
                 </span>
               </span>
               <hr>
@@ -108,7 +127,16 @@
 
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
                 <span v-for="(criteria, criteriaName) in category">
-                  <h3>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h3>
+
+                <div class="row s-rows">
+                  <div class="col-lg-11">
+                    <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h4>
+                  </div>
+                  <div class="col-lg-1">
+                    <abbr v-if=criteria.description class="description-info-circle" v-bind:title=criteria.description><i class='fa fa-info-circle'></i></abbr>
+                  </div>
+                </div>
+
                   <span v-for="(val, valName) in criteria.values">
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
@@ -119,12 +147,12 @@
                       </div>
                       <div class="col-lg-2 agg_acc">
                         <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
-                        {{ agg_acc_value(categoryName, criteriaName, valName) }}
+                        <abbr v-bind:title="valName + ' : ' + agg_acc_value(categoryName, criteriaName, valName, false) + ' accidents'">{{ agg_acc_value(categoryName, criteriaName, valName) }}</abbr>
                         </span>
                       </div>
                       <div class="col-lg-2 agg_pve">
                         <span v-if="agg_pve_value(categoryName, criteriaName, valName)">
-                        {{ agg_pve_value(categoryName, criteriaName, valName) }}
+                        <abbr v-bind:title="valName + ' : ' + agg_pve_value(categoryName, criteriaName, valName, false) + ' PVE'">{{ agg_pve_value(categoryName, criteriaName, valName) }}</abbr>
                         </span>
                       </div>
                       <br>
@@ -139,7 +167,7 @@
       </div>
 
       <div class="sidebar-pane" id="ratio">
-        <h1 class="sidebar-header">Couleurs de la carte<span class="sidebar-close"><i class="glyphicon glyphicon-triangle-left"></i></span></h1>
+        <h1 class="sidebar-header">Données visualisées<span class="sidebar-close"><i class="glyphicon glyphicon-triangle-left"></i></span></h1>
           <ratio></ratio>
       </div>
 
@@ -255,11 +283,19 @@ export default {
       let criteriaPath = `${categoryName}.${criteriaName}.values.${valName}`
       this.$store.dispatch('set_criteria', {criteriaPath: criteriaPath, value: value})
     },
-    agg_pve_value (categoryName, criteriaName, valName) {
-      return nd.niceDisplay(this.agg_pve[categoryName + '.' + criteriaName + '.' + valName])
+    agg_pve_value (categoryName, criteriaName, valName, niceDisplay = true) {
+      if (niceDisplay) {
+        return nd.niceDisplay(this.agg_pve[categoryName + '.' + criteriaName + '.' + valName])
+      } else {
+        return this.agg_pve[categoryName + '.' + criteriaName + '.' + valName]
+      }
     },
-    agg_acc_value (categoryName, criteriaName, valName) {
-      return nd.niceDisplay(this.agg_acc[categoryName + '.' + criteriaName + '.' + valName])
+    agg_acc_value (categoryName, criteriaName, valName, niceDisplay = true) {
+      if (niceDisplay) {
+        return nd.niceDisplay(this.agg_acc[categoryName + '.' + criteriaName + '.' + valName])
+      } else {
+        return this.agg_acc[categoryName + '.' + criteriaName + '.' + valName]
+      }
     }
   }
 }
@@ -397,6 +433,10 @@ export default {
 .funkyradio-info input[type="checkbox"]:checked ~ label:before {
   color: #fff;
   background-color: #5bc0de;
+}
+
+.description-info-circle {
+  color: #337ab7;
 }
 
 </style>

@@ -49,6 +49,7 @@
       "Accidents" : {
         "gravité" : {
           "field_name_acc": "gravite_accident",
+          "description": "Tué: au moins une personne a été tuée. Hospitalisé: au moins une personne a été hospitalisée. Blessé léger: uniquement des blessés légers.",
           "values": {
             "tué": true,
             "hospitalisé": true,
