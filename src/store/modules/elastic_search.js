@@ -15,8 +15,8 @@ let index = {
   acc: 'es5_2005_2015_accidents_custom_mapping',
   pve: 'es5_2015_pve_sr_regions_custom_mapping',
   commune: 'es5_2016_geohisto_communes_complete2',
-  acc_usagers: 'es5_accidents_usagers',
-  acc_vehicules: 'es5_accidents_vehicules'
+  acc_usagers: 'es2_accidents_usagers',
+  acc_vehicules: 'es2_accidents_vehicules'
 }
 
 let client = new elasticsearch.Client({
