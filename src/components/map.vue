@@ -315,9 +315,19 @@ export default {
       if (opt.showAcc) {
         for (let roadId of Object.keys(dataAcc)) {
           let road = dataAcc[roadId]
-          let hasPve = dataPve[roadId] !== undefined
+          let include = false
+          let hasPve = false
+          if (vm.localLevelData === 'accidentsNoPve') {
+            hasPve = dataPve[roadId] !== undefined
+            include = !hasPve
+          } else if (vm.localLevelData === 'accidentsOnly') {
+            include = true
+          } else if (vm.localLevelData === 'accidentsAndPve') {
+            include = true
+            hasPve = dataPve[roadId] !== undefined
+          }
 
-          if (vm.localLevelData !== 'accidentsNoPve' || !hasPve) {
+          if (include) {
             let layer = L.geoJson(road.geometry, {
               style: opt.styleAcc(road.count, hasPve),
               onEachFeature: function (feature, lay) {
@@ -335,7 +345,7 @@ export default {
                   }
                 })
               }
-            }).addTo(this.detailedContentLayerGroup).bringToFront()
+            }).addTo(this.detailedContentLayerGroup) // .bringToFront()
           }
         }
       }
@@ -343,9 +353,19 @@ export default {
       if (opt.showPve) {
         for (let roadId of Object.keys(dataPve)) {
           let road = dataPve[roadId]
-          let hasAcc = dataAcc[roadId] !== undefined
+          let include = false
+          let hasAcc = false
+          if (vm.localLevelData === 'pveNoAccidents') {
+            hasAcc = dataAcc[roadId] !== undefined
+            include = !hasAcc
+          } else if (vm.localLevelData === 'pveOnly') {
+            include = true
+          } else if (vm.localLevelData === 'accidentsAndPve') {
+            include = true
+            hasAcc = dataAcc[roadId] !== undefined
+          }
 
-          if (vm.localLevelData !== 'pveNoAccidents' || !hasAcc) {
+          if (include) {
             let layer = L.geoJson(road.geometry, {
               style: opt.stylePve(road.count, hasAcc),
               onEachFeature: function (feature, lay) {
@@ -384,7 +404,7 @@ export default {
                   }
                 })
               }
-            }).addTo(this.detailedContentLayerGroup).bringToFront()
+            }).addTo(this.detailedContentLayerGroup) // .bringToFront()
           }
         }
       }
