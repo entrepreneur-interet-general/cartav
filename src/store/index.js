@@ -231,7 +231,7 @@ export default new Vuex.Store({
     },
     getPVEGraphData (context, roadId) {
       let state = context.state
-      let query = es.generateGraphAgg(state.criteria_list, 'pve', context.getters.view, roadId, 'LIBELLE_FAMILLE.LIBELLE_FAMILLE_facet')
+      let query = es.generateGraphAgg(state.criteria_list, 'pve', context.getters.view, roadId, 'LIBELLE_FAMILLE')
       return es.search('pve', query)
     }
   },

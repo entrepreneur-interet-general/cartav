@@ -15,8 +15,8 @@
             }
           },
           "jour" : {
-            "field_name_pve": "LIBELLE_JOUR_INFRACTION.LIBELLE_JOUR_INFRACTION_facet",
-            "field_name_acc": "LIBELLE_JOUR.LIBELLE_JOUR_facet",
+            "field_name_pve": "LIBELLE_JOUR_INFRACTION",
+            "field_name_acc": "LIBELLE_JOUR",
             "values": {
               "Lundi": true,
               "Mardi": true,
@@ -31,7 +31,7 @@
       "PVE" : {
         "LIBELLE_FAMILLE" : {
           "display_name": "Famille Infraction",
-          "field_name_pve": "LIBELLE_FAMILLE.LIBELLE_FAMILLE_facet",
+          "field_name_pve": "LIBELLE_FAMILLE",
           "values": {
             "Règles administratives": true,
             "Vitesse": true,
@@ -48,7 +48,7 @@
       },
       "Accidents" : {
         "gravité" : {
-          "field_name_acc": "gravite_accident.gravite_accident_facet",
+          "field_name_acc": "gravite_accident",
           "values": {
             "tué": true,
             "hospitalisé": true,
@@ -56,7 +56,7 @@
           }
         },
         "luminosité" : {
-          "field_name_acc": "lum.lum_facet",
+          "field_name_acc": "lum",
           "values": {
             "plein jour": true,
             "nuit avec éclairage public allumé": true,
@@ -66,14 +66,14 @@
           }
         },
         "Lieu" : {
-          "field_name_acc": "agg.agg_facet",
+          "field_name_acc": "agg",
           "values": {
             "en agglomération": true,
             "hors agglomération": true
           }
         },
         "Intersection" : {
-          "field_name_acc": "int.int_facet",
+          "field_name_acc": "int",
           "values": {
             "hors intersection": true,
             "intersection en X": true,
@@ -87,7 +87,7 @@
           }
         },
         "Conditions météo" : {
-          "field_name_acc": "atm.atm_facet",
+          "field_name_acc": "atm",
           "values": {
             "météo normale": true,
             "pluie légère": true,
@@ -100,7 +100,7 @@
           }
         },
         "Collisions" : {
-          "field_name_acc": "col.col_facet",
+          "field_name_acc": "col",
           "values": {
             "autre collision": true,
             "2 véhicules côté": true,
@@ -112,7 +112,7 @@
           }
         },
         "Heure" : {
-          "field_name_acc": "HEURE.HEURE_facet",
+          "field_name_acc": "HEURE",
           "values": {
             "0": true,
             "1": true,
