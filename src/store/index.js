@@ -25,7 +25,6 @@ let accidentsFields = {
   'conditions météo': 'atm',
   collision: 'col',
   _catv_voiture_nb: 'voiture_nb',
-  _catv_utilitaire_nb: 'utilitaire_nb',
   _catv_deuxrouesmotorises_nb: 'deuxrouesmotorises_nb',
   _catv_velo_nb: 'velo_nb',
   _catv_poidslourd_nb: 'poidslourd_nb',
