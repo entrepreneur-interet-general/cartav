@@ -33,13 +33,12 @@
                     <abbr v-if=criteria.description class="description-info-circle" v-bind:title=criteria.description><i class='fa fa-info-circle'></i></abbr>
                   </div>
                 </div>
-
                   <span v-for="(val, valName) in criteria.values">
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
                         <div class="funkyradio-default">
-                            <input type="checkbox" name="checkbox" v-bind:id=valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
-                            <label v-bind:for=valName>{{ valName }}</label>
+                            <input type="checkbox" name="checkbox" v-bind:id=criteriaName+valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
+                            <label v-bind:for=criteriaName+valName>{{ criteria.labels && criteria.labels[valName] ? criteria.labels[valName] : valName}}</label>
                         </div>
                       </div>
                       <div class="col-lg-2 agg_acc">
@@ -83,14 +82,13 @@
                   <div class="col-lg-1">
                     <abbr v-if=criteria.description class="description-info-circle" v-bind:title=criteria.description><i class='fa fa-info-circle'></i></abbr>
                   </div>
-
                 </div>
                   <span v-for="(val, valName) in criteria.values">
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
                         <div class="funkyradio-default">
-                            <input type="checkbox" name="checkbox" v-bind:id=valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
-                            <label v-bind:for=valName>{{ valName }}</label>
+                            <input type="checkbox" name="checkbox" v-bind:id=criteriaName+valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
+                            <label v-bind:for=criteriaName+valName>{{ criteria.labels && criteria.labels[valName] ? criteria.labels[valName] : valName }}</label>
                         </div>
                       </div>
                       <div class="col-lg-2 agg_acc">
@@ -141,8 +139,8 @@
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
                         <div class="funkyradio-default">
-                            <input type="checkbox" name="checkbox" v-bind:id=valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
-                            <label v-bind:for=valName>{{ valName }}</label>
+                            <input type="checkbox" name="checkbox" v-bind:id=criteriaName+valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
+                            <label v-bind:for=criteriaName+valName>{{ criteria.labels && criteria.labels[valName] ? criteria.labels[valName] : valName }}</label>
                         </div>
                       </div>
                       <div class="col-lg-2 agg_acc">
