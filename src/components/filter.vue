@@ -73,6 +73,7 @@
             <span v-if="categoryName === 'Accidents'">
 
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
+
                 <span v-for="(criteria, criteriaName) in category">
 
                 <div class="row s-rows">
@@ -83,6 +84,15 @@
                     <abbr v-if=criteria.description class="description-info-circle" v-bind:title=criteria.description><i class='fa fa-info-circle'></i></abbr>
                   </div>
                 </div>
+
+                <span v-if="criteria.type == 'vehiculeFilter'">
+                  <vehiculeCheckbox 
+                    :criteriaPath="categoryName+'.'+criteriaName"
+                    :criteria="criteria"> 
+                  </vehiculeCheckbox>
+                </span>
+                <span v-else>
+
                   <span v-for="(val, valName) in criteria.values">
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
@@ -105,6 +115,9 @@
                     </div>
                   </span>
                   <br>
+
+                </span>
+
                 </span>
               </span>
               <hr>
@@ -259,11 +272,13 @@ Ce projet est réalisé dans le cadre des [Entrepreneurs d’Intérêt Général
 import ratio from './ratio'
 import VueMarkdown from 'vue-markdown'
 import nd from '../assets/js/niceDisplay'
+import vehiculeCheckbox from './vehicule-checkbox'
 
 export default {
   components: {
     ratio: ratio,
-    VueMarkdown
+    VueMarkdown,
+    vehiculeCheckbox
   },
   computed: {
     criteria_list () {

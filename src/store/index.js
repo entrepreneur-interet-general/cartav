@@ -93,9 +93,14 @@ export default new Vuex.Store({
       state.colorScaleInverted = colorScaleInverted
     },
     set_criteria (state, {criteriaPath, value}) {
-      let cl = JSON.parse(JSON.stringify(state.criteria_list))
-      _.set(cl, criteriaPath, value)
-      state.criteria_list = cl
+      _.set(state.criteria_list, criteriaPath, value)
+    },
+    set_criteria_bulk (state, {criteriaPath, criterias}) {
+      criteriaPath += '.values.'
+      for (let crit of criterias) {
+        let cp = criteriaPath + crit.label
+        _.set(state.criteria_list, cp, crit.value)
+      }
     },
     accidents_data (state, response) {
       state.accidents = response
@@ -149,7 +154,11 @@ export default new Vuex.Store({
       }
     },
     set_criteria (context, o) {
-      context.commit('set_criteria', o)
+      if (o.type === 'bulk') {
+        context.commit('set_criteria_bulk', o)
+      } else {
+        context.commit('set_criteria', o)
+      }
 
       if (context.getters.view.content === 'detailedContent') {
         context.dispatch('getLocalData', {zoomActive: false})

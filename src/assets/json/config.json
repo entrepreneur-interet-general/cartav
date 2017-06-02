@@ -122,6 +122,82 @@
       }
     },
     "Accidents" : {
+      "voiture" : {
+        "field_name_acc": "voiture_nb",
+        "type": "vehiculeFilter",
+        "values": {
+          "0": true,
+          "1": true,
+          "2": true,
+          "3+": true
+        },
+        "choices": {
+          "any": "Indifférent",
+          "none": "accident sans voiture",
+          "some": "accident avec voiture(s)"
+        }
+      },
+      "poids lourd" : {
+        "field_name_acc": "poidslourd_nb",
+        "type": "vehiculeFilter",
+        "values": {
+          "0": true,
+          "1": true,
+          "2": true,
+          "3+": true
+        },
+        "choices": {
+          "any": "Indifférent",
+          "none": "accident sans poids lourd",
+          "some": "accident avec poids lourd(s)"
+        }
+      },
+      "moto" : {
+        "field_name_acc": "deuxrouesmotorises_nb",
+        "type": "vehiculeFilter",
+        "values": {
+          "0": true,
+          "1": true,
+          "2": true,
+          "3+": true
+        },
+        "choices": {
+          "any": "Indifférent",
+          "none": "accident sans moto",
+          "some": "accident avec moto(s)"
+        }
+      },
+      "piéton" : {
+        "field_name_acc": "pietons_nb",
+        "type": "vehiculeFilter",
+        "values": {
+          "0": true,
+          "1": true,
+          "2": true,
+          "3+": true
+        },
+        "choices": {
+          "any": "Indifférent",
+          "none": "accident sans piéton",
+          "some": "accident avec piéton(s)"
+        }
+      },
+      "autre véhicule" : {
+        "field_name_acc": "vehiculeautre_nb",
+        "description": "Tous les autres véhicules (tracteur, bus, quad, engin spécial, train)",
+        "type": "vehiculeFilter",
+        "values": {
+          "0": true,
+          "1": true,
+          "2": true,
+          "3+": true
+        },
+        "choices": {
+          "any": "Indifférent",
+          "none": "accident sans autre véhicule",
+          "some": "accident avec autre véhicule(s)"
+        }
+      },
       "gravité" : {
         "field_name_acc": "gravite_accident",
         "description": "Tué: au moins une personne a été tuée. Hospitalisé: au moins une personne a été hospitalisée. Blessé léger: uniquement des blessés légers.",
