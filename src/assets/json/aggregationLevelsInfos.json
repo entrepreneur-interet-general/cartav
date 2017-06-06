@@ -21,6 +21,9 @@
             "départemental": "DEPARTEMENT_INFRACTION",
             "routier": "num_route_or_id",
             "communal": "CODE_INSEE_INFRACTION"
+        },
+        "radars": {
+            "départemental": "departement_num"
         }
     }
 }

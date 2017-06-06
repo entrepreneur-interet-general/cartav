@@ -296,6 +296,9 @@ export default {
         this.map.fitBounds(this.detailedContentLayerGroup.getBounds())
       }
       this.displayContours(() => { return style }, this.myOnEachFeature)
+      if (this.localLevelData !== 'accidentsOnly') {
+        this.showRadars()
+      }
     },
     aggByRoad (type) {
       let vm = this
@@ -448,6 +451,31 @@ export default {
       } else if (type === 'pve') {
         this.cluster_Pve = cluster
       }
+    },
+    showRadars () {
+      L.geoJson(this.$store.state.radars_geojson, {
+        onEachFeature: function (feature, layer) {
+          layer.bindPopup()
+          layer.on({
+            click: function () {
+              let content = ''
+              for (let p in feature.properties) {
+                if (feature.properties[p]) {
+                  content += p + ': ' + feature.properties[p] + '</br>'
+                }
+              }
+              content += '<a target="_blank" href=http://beta.datalab.mi/av/streetview2.html?posLat=' + feature.geometry.coordinates[1] + '+&posLng=' + feature.geometry.coordinates[0] + '>voir dans streetview</a></br>'
+              layer.bindPopup(content)
+            }
+          })
+        },
+        pointToLayer: function (feature, latlng) {
+          let content = '<i class="fa fa-camera aria-hidden="true"></i>'
+          let myIcon = L.divIcon({className: 'radar-div-icon', html: content, iconSize: null})
+          return L.marker(latlng, {icon: myIcon})
+        },
+        style: styleAccidents
+      }).addTo(this.detailedContentLayerGroup)
     },
     createClusterLocal (type) {
       // cluster des accidents individuels
@@ -768,6 +796,14 @@ export default {
   color: white;
   white-space: nowrap;
   padding: 0.5px;
+  border-radius: 3px;
+}
+
+.radar-div-icon {
+  background-color: rgb(0, 0, 131);
+  color: white;
+  white-space: nowrap;
+  padding: 2px;
   border-radius: 3px;
 }
 

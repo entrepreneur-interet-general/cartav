@@ -32,6 +32,22 @@ let accidentsFields = {
   _catv_pietons_nb: 'pietons_nb'
 }
 
+let radarsFields = {
+  'Voie': 'Libellé voie',
+  'Sens circulation': 'Sens circulation',
+  'VLA': 'VLA',
+  'VLA Poids Lourds': 'VLA PL',
+  'Type de radar': 'Type',
+  'Catégorie Miffeur': 'Catégorie Miffeur',
+  'ET discriminant les voies': 'ET discriminant les voies',
+  'Date de mise en service': 'Date de mise en service',
+  'Zone': 'Zone',
+  'Commune': 'Commune',
+  'Code INSEE': 'Code INSEE',
+  'Environnement de la voie': 'Environnement de la voie'
+
+}
+
 function getLevelShapesGeojson (decoupage, dep) {
   let promise
   if (decoupage === 'régional' || decoupage === 'départemental') {
@@ -64,6 +80,7 @@ export default new Vuex.Store({
     accidents_value_by_filter: {},
     pve_value_by_filter: {},
     accidents_geojson: {},
+    radars_geojson: {},
     accidents_agg_by_road: {},
     pve_agg_by_road: {},
     pve_geojson: {},
@@ -116,6 +133,9 @@ export default new Vuex.Store({
     },
     accidents_geojson (state, geojson) {
       state.accidents_geojson = geojson
+    },
+    radars_geojson (state, geojson) {
+      state.radars_geojson = geojson
     },
     accidents_agg_by_road (state, json) {
       state.accidents_agg_by_road = json
@@ -229,6 +249,7 @@ export default new Vuex.Store({
         Promise.all(promises).then(values => {
           context.commit('accidents_agg_by_road', es.toRoadsDict(values[0]))
           context.commit('pve_agg_by_road', es.toRoadsDict(values[1]))
+          context.dispatch('getRadars')
         })
       } else {
         let query = es.generateQuery(state.criteria_list, 'acc', context.getters.view)
@@ -241,6 +262,12 @@ export default new Vuex.Store({
       let state = context.state
       let query = es.generateGraphAgg(state.criteria_list, 'pve', context.getters.view, roadId, 'LIBELLE_FAMILLE')
       return es.search('pve', query)
+    },
+    getRadars (context, dep) {
+      let query = es.generateQuery(null, 'radars', context.getters.view)
+      es.searchAsGeoJson('radars', query, 'Coordonnées GPS cabine - latitude', 'Coordonnées GPS cabine - longitude', radarsFields).then(function (res) {
+        context.commit('radars_geojson', res)
+      })
     }
   },
   getters: {

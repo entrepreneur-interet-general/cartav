@@ -16,7 +16,8 @@ let index = {
   pve: 'es5_2015_pve_sr_regions_custom_mapping',
   commune: 'es5_2016_geohisto_communes_complete2',
   acc_usagers: 'es2_accidents_usagers',
-  acc_vehicules: 'es2_accidents_vehicules'
+  acc_vehicules: 'es2_accidents_vehicules',
+  radars: 'es5dev_radars'
 }
 
 let client = new elasticsearch.Client({
@@ -188,11 +189,12 @@ function generateGraphAgg (criteriaList, type, view, roadID, aggKey) {
 function generateQuery (criteriaList, type, view) {
   // Génération de la query ES
   let query = getQueryBase(10000)
-  let must = generateFilter(criteriaList, type)
+  let must = []
+  if (criteriaList) {
+    must = generateFilter(criteriaList, type)
+  }
   addAdditionalFilters(must, type, view)
-
   query.query.constant_score.filter.bool.must = must
-
   return query
 }
 
