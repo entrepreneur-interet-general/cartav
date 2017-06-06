@@ -244,12 +244,13 @@ export default new Vuex.Store({
         let queryPve = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view, 'geojson')
         let promises = [
           es.search('acc', queryAcc),
-          es.search('pve', queryPve)
+          es.search('pve', queryPve),
+          context.dispatch('getRadars')
         ]
         Promise.all(promises).then(values => {
           context.commit('accidents_agg_by_road', es.toRoadsDict(values[0]))
           context.commit('pve_agg_by_road', es.toRoadsDict(values[1]))
-          context.dispatch('getRadars')
+          context.commit('radars_geojson', values[2])
         })
       } else {
         let query = es.generateQuery(state.criteria_list, 'acc', context.getters.view)
@@ -265,9 +266,7 @@ export default new Vuex.Store({
     },
     getRadars (context, dep) {
       let query = es.generateQuery(null, 'radars', context.getters.view)
-      es.searchAsGeoJson('radars', query, 'Coordonnées GPS cabine - latitude', 'Coordonnées GPS cabine - longitude', radarsFields).then(function (res) {
-        context.commit('radars_geojson', res)
-      })
+      return es.searchAsGeoJson('radars', query, 'Coordonnées GPS cabine - latitude', 'Coordonnées GPS cabine - longitude', radarsFields)
     }
   },
   getters: {
