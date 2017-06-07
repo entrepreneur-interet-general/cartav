@@ -36,38 +36,37 @@
     <br>
   </div>
   <div v-if='localLevel'>
-    <h4>Représentation</h4>
-
-    <input type="radio" id="clusterType" value="cluster" v-model="localLevelDisplay">
-    <label for="clusterType">Nuage de points (cluster)</label>
+    <h4>Données représentées</h4>
+    <input type="radio" id="accidentsOnly" value="accidentsOnly" v-model="localLevelData">
+    <label for="accidentsOnly">Accidents</label>
     <br>
-    <input type="radio" id="heatMapType" value="heatmap" v-model="localLevelDisplay">
+    <input type="radio" id="pveOnly" value="pveOnly" v-model="localLevelData">
+    <label for="pveOnly">PVE</label>
+    <br>
+    <input type="radio" id="accidentsAndPve" value="accidentsAndPve" v-model="localLevelData">
+    <label for="accidentsAndPve">Accidents et PVE</label>
+    <br>
+    <input type="radio" id="accidentsNoPve" value="accidentsNoPve" v-model="localLevelData">
+    <label for="accidentsNoPve">Axes avec accidents, sans PVE</label>
+    <br>
+    <input type="radio" id="pveNoAccidents" value="pveNoAccidents" v-model="localLevelData">
+    <label for="pveNoAccidents">Axes avec PVE, sans accidents</label>
+    <br>
+    <br>
+
+    <h4>Représentation</h4>
+    <input type="radio" id="clusterType" value="cluster" v-model="localLevelDisplay" :disabled=aggregatedByRoadOnly>
+    <label for="clusterType">Nuage de points (cluster)</label>
+    <abbr v-if=aggregatedByRoadOnly class="description-info-circle" title="La géolocalisation précise n'est disponible que pour les accidents"><i class='fa fa-info-circle'></i></abbr>
+    <br>
+    <input type="radio" id="heatMapType" value="heatmap" v-model="localLevelDisplay" :disabled=aggregatedByRoadOnly>
     <label for="heatMapType">Carte de chaleur (heatmap)</label>
+    <abbr v-if=aggregatedByRoadOnly class="description-info-circle" title="La géolocalisation précise n'est disponible que pour les accidents"><i class='fa fa-info-circle'></i></abbr>
     <br>
     <input type="radio" id="aggregatedByRoadType" value="aggregatedByRoad" v-model="localLevelDisplay">
     <label for="aggregatedByRoadType">Routes</label>
     <br>
     <br>
-
-    <h4>Données représentées</h4>
-    <input type="radio" id="accidentsOnly" value="accidentsOnly" v-model="localLevelData">
-    <label for="accidentsOnly">Accidents</label>
-    <br>
-    <div v-if='localLevelDisplay === "aggregatedByRoad"'>
-      <input type="radio" id="pveOnly" value="pveOnly" v-model="localLevelData">
-      <label for="pveOnly">PVE</label>
-      <br>
-      <input type="radio" id="accidentsAndPve" value="accidentsAndPve" v-model="localLevelData">
-      <label for="accidentsAndPve">Accidents et PVE</label>
-      <br>
-      <input type="radio" id="accidentsNoPve" value="accidentsNoPve" v-model="localLevelData">
-      <label for="accidentsNoPve">Axes avec accidents, sans PVE</label>
-      <br>
-      <input type="radio" id="pveNoAccidents" value="pveNoAccidents" v-model="localLevelData">
-      <label for="pveNoAccidents">Axes avec PVE, sans accidents</label>
-      <br>
-      <br>
-    </div>
   </div>
   <h4>Fonds de carte</h4>
   <span v-for="(url, name) in basemaps">
@@ -107,6 +106,9 @@ export default {
     },
     localLevelDataStore () {
       return this.$store.state.localLevelData
+    },
+    aggregatedByRoadOnly () {
+      return this.localLevelData !== 'accidentsOnly'
     }
   },
   watch: {
@@ -120,6 +122,9 @@ export default {
       this.$store.dispatch('set_localLevelDisplay', this.localLevelDisplay)
     },
     localLevelData () {
+      if (this.localLevelData !== 'accidentsOnly') {
+        this.localLevelDisplay = 'aggregatedByRoad'
+      }
       this.$store.dispatch('set_localLevelData', this.localLevelData)
     },
     localLevelDataStore () {
