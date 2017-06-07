@@ -7,6 +7,7 @@ import criteriaList from '../assets/json/config.json'
 import _ from 'lodash'
 import regionsFrontieres from '../assets/json/regions_frontieres.json'
 import departementsFrontieres from '../assets/json/departements_frontieres.json'
+import circonscriptions from '../assets/json/circonscriptions.json'
 import $ from 'jquery'
 import colors from '../assets/json/colors.json'
 import views from '../assets/json/views.json'
@@ -50,19 +51,21 @@ let radarsFields = {
 
 function getLevelShapesGeojson (decoupage, dep) {
   let promise
-  if (decoupage === 'régional' || decoupage === 'départemental') {
+  if (decoupage === 'communal') {
+    return $.getJSON('http://10.237.27.129/data/communes/' + dep + '/communes.geojson')
+  } else {
     let geojson = ''
     if (decoupage === 'régional') {
       geojson = regionsFrontieres
     } else if (decoupage === 'départemental') {
       geojson = departementsFrontieres
+    } else if (decoupage === 'circonscriptif') {
+      geojson = circonscriptions
     }
     promise = new Promise(function (resolve, reject) {
       resolve(geojson)
     })
     return promise
-  } else if (decoupage === 'communal') {
-    return $.getJSON('http://10.237.27.129/data/communes/' + dep + '/communes.geojson')
   }
 }
 

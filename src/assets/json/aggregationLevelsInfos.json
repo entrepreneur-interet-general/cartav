@@ -7,6 +7,10 @@
         "départemental": {
             "id": "CODE_DEPT",
             "name": "NOM_DEPT"
+        },
+        "circonscriptif": {
+            "id": "nom_circo",
+            "name": "nom_circo"
         }
     },
     "data": {
@@ -14,16 +18,19 @@
             "régional": "NOM_REG",
             "départemental": "dep",
             "routier": "num_route_or_id",
-            "communal": "current_city_code"
+            "communal": "current_city_code",
+            "circonscriptif": "nom_circonscription_police"
         },
         "pve": {
             "régional": "NOM_REG",
             "départemental": "DEPARTEMENT_INFRACTION",
             "routier": "num_route_or_id",
-            "communal": "CODE_INSEE_INFRACTION"
+            "communal": "CODE_INSEE_INFRACTION",
+            "circonscriptif": "nom_circonscription_police"
         },
         "radars": {
-            "départemental": "departement_num"
+            "départemental": "departement_num",
+            "circonscriptif": "nom_circonscription_police"
         }
     }
 }

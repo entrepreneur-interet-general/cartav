@@ -55,5 +55,24 @@
         "content": "detailedContent",
         "linksTo": "département",
         "zoomLimit": 8
+    },
+    "circonscription": {
+        "description": "vue par circonscriptions DCSP",
+        "contour": {
+            "decoupage": "circonscriptif",
+            "filter": {
+                "activated": false
+            }
+        },
+        "data": {
+            "group_by": "routier",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "circonscriptif"
+            }
+        },
+        "content": "detailedContent",
+        "linksTo": "circonscription",
+        "zoomLimit": 8
     }
 }
