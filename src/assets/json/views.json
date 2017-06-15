@@ -1,5 +1,5 @@
 {
-    "france": {
+    "régions": {
         "description": "vue d'une métrique sur la France entière, découpée par régions",
         "contour": {
             "decoupage": "régional",
@@ -37,6 +37,24 @@
         "linksTo": "département",
         "zoomLimit": 6
     },
+    "départements": {
+        "description": "vue de tous les départements",
+        "contour": {
+            "decoupage": "départemental",
+            "filter": {
+                "activated": false
+            }
+        },
+        "data": {
+            "group_by": "départemental",
+            "filter": {
+                "activated": null
+            }
+        },
+        "content": "metric",
+        "linksTo": "département",
+        "zoomLimit": 8
+    },
     "département": {
         "description": "vue détaillée d'un département",
         "contour": {
@@ -56,8 +74,26 @@
         "linksTo": "département",
         "zoomLimit": 8
     },
+    "circonscriptions": {
+        "description": "vue de toutes les circonscriptions DCSP",
+        "contour": {
+            "decoupage": "circonscriptif",
+            "filter": {
+                "activated": false
+            }
+        },
+        "data": {
+            "group_by": "circonscriptif",
+            "filter": {
+                "activated": null
+            }
+        },
+        "content": "metric",
+        "linksTo": "circonscription",
+        "zoomLimit": 8
+    },
     "circonscription": {
-        "description": "vue par circonscriptions DCSP",
+        "description": "vue d'une circonscriptions DCSP",
         "contour": {
             "decoupage": "circonscriptif",
             "filter": {

@@ -275,9 +275,10 @@ export default new Vuex.Store({
   getters: {
     // Renvoie la view décrite dans views.json correspondant à l'url de la page
     view (state) {
-      let viewName = state.route.params.view || 'france'
+      let viewName = state.route.params.view || 'régions'
       let id = state.route.params.id || null
       let view = views[viewName]
+      view.name = viewName
 
       if (id) {
         if (view.contour.filter.activated) {
@@ -291,7 +292,7 @@ export default new Vuex.Store({
       return view
     },
     viewName (state) {
-      return state.route.params.view || 'france'
+      return state.route.params.view || 'régions'
     },
     contourIdFieldName (state, getters) {
       let decoupage = getters.view.contour.decoupage

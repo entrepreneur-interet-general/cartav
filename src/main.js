@@ -3,7 +3,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './components/App.vue'
-import Circo from './components/Circo.vue'
 import store from './store'
 import ElementUI from 'element-ui'
 import { sync } from 'vuex-router-sync'
@@ -15,7 +14,7 @@ Vue.use(VueRouter)
 const routes = [
   { path: '/', component: App },
   { path: '/carte', component: App },
-  { name: 'circonscription', path: '/carte/circonscription/', component: Circo },
+  { path: '/carte/:view', component: App },
   { name: 'sous-carte', path: '/carte/:view/:id', component: App }
 ]
 

@@ -8,6 +8,8 @@
       <span id='header-icon' v-on:click='collapsed = !collapsed'><i class="fa fa-compass fa-lg"></i></span>
     </div>
     <div id='info-sidebar-content'>
+      <button type="button" class="btn btn-default" v-on:click='restore'><i class="fa fa-level-up"></i> Niveau supérieur</button>
+      <circo v-if="levelIsCirco"></circo>
       <hoverInfo :data="infoSidebarData.hoverInfoData"></hoverInfo>
       <div v-if="infoSidebarData.showGraph">
         <pieChart :chart-data="infoSidebarData.graphData" :options="{legend: {display: true, position: 'bottom', labels: {boxWidth: 10, padding: 3, fontColor: '#333'}}}"></pieChart>
@@ -21,6 +23,7 @@
 import hoverInfo from './hoverInfo'
 import legend from './legend'
 import pieChart from '../assets/js/pieChart.js'
+import circo from './Circo'
 
 export default {
   data () {
@@ -31,7 +34,18 @@ export default {
   components: {
     hoverInfo: hoverInfo,
     legende: legend,
-    pieChart: pieChart
+    pieChart: pieChart,
+    circo
+  },
+  computed: {
+    levelIsCirco () {
+      return this.$store.state.route.params.view === 'circonscription' || this.$store.state.route.params.view === 'circonscriptions'
+    }
+  },
+  methods: {
+    restore () {
+      this.$router.push({path: '/carte'})
+    }
   },
   props: ['infoSidebarData']
 }

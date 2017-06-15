@@ -1,29 +1,29 @@
 <template>
   <div id="circo">
-    <div>Entrer un nom de circonscription:</div>
-    <input v-model.lazy="circoSelected" type="text" list='list'>
+    <div>Entrer un nom de circonscription de police:</div>
+    <input v-model.lazy="circoSelected" type="text" list='list' v-on:focus="showWarning=false" autofocus>
      <datalist id='list'>
         <template v-for="circo in circo_liste">
            <option >{{ circo }}</option>
         </template>
      </datalist>
      <button>ok</button>
-     {{ circoSelected }}
+    <div class="warning" v-show="showWarning">
+      {{ circoSelected }} n'est pas une circonscription de police dont nous avons le tracé.
+    </div>
   </div>
-</div>
 </template>
 
 <script>
 import circonscriptions from '../assets/json/circonscriptions.json'
-import jQuery from 'jquery'
-global.jQuery = jQuery
-require('bootstrap')
+// import some from 'lodash/some'
 
 export default {
   name: 'circo',
   data () {
     return {
-      circoSelected: ''
+      circoSelected: '',
+      showWarning: false
     }
   },
   computed: {
@@ -37,11 +37,21 @@ export default {
   },
   watch: {
     circoSelected () {
-      let route = {
-        name: 'sous-carte',
-        params: { view: 'circonscription', id: this.circoSelected }
+      let vm = this
+      let theCirco = vm.circo_liste.find(circo =>
+        circo.toLowerCase() === vm.circoSelected.toLowerCase()
+      )
+
+      if (theCirco) {
+        let route = {
+          name: 'sous-carte',
+          params: { view: 'circonscription', id: theCirco }
+        }
+        this.$router.push(route)
+        this.showWarning = false
+      } else {
+        this.showWarning = true
       }
-      this.$router.push(route)
     }
   }
 }
@@ -55,7 +65,17 @@ html, body, #app {
 }
 
 #circo {
-  text-align: center;
-  padding-top: 150px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+input:focus {
+  border: 2px solid rgb(0, 116, 217);
+  border-radius: 4px;
+}
+
+.warning {
+  color: red;
+  padding-top: 30px;
 }
 </style>

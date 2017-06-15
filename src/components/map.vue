@@ -425,7 +425,7 @@ export default {
     },
     zoomBounds (layer) {
       if (layer) {
-        if (this.view.contour.decoupage !== 'régional') {
+        if (this.view.name !== 'régions' && this.view.name !== 'départements' && this.view.name !== 'circonscriptions') {
           if (layer.getBounds().isValid()) {
             this.map.fitBounds(layer.getBounds())
           }
