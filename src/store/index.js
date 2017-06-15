@@ -7,6 +7,7 @@ import criteriaList from '../assets/json/config.json'
 import _ from 'lodash'
 import regionsFrontieres from '../assets/json/regions_frontieres.json'
 import departementsFrontieres from '../assets/json/departements_frontieres.json'
+import circonscriptions from '../assets/json/circonscriptions.json'
 import $ from 'jquery'
 import colors from '../assets/json/colors.json'
 import views from '../assets/json/views.json'
@@ -25,7 +26,6 @@ let accidentsFields = {
   'conditions météo': 'atm',
   collision: 'col',
   _catv_voiture_nb: 'voiture_nb',
-  _catv_utilitaire_nb: 'utilitaire_nb',
   _catv_deuxrouesmotorises_nb: 'deuxrouesmotorises_nb',
   _catv_velo_nb: 'velo_nb',
   _catv_poidslourd_nb: 'poidslourd_nb',
@@ -33,21 +33,39 @@ let accidentsFields = {
   _catv_pietons_nb: 'pietons_nb'
 }
 
+let radarsFields = {
+  'Voie': 'Libellé voie',
+  'Sens circulation': 'Sens circulation',
+  'VLA': 'VLA',
+  'VLA Poids Lourds': 'VLA PL',
+  'Type de radar': 'Type',
+  'Catégorie Miffeur': 'Catégorie Miffeur',
+  'ET discriminant les voies': 'ET discriminant les voies',
+  'Date de mise en service': 'Date de mise en service',
+  'Zone': 'Zone',
+  'Commune': 'Commune',
+  'Code INSEE': 'Code INSEE',
+  'Environnement de la voie': 'Environnement de la voie'
+
+}
+
 function getLevelShapesGeojson (decoupage, dep) {
   let promise
-  if (decoupage === 'régional' || decoupage === 'départemental') {
+  if (decoupage === 'communal') {
+    return $.getJSON('http://10.237.27.129/data/communes/' + dep + '/communes.geojson')
+  } else {
     let geojson = ''
     if (decoupage === 'régional') {
       geojson = regionsFrontieres
     } else if (decoupage === 'départemental') {
       geojson = departementsFrontieres
+    } else if (decoupage === 'circonscriptif') {
+      geojson = circonscriptions
     }
     promise = new Promise(function (resolve, reject) {
       resolve(geojson)
     })
     return promise
-  } else if (decoupage === 'communal') {
-    return $.getJSON('http://10.237.27.129/data/communes/' + dep + '/communes.geojson')
   }
 }
 
@@ -65,20 +83,25 @@ export default new Vuex.Store({
     accidents_value_by_filter: {},
     pve_value_by_filter: {},
     accidents_geojson: {},
+    radars_geojson: {},
     accidents_agg_by_road: {},
     pve_agg_by_road: {},
     pve_geojson: {},
     dividende: 'PVE',
     divisor: 'accidents',
     localLevelDisplay: 'aggregatedByRoad',
+    localLevelData: 'accidentsOnly',
     zoomActive: true,
     colorScale: Object.keys(colors)[0],
     colorScaleInverted: true,
-    basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[0]]
+    basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]]
   },
   mutations: {
     set_localLevelDisplay (state, localLevelDisplay) {
       state.localLevelDisplay = localLevelDisplay
+    },
+    set_localLevelData (state, localLevelData) {
+      state.localLevelData = localLevelData
     },
     set_zoomActive (state, zoomActive) {
       state.zoomActive = zoomActive
@@ -90,9 +113,14 @@ export default new Vuex.Store({
       state.colorScaleInverted = colorScaleInverted
     },
     set_criteria (state, {criteriaPath, value}) {
-      let cl = JSON.parse(JSON.stringify(state.criteria_list))
-      _.set(cl, criteriaPath, value)
-      state.criteria_list = cl
+      _.set(state.criteria_list, criteriaPath, value)
+    },
+    set_criteria_bulk (state, {criteriaPath, criterias}) {
+      criteriaPath += '.values.'
+      for (let crit of criterias) {
+        let cp = criteriaPath + crit.label
+        _.set(state.criteria_list, cp, crit.value)
+      }
     },
     accidents_data (state, response) {
       state.accidents = response
@@ -108,6 +136,9 @@ export default new Vuex.Store({
     },
     accidents_geojson (state, geojson) {
       state.accidents_geojson = geojson
+    },
+    radars_geojson (state, geojson) {
+      state.radars_geojson = geojson
     },
     accidents_agg_by_road (state, json) {
       state.accidents_agg_by_road = json
@@ -134,14 +165,26 @@ export default new Vuex.Store({
   actions: {
     set_localLevelDisplay (context, localLevelDisplay) {
       context.commit('set_localLevelDisplay', localLevelDisplay)
-      context.dispatch('accidentsPoints', {zoomActive: false})
+      if (localLevelDisplay !== 'aggregatedByRoad') {
+        context.commit('set_localLevelData', 'accidentsOnly')
+      }
+      context.dispatch('getLocalData', {zoomActive: false})
+    },
+    set_localLevelData (context, localLevelData) {
+      if (context.state.localLevelData !== localLevelData) {
+        context.commit('set_zoomActive', false)
+        context.commit('set_localLevelData', localLevelData)
+      }
     },
     set_criteria (context, o) {
-      context.commit('set_criteria', o)
+      if (o.type === 'bulk') {
+        context.commit('set_criteria_bulk', o)
+      } else {
+        context.commit('set_criteria', o)
+      }
 
       if (context.getters.view.content === 'detailedContent') {
-        context.dispatch('accidentsPoints', {zoomActive: false})
-        // context.dispatch('queryESPveLocal')
+        context.dispatch('getLocalData', {zoomActive: false})
       } else {
         let promises = [
           context.dispatch('queryESAcc'),
@@ -158,9 +201,8 @@ export default new Vuex.Store({
       let view = context.getters.view
 
       if (view.content === 'detailedContent') {
-        context.dispatch('accidentsPoints', {zoomActive: true})
+        context.dispatch('getLocalData', {zoomActive: true})
         getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value).then(res => context.commit('contour', res))
-        // context.dispatch('queryESPveLocal')
       } else if (view.content === 'metric') {
         let promises = [
           getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value),
@@ -196,14 +238,22 @@ export default new Vuex.Store({
       let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view)
       return es.search('pve', query)
     },
-    accidentsPoints (context, options) {
+    getLocalData (context, options) {
       let state = context.state
       context.commit('set_zoomActive', options.zoomActive)
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
-        let query = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view, 'geojson')
-        es.search('acc', query).then(res => {
-          context.commit('accidents_agg_by_road', es.toMultiLineGeojson(res))
+        let queryAcc = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view, 'geojson')
+        let queryPve = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view, 'geojson')
+        let promises = [
+          es.search('acc', queryAcc),
+          es.search('pve', queryPve),
+          context.dispatch('getRadars')
+        ]
+        Promise.all(promises).then(values => {
+          context.commit('accidents_agg_by_road', es.toRoadsDict(values[0]))
+          context.commit('pve_agg_by_road', es.toRoadsDict(values[1]))
+          context.commit('radars_geojson', values[2])
         })
       } else {
         let query = es.generateQuery(state.criteria_list, 'acc', context.getters.view)
@@ -212,12 +262,14 @@ export default new Vuex.Store({
         })
       }
     },
-    queryESPveLocal (context) {
+    getPVEGraphData (context, roadId) {
       let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view, 'geojson')
-      es.search('pve', query).then(res => {
-        context.commit('pve_agg_by_road', es.toMultiLineGeojson(res))
-      })
+      let query = es.generateGraphAgg(state.criteria_list, 'pve', context.getters.view, roadId, 'LIBELLE_FAMILLE')
+      return es.search('pve', query)
+    },
+    getRadars (context, dep) {
+      let query = es.generateQuery(null, 'radars', context.getters.view)
+      return es.searchAsGeoJson('radars', query, 'Coordonnées GPS cabine - latitude', 'Coordonnées GPS cabine - longitude', radarsFields)
     }
   },
   getters: {

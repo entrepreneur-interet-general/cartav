@@ -8,8 +8,11 @@
       <span id='header-icon' v-on:click='collapsed = !collapsed'><i class="fa fa-compass fa-lg"></i></span>
     </div>
     <div id='info-sidebar-content'>
-      <hoverInfo :data="hoverInfoData"></hoverInfo>
-      <legende :data="hoverInfoData"></legende>
+      <hoverInfo :data="infoSidebarData.hoverInfoData"></hoverInfo>
+      <div v-if="infoSidebarData.showGraph">
+        <pieChart :chart-data="infoSidebarData.graphData" :options="{legend: {display: true, position: 'bottom', labels: {boxWidth: 10, padding: 3, fontColor: '#333'}}}"></pieChart>
+      </div>
+      <legende></legende>
     </div>
   </div>
 </template>
@@ -17,6 +20,7 @@
 <script>
 import hoverInfo from './hoverInfo'
 import legend from './legend'
+import pieChart from '../assets/js/pieChart.js'
 
 export default {
   data () {
@@ -26,9 +30,10 @@ export default {
   },
   components: {
     hoverInfo: hoverInfo,
-    legende: legend
+    legende: legend,
+    pieChart: pieChart
   },
-  props: ['hoverInfoData']
+  props: ['infoSidebarData']
 }
 </script>
 
@@ -94,5 +99,11 @@ export default {
 }
 #info-sidebar.collapsed #info-sidebar-content{
   display: none;
+}
+
+#pie-chart {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
 }
 </style>

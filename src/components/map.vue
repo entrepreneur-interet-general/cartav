@@ -1,6 +1,6 @@
 <template>
     <div id="map2">
-        <infoSidebar id="info-sidebar" :hover-info-data="hoverInfoData" class=""></infoSidebar>
+        <infoSidebar id="info-sidebar" :infoSidebarData="infoSidebarData" class=""></infoSidebar>
     </div>
 </template>
 
@@ -24,47 +24,80 @@ function styleAccidents (feature) {
   }
 }
 
-function styleAccidentsRoads (feature) {
-  let count = feature.properties.count
-  let opacity, weight
-  if (count >= 10) {
-    opacity = 1
-    weight = 6
-  } else if (count >= 5) {
-    opacity = 0.8
-    weight = 4
-  } else if (count >= 2) {
-    opacity = 0.7
-    weight = 2
-  } else {
-    opacity = 0.5
-    weight = 1
-  }
-  return {
-    color: 'rgb(255, 81, 0)',
-    opacity: opacity,
-    weight: weight
+function styleAccidentsRoads (count) {
+  return function () {
+    let opacity, weight
+    if (count >= 10) {
+      opacity = 1
+      weight = 6
+    } else if (count >= 5) {
+      opacity = 0.8
+      weight = 4
+    } else if (count >= 2) {
+      opacity = 0.7
+      weight = 3
+    } else {
+      opacity = 0.5
+      weight = 2
+    }
+    return {
+      color: 'rgb(255, 0, 0)',
+      opacity: opacity,
+      weight: weight
+    }
   }
 }
 
-function stylePveRoads (feature) {
-  let count = feature.properties.count
+function styleAccidentsRoadsDashed (count, dashed) {
+  return function () {
+    let res = {
+      color: 'rgb(255, 0, 0)',
+      opacity: 0.8,
+      weight: 3
+    }
+    if (dashed) {
+      res.dashArray = [20, 20]
+      res.lineCap = 'butt'
+    }
+    return res
+  }
+}
+
+function stylePveRoadsDashed (count, dashed) {
+  return function () {
+    let res = {
+      color: 'rgb(0, 0, 255)',
+      opacity: 0.8,
+      weight: 3
+    }
+    if (dashed) {
+      res.dashArray = [20, 20]
+      res.lineCap = 'butt'
+      res.dashOffset = 20
+    }
+    return res
+  }
+}
+
+function stylePveRoads (count) {
   let opacity, weight
-  if (count >= 10) {
+
+  if (count >= 200) {
     opacity = 1
+    weight = 8
+  } else if (count >= 100) {
+    opacity = 0.9
     weight = 6
-  } else if (count >= 5) {
+  } else if (count >= 50) {
     opacity = 0.8
     weight = 4
-  } else if (count >= 2) {
+  } else if (count >= 20) {
     opacity = 0.7
-    weight = 2
+    weight = 3
   } else {
     opacity = 0.5
-    weight = 1
+    weight = 2
   }
-  weight = 4
-  opacity = 1
   return {
     color: 'rgb(0, 0, 255)',
     opacity: opacity,
@@ -117,14 +150,18 @@ export default {
       tileLayer: null,
       contourLayerGroup: L.layerGroup(),
       contourLayer: null,
-      detailedContentLayerGroup: L.layerGroup(),
+      detailedContentLayerGroup: L.featureGroup(),
       detailedContentLayer: null,
       geojsonAccLayer: null,
-      hoverInfoData: {
-        areaMouseOver: '',
-        ratio: '',
-        accidentsN: '',
-        pveN: ''
+      infoSidebarData: {
+        hoverInfoData: {
+          areaMouseOver: '',
+          ratio: '',
+          accidentsN: '',
+          pveN: ''
+        },
+        showGraph: true,
+        graphData: {}
       },
       so6: this.setOpacity(0.6),
       so3: this.setOpacity(0.3),
@@ -170,6 +207,9 @@ export default {
     localLevelDisplay () {
       return this.$store.state.localLevelDisplay
     },
+    localLevelData () {
+      return this.$store.state.localLevelData
+    },
     colors () {
       return this.$store.getters.colors
     },
@@ -190,11 +230,15 @@ export default {
     accidents () {
       this.colorMap()
     },
-    accidentsLocalAgg () {
-      this.displayLocalLayer()
+    localLevelData () {
+      this.infoSidebarData.showGraph = false
+      if (this.localLevelDisplay === 'aggregatedByRoad') {
+        this.displayLocalLayer()
+      }
     },
-    pveLocalAgg () {
-      this.aggByRoad('pve')
+    accidentsLocalAgg () {
+      this.infoSidebarData.showGraph = false
+      this.displayLocalLayer()
     },
     accidentsLocal () {
       this.displayLocalLayer()
@@ -246,57 +290,126 @@ export default {
       } else if (this.localLevelDisplay === 'heatmap') {
         this.heatMap()
       } else if (this.localLevelDisplay === 'aggregatedByRoad') {
-        this.aggByRoad('acc')
+        this.aggByRoad()
       }
       if (this.$store.state.zoomActive) {
-        this.zoomBounds(this.detailedContentLayerGroup.getLayers()[0])
+        this.map.fitBounds(this.detailedContentLayerGroup.getBounds())
       }
       this.displayContours(() => { return style }, this.myOnEachFeature)
+      if (this.localLevelData !== 'accidentsOnly') {
+        this.showRadars()
+      }
     },
     aggByRoad (type) {
       let vm = this
-      let data, styleFunction, popUpContent
+      let dataAcc = this.accidentsLocalAgg
+      let dataPve = this.pveLocalAgg
 
-      if (type === 'acc') {
-        data = this.accidentsLocalAgg
-        styleFunction = styleAccidentsRoads
-        popUpContent = '</span> accidents'
-      } else {
-        data = this.pveLocalAgg
-        styleFunction = stylePveRoads
-        popUpContent = '</span> pve'
+      let options = {
+        accidentsOnly: {showAcc: true, styleAcc: styleAccidentsRoads, showPve: false},
+        pveOnly: {showAcc: false, showPve: true, stylePve: stylePveRoads},
+        accidentsAndPve: {showAcc: true, styleAcc: styleAccidentsRoadsDashed, showPve: true, stylePve: stylePveRoadsDashed},
+        accidentsNoPve: {showAcc: true, styleAcc: styleAccidentsRoads, showPve: false},
+        pveNoAccidents: {showAcc: false, showPve: true, stylePve: stylePveRoads}
       }
 
-      let layer = L.geoJSON(data, {
-        style: styleFunction,
-        onEachFeature: function (feature, lay) {
-          /* let segmentCoords = L.GeoJSON.coordsToLatLngs(feature.geometry.coordinates, 1)
-          L.polyline(segmentCoords, {
-            offset: 10
-          }).addTo(vm.detailedContentLayerGroup) */
+      let opt = options[vm.localLevelData]
 
-          lay.on({
-            mouseover: function (event) {
-              lay.setStyle({ weight: 15 })
-              L.popup()
-              .setContent('<strong>' + feature.properties.name + '</strong><br><span class="accHighlight">' + feature.properties.count + popUpContent)
-              .setLatLng(event.latlng)
-              .openOn(vm.map)
-            },
-            mouseout (event) {
-              vm.map.closePopup()
-              layer.resetStyle(lay)
-            }
-          })
+      if (opt.showAcc) {
+        for (let roadId of Object.keys(dataAcc)) {
+          let road = dataAcc[roadId]
+          let include = false
+          let hasPve = false
+          if (vm.localLevelData === 'accidentsNoPve') {
+            hasPve = dataPve[roadId] !== undefined
+            include = !hasPve
+          } else if (vm.localLevelData === 'accidentsOnly') {
+            include = true
+          } else if (vm.localLevelData === 'accidentsAndPve') {
+            include = true
+            hasPve = dataPve[roadId] !== undefined
+          }
+
+          if (include) {
+            let layer = L.geoJson(road.geometry, {
+              style: opt.styleAcc(road.count, hasPve),
+              onEachFeature: function (feature, lay) {
+                lay.on({
+                  mouseover: function (event) {
+                    lay.setStyle({ weight: 10 })
+                    L.popup()
+                    .setContent('<strong>' + roadId + '</strong><br><span class="accHighlight">' + road.count + '</span> accidents')
+                    .setLatLng(event.latlng)
+                    .openOn(vm.map)
+                  },
+                  mouseout (event) {
+                    vm.map.closePopup()
+                    layer.resetStyle(lay)
+                  }
+                })
+              }
+            }).addTo(this.detailedContentLayerGroup) // .bringToFront()
+          }
         }
-      })
-      this.detailedContentLayerGroup.addLayer(layer)
-      layer.bringToFront()
+      }
 
-      if (type === 'acc') {
-        layer.bringToFront()
-      } else {
-        layer.bringToBack()
+      if (opt.showPve) {
+        for (let roadId of Object.keys(dataPve)) {
+          let road = dataPve[roadId]
+          let include = false
+          let hasAcc = false
+          if (vm.localLevelData === 'pveNoAccidents') {
+            hasAcc = dataAcc[roadId] !== undefined
+            include = !hasAcc
+          } else if (vm.localLevelData === 'pveOnly') {
+            include = true
+          } else if (vm.localLevelData === 'accidentsAndPve') {
+            include = true
+            hasAcc = dataAcc[roadId] !== undefined
+          }
+
+          if (include) {
+            let layer = L.geoJson(road.geometry, {
+              style: opt.stylePve(road.count, hasAcc),
+              onEachFeature: function (feature, lay) {
+                lay.on({
+                  mouseover: function (event) {
+                    lay.setStyle({ weight: 10 })
+                    L.popup()
+                    .setContent('<strong>' + roadId + '</strong><br><span class="pveHighlight">' + road.count + '</span> pve')
+                    .setLatLng(event.latlng)
+                    .openOn(vm.map)
+                  },
+                  mouseout (event) {
+                    vm.map.closePopup()
+                    layer.resetStyle(lay)
+                  },
+                  click: function (event) {
+                    vm.$store.dispatch('getPVEGraphData', roadId).then(function (res) {
+                      let aggs = res.aggregations.group_by.buckets
+                      let g = {
+                        labels: [],
+                        datasets: [
+                          {
+                            label: 'PVE par famille d\'infractions',
+                            backgroundColor: ['#FF0505', '#FFFF05', '#FF8205', '#05FFFF', '#0505FF', '#05FF82', '#FF05FF'],
+                            data: []
+                          }
+                        ]
+                      }
+                      for (let agg of aggs) {
+                        g.labels.push(agg.key)
+                        g.datasets[0].data.push(agg.doc_count)
+                      }
+                      vm.infoSidebarData.graphData = g
+                    })
+                    vm.infoSidebarData.showGraph = true
+                  }
+                })
+              }
+            }).addTo(this.detailedContentLayerGroup) // .bringToFront()
+          }
+        }
       }
     },
     heatMap () {
@@ -322,6 +435,7 @@ export default {
       }
     },
     colorMap () {
+      this.infoSidebarData.showGraph = false
       this.contourLayerGroup.clearLayers()
       let colorOptions = {
         color: 'rgba(0,0,0,0.2)',
@@ -338,6 +452,31 @@ export default {
         this.cluster_Pve = cluster
       }
     },
+    showRadars () {
+      L.geoJson(this.$store.state.radars_geojson, {
+        onEachFeature: function (feature, layer) {
+          layer.bindPopup()
+          layer.on({
+            click: function () {
+              let content = ''
+              for (let p in feature.properties) {
+                if (feature.properties[p]) {
+                  content += p + ': ' + feature.properties[p] + '</br>'
+                }
+              }
+              content += '<a target="_blank" href=http://beta.datalab.mi/av/streetview2.html?posLat=' + feature.geometry.coordinates[1] + '+&posLng=' + feature.geometry.coordinates[0] + '>voir dans streetview</a></br>'
+              layer.bindPopup(content)
+            }
+          })
+        },
+        pointToLayer: function (feature, latlng) {
+          let content = '<i class="fa fa-camera aria-hidden="true"></i>'
+          let myIcon = L.divIcon({className: 'radar-div-icon', html: content, iconSize: null})
+          return L.marker(latlng, {icon: myIcon})
+        },
+        style: styleAccidents
+      }).addTo(this.detailedContentLayerGroup)
+    },
     createClusterLocal (type) {
       // cluster des accidents individuels
       this.detailedContentLayer = L.geoJson(this.accidentsLocal, {
@@ -351,7 +490,7 @@ export default {
                   content += p + ': ' + feature.properties[p] + '</br>'
                 }
               }
-              content += '<a target="_blank" href=http://10.237.27.129/demo/francis/streetview2.html?posLat=' + feature.geometry.coordinates[1] + '+&posLng=' + feature.geometry.coordinates[0] + '>voir dans streetview</a></br>'
+              content += '<a target="_blank" href=http://beta.datalab.mi/av/streetview2.html?posLat=' + feature.geometry.coordinates[1] + '+&posLng=' + feature.geometry.coordinates[0] + '>voir dans streetview</a></br>'
               layer.bindPopup(content)
               es.searchSimpleFilter('acc_usagers', 'Num_Acc', feature.properties['numéro accident']).then(function (resp) {
                 content += '</br><i class="fa fa-users" aria-hidden="true"></i></br>'
@@ -525,10 +664,10 @@ export default {
     linkHoverInfoToLayer (feature, layer) {
       let vm = this
       layer.on('mouseover', function (e) {
-        vm.hoverInfoData.areaMouseOver = layer.displayName
-        vm.hoverInfoData.ratio = feature.countElements ? feature.countElements.ratio : ''
-        vm.hoverInfoData.accidentsN = feature.countElements ? feature.countElements.accidents : ''
-        vm.hoverInfoData.pveN = feature.countElements ? feature.countElements.PVE : ''
+        vm.infoSidebarData.hoverInfoData.areaMouseOver = layer.displayName
+        vm.infoSidebarData.hoverInfoData.ratio = feature.countElements ? feature.countElements.ratio : ''
+        vm.infoSidebarData.hoverInfoData.accidentsN = feature.countElements ? feature.countElements.accidents : ''
+        vm.infoSidebarData.hoverInfoData.pveN = feature.countElements ? feature.countElements.PVE : ''
       })
     }
   },
@@ -548,11 +687,11 @@ export default {
     this.$router.push(this.$route.path)
     this.$store.dispatch('set_view')
 
-    this.map.on('zoomend', (e) => {
+    /* this.map.on('zoomend', (e) => {
       if (this.map.getZoom() < this.view.zoomLimit) {
         this.$router.go(-1)
       }
-    })
+    }) */
 
     // avoid clicking and scrolling when the mouse is over the div
     let div = L.DomUtil.get('info-sidebar')
@@ -577,52 +716,52 @@ export default {
 }
 
 .cluster-acc.marker-cluster-size1 {
-    background-color: rgba(255, 81, 0, 0.3);
+    background-color: rgba(255, 0, 0, 0.3);
 }
 .cluster-acc.marker-cluster-size1 div{
-    background-color: rgba(255, 81, 0, 0.3);
+    background-color: rgba(255, 0, 0, 0.3);
 }
 
 .cluster-acc.marker-cluster-size2 {
-    background-color: rgba(255, 81, 0, 0.3);
+    background-color: rgba(255, 0, 0, 0.3);
 }
 .cluster-acc.marker-cluster-size2 div{
-    background-color: rgba(255, 81, 0, 0.5);
+    background-color: rgba(255, 0, 0, 0.5);
 }
 
 .cluster-acc.marker-cluster-size3 {
-    background-color: rgba(255, 81, 0, 0.6);
+    background-color: rgba(225, 0, 0, 0.6);
 }
 .cluster-acc.marker-cluster-size3 div{
-    background-color: rgba(255, 81, 0, 0.6);
+    background-color: rgba(225, 0, 0, 0.6);
 }
 
 .cluster-acc.marker-cluster-size4 {
-    background-color: rgba(255, 52, 1, 0.7);
+    background-color: rgba(200, 0, 0, 0.7);
 }
 .cluster-acc.marker-cluster-size4 div{
-    background-color: rgba(255, 52, 1, 0.7);
+    background-color: rgba(200, 0, 0, 0.7);
 }
 
 .cluster-acc.marker-cluster-size5 {
-    background-color: rgba(255, 38, 0, 0.8);
+    background-color: rgba(165, 0, 0, 0.8);
 }
 .cluster-acc.marker-cluster-size5 div{
-    background-color: rgba(255, 38, 0, 0.8);
+    background-color: rgba(165, 0, 0, 0.8);
 }
 
 .cluster-acc.marker-cluster-size6 {
-    background-color: rgba(204, 27, 0, 0.8);
+    background-color: rgba(100, 0, 0, 0.8);
 }
 .cluster-acc.marker-cluster-size6 div{
-    background-color: rgba(204, 27, 0, 0.8);
+    background-color: rgba(100, 0, 0, 0.8);
 }
 
 .cluster-acc.marker-cluster-size7 {
-    background-color: rgba(109, 10, 0, 0.8);
+    background-color: rgba(50, 0, 0, 0.8);
 }
 .cluster-acc.marker-cluster-size7 div{
-    background-color: rgba(109, 10, 0, 0.8);
+    background-color: rgba(50, 0, 0, 0.8);
 }
 
 .cluster-acc.marker-cluster {
@@ -644,7 +783,7 @@ export default {
 }
 
 .leaflet-tooltip {
-  background-color: rgba(255, 81, 0, 0.8) !important;
+  background-color: rgba(255, 0, 0, 0.8) !important;
   border-style: none !important;
   padding: 1px !important;
 }
@@ -653,15 +792,27 @@ export default {
 }
 
 .my-div-icon {
-  background-color: rgba(255, 81, 0, 0.8);
+  background-color: rgba(255, 0, 0, 0.8);
   color: white;
   white-space: nowrap;
   padding: 0.5px;
   border-radius: 3px;
 }
 
+.radar-div-icon {
+  background-color: rgb(0, 0, 131);
+  color: white;
+  white-space: nowrap;
+  padding: 2px;
+  border-radius: 3px;
+}
+
 .accHighlight {
-  color: rgba(255, 81, 0, 1.0);
+  color: rgba(255, 0, 0, 1.0);
+  font-weight: bold;
+}
+.pveHighlight {
+  color: rgb(0, 0, 255);
   font-weight: bold;
 }
 </style>

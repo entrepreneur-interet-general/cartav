@@ -18,7 +18,7 @@
         <option>habitants</option>
       </select>
     </div>
-    <hr>
+    <br>
     <h4>Palette</h4>
     <span v-for="(colorsList, scaleName) in colors">
     <input type="radio" v-bind:value=scaleName v-model="colorScale">
@@ -31,19 +31,41 @@
     </span>
     <input type="checkbox" id="colorsScaleInvert" v-model="colorScaleInverted">
     <label for="colorsScaleInvert"> ordre des couleurs inversé </label>
-    <hr>
+    <br>
+    <br>
+    <br>
   </div>
   <div v-if='localLevel'>
-    <h4>Carte locale</h4>
-
-    <input type="radio" id="clusterType" value="cluster" v-model="localLevelDisplay">
-    <label for="clusterType">Nuage de points (cluster)</label>
+    <h4>Données représentées</h4>
+    <input type="radio" id="accidentsOnly" value="accidentsOnly" v-model="localLevelData">
+    <label for="accidentsOnly">Accidents</label>
     <br>
-    <input type="radio" id="heatMapType" value="heatmap" v-model="localLevelDisplay">
+    <input type="radio" id="pveOnly" value="pveOnly" v-model="localLevelData">
+    <label for="pveOnly">PVE</label>
+    <br>
+    <input type="radio" id="accidentsAndPve" value="accidentsAndPve" v-model="localLevelData">
+    <label for="accidentsAndPve">Accidents et PVE</label>
+    <br>
+    <input type="radio" id="accidentsNoPve" value="accidentsNoPve" v-model="localLevelData">
+    <label for="accidentsNoPve">Axes avec accidents, sans PVE</label>
+    <br>
+    <input type="radio" id="pveNoAccidents" value="pveNoAccidents" v-model="localLevelData">
+    <label for="pveNoAccidents">Axes avec PVE, sans accidents</label>
+    <br>
+    <br>
+
+    <h4>Représentation</h4>
+    <input type="radio" id="clusterType" value="cluster" v-model="localLevelDisplay" :disabled=aggregatedByRoadOnly>
+    <label for="clusterType">Nuage de points (cluster)</label>
+    <abbr v-if=aggregatedByRoadOnly class="description-info-circle" title="La géolocalisation précise n'est disponible que pour les accidents"><i class='fa fa-info-circle'></i></abbr>
+    <br>
+    <input type="radio" id="heatMapType" value="heatmap" v-model="localLevelDisplay" :disabled=aggregatedByRoadOnly>
     <label for="heatMapType">Carte de chaleur (heatmap)</label>
+    <abbr v-if=aggregatedByRoadOnly class="description-info-circle" title="La géolocalisation précise n'est disponible que pour les accidents"><i class='fa fa-info-circle'></i></abbr>
     <br>
     <input type="radio" id="aggregatedByRoadType" value="aggregatedByRoad" v-model="localLevelDisplay">
     <label for="aggregatedByRoadType">Routes</label>
+    <br>
     <br>
   </div>
   <h4>Fonds de carte</h4>
@@ -67,6 +89,7 @@ export default {
       dividende: this.$store.state.dividende,
       divisor: this.$store.state.divisor,
       localLevelDisplay: this.$store.state.localLevelDisplay,
+      localLevelData: this.$store.state.localLevelData,
       colorScale: this.$store.state.colorScale,
       colors: colors,
       colorScaleInverted: this.$store.state.colorScaleInverted,
@@ -77,6 +100,15 @@ export default {
   computed: {
     localLevel () {
       return this.$store.getters.view.content === 'detailedContent'
+    },
+    aggregatedByRoad () {
+      return this.$store.getters.view.content === 'detailedContent'
+    },
+    localLevelDataStore () {
+      return this.$store.state.localLevelData
+    },
+    aggregatedByRoadOnly () {
+      return this.localLevelData !== 'accidentsOnly'
     }
   },
   watch: {
@@ -88,6 +120,15 @@ export default {
     },
     localLevelDisplay () {
       this.$store.dispatch('set_localLevelDisplay', this.localLevelDisplay)
+    },
+    localLevelData () {
+      if (this.localLevelData !== 'accidentsOnly') {
+        this.localLevelDisplay = 'aggregatedByRoad'
+      }
+      this.$store.dispatch('set_localLevelData', this.localLevelData)
+    },
+    localLevelDataStore () {
+      this.localLevelData = this.localLevelDataStore
     },
     colorScale () {
       this.$store.commit('set_colorScale', this.colorScale)
@@ -103,4 +144,7 @@ export default {
 </script>
 
 <style>
+h4 {
+  color: #0074d9;
+}
 </style>

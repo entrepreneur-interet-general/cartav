@@ -7,20 +7,30 @@
         "départemental": {
             "id": "CODE_DEPT",
             "name": "NOM_DEPT"
+        },
+        "circonscriptif": {
+            "id": "nom_circo",
+            "name": "nom_circo"
         }
     },
     "data": {
         "acc": {
-            "régional": "NOM_REG.NOM_REG_facet",
-            "départemental": "dep.dep_facet",
-            "routier": "num_route_or_id.num_route_or_id_facet",
-            "communal": "current_city_code.current_city_code_facet"
+            "régional": "NOM_REG",
+            "départemental": "dep",
+            "routier": "num_route_or_id",
+            "communal": "current_city_code",
+            "circonscriptif": "nom_circonscription_police"
         },
         "pve": {
-            "régional": "NOM_REG.NOM_REG_facet",
-            "départemental": "DEPARTEMENT_INFRACTION.DEPARTEMENT_INFRACTION_facet",
-            "routier": "num_route_or_id.num_route_or_id_facet",
-            "communal": "CODE_INSEE_INFRACTION.CODE_INSEE_INFRACTION_facet"
+            "régional": "NOM_REG",
+            "départemental": "DEPARTEMENT_INFRACTION",
+            "routier": "num_route_or_id",
+            "communal": "CODE_INSEE_INFRACTION",
+            "circonscriptif": "nom_circonscription_police"
+        },
+        "radars": {
+            "départemental": "departement_num",
+            "circonscriptif": "nom_circonscription_police"
         }
     }
 }

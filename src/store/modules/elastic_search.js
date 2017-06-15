@@ -2,7 +2,7 @@ import elasticsearch from 'elasticsearch'
 import _ from 'lodash'
 import aggregationLevelsInfos from '../../assets/json/aggregationLevelsInfos'
 
-export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getCommunesGeoJson, searchSimpleFilter, toMultiLineGeojson }
+export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getCommunesGeoJson, searchSimpleFilter, toRoadsDict, generateGraphAgg }
 
 let communesGeoJsonFields = {
   Population: 'Population',
@@ -12,11 +12,12 @@ let communesGeoJsonFields = {
 }
 
 let index = {
-  acc: 'es5_2005_2015_accidents',
-  pve: 'es5_2010_2015_pve_sr2',
+  acc: 'es5_2005_2015_accidents_custom_mapping',
+  pve: 'es5_2015_pve_sr_regions_custom_mapping',
   commune: 'es5_2016_geohisto_communes_complete2',
-  acc_usagers: 'es5_accidents_usagers',
-  acc_vehicules: 'es5_accidents_vehicules'
+  acc_usagers: 'es2_accidents_usagers',
+  acc_vehicules: 'es2_accidents_vehicules',
+  radars: 'es5dev_radars'
 }
 
 let client = new elasticsearch.Client({
@@ -42,29 +43,20 @@ function searchAsGeoJson (type, query, latField, longField, propertyFields) {
   })
 }
 
-function toMultiLineGeojson (json) {
+function toRoadsDict (json) {
+  let dict = {}
   let buckets = json.aggregations.group_by.buckets
-  let features = []
   buckets.forEach(function (bucket) {
-    let geojsonString = _.get(bucket, 'top_agg_hits.hits.hits[0]._source.geojson', undefined)
-    if (geojsonString !== undefined) {
-      let geojson = JSON.parse(geojsonString)
-      let feature = {
-        type: 'Feature',
-        geometry: geojson,
-        properties: {
-          name: bucket.key,
-          count: bucket.doc_count
-        }
+    let geometryString = _.get(bucket, 'top_agg_hits.hits.hits[0]._source.geojson', undefined)
+    if (geometryString !== undefined) {
+      let geometry = JSON.parse(geometryString)
+      dict[bucket.key] = {
+        geometry: geometry,
+        count: bucket.doc_count
       }
-      features.push(feature)
     }
   })
-  let geoJson = {
-    type: 'FeatureCollection',
-    features: features
-  }
-  return geoJson
+  return dict
 }
 
 function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
@@ -105,24 +97,25 @@ function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
   return must
 }
 
-function generateAggs (type, fieldName, size, sourceField = null) {
+function generateAggs (type, fieldName, size, topAgghitsField = null) {
   // Génère le champ aggrégation de la requête ES
   let aggs = {
     group_by: {
       terms: {
         field: fieldName,
-        size: size
+        size: size,
+        collect_mode: 'breadth_first'
       }
     }
   }
 
-  if (sourceField) {
+  if (topAgghitsField) {
     aggs.group_by.aggs = {
       top_agg_hits: {
         top_hits: {
           _source: {
             include: [
-              sourceField
+              topAgghitsField
             ]
           },
           size: 1
@@ -153,24 +146,40 @@ function getQueryBase (size) {
 function addAdditionalFilters (must, type, view) {
   if (view.data.filter.activated) {
     let filterName = aggregationLevelsInfos.data[type][view.data.filter.filterCriteria]
-    let f = {}
-    f[filterName] = view.data.filter.value
-    must.push({
-      bool: {
-        should: [{term: f}]
-      }
-    })
+    addFilter(must, filterName, view.data.filter.value)
   }
 }
 
-function generateAggregatedQuery (criteriaList, type, view, sourceField = null) {
+function addFilter (must, field, value) {
+  let f = {}
+  f[field] = value
+  must.push({
+    bool: {
+      should: [{term: f}]
+    }
+  })
+}
+
+function generateAggregatedQuery (criteriaList, type, view, topAgghitsField = null) {
   // Génération de la query ES
   let query = getQueryBase(0)
   let must = generateFilter(criteriaList, type)
   addAdditionalFilters(must, type, view)
   let aggKey = aggregationLevelsInfos.data[type][view.data.group_by]
-  let aggs = generateAggs(type, aggKey, 1000, sourceField)
+  let aggs = generateAggs(type, aggKey, 1000, topAgghitsField)
 
+  query.query.constant_score.filter.bool.must = must
+  query.aggs = aggs
+
+  return query
+}
+
+function generateGraphAgg (criteriaList, type, view, roadID, aggKey) {
+  let query = getQueryBase(0)
+  let must = generateFilter(criteriaList, type)
+  addAdditionalFilters(must, type, view)
+  addFilter(must, aggregationLevelsInfos.data[type][view.data.group_by], roadID)
+  let aggs = generateAggs(type, aggKey, 100)
   query.query.constant_score.filter.bool.must = must
   query.aggs = aggs
 
@@ -180,11 +189,12 @@ function generateAggregatedQuery (criteriaList, type, view, sourceField = null) 
 function generateQuery (criteriaList, type, view) {
   // Génération de la query ES
   let query = getQueryBase(10000)
-  let must = generateFilter(criteriaList, type)
+  let must = []
+  if (criteriaList) {
+    must = generateFilter(criteriaList, type)
+  }
   addAdditionalFilters(must, type, view)
-
   query.query.constant_score.filter.bool.must = must
-
   return query
 }
 

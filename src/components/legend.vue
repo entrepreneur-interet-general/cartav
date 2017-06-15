@@ -46,8 +46,7 @@ export default {
         return nd.niceDisplay(this.legendScale[i - 1]) + ' - ' + nd.niceDisplay(this.legendScale[i])
       }
     }
-  },
-  props: ['data']
+  }
 }
 </script>
 

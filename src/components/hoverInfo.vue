@@ -15,7 +15,7 @@ import nd from '../assets/js/niceDisplay'
 export default {
   computed: {
     decoupage () {
-      return this.$store.getters.view.contour.decoupage
+      return this.$store.getters.view.linksTo
     },
     ratio () {
       return nd.niceDisplay(this.data.ratio)
@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     restore () {
-      this.$router.go(-1)
+      this.$router.push({path: '/carte'})
     }
   },
   props: ['data']
