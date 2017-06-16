@@ -25,7 +25,7 @@ function styleAccidents (feature) {
 }
 
 function styleAccidentsRoads (count) {
-  return function () {
+  return function (feature) {
     let opacity, weight
     if (count >= 10) {
       opacity = 1
@@ -40,6 +40,9 @@ function styleAccidentsRoads (count) {
       opacity = 0.5
       weight = 2
     }
+    // store opacity, weight here to be able to reset it
+    feature.opacity = opacity
+    feature.weight = weight
     return {
       color: 'rgb(255, 0, 0)',
       opacity: opacity,
@@ -151,7 +154,6 @@ export default {
       contourLayerGroup: L.layerGroup(),
       contourLayer: null,
       detailedContentLayerGroup: L.featureGroup(),
-      detailedContentLayer: null,
       geojsonAccLayer: null,
       infoSidebarData: {
         hoverInfoData: {
@@ -167,7 +169,9 @@ export default {
       so3: this.setOpacity(0.3),
       slcBlack: this.setLineColor('black'),
       slcWhite: this.setLineColor('white'),
-      keepLocalDataOnChange: false
+      keepLocalDataOnChange: false,
+      accidentsOfRoadId: null,
+      roadAccidentsLayerGroup: L.layerGroup()
     }
   },
   computed: {
@@ -279,14 +283,9 @@ export default {
         opacity: 1,
         fillOpacity: 0
       }
-      /*
-      if (!this.keepLocalDataOnChange) {
-        this.detailedContentLayerGroup.clearLayers()
-      } */
 
       if (this.localLevelDisplay === 'cluster') {
-        this.createClusterLocal('acc')
-        this.detailedContentLayerGroup.addLayer(this.detailedContentLayer)
+        this.detailedContentLayerGroup.addLayer(this.createClusterLocal('acc', this.accidentsLocal))
       } else if (this.localLevelDisplay === 'heatmap') {
         this.heatMap()
       } else if (this.localLevelDisplay === 'aggregatedByRoad') {
@@ -331,7 +330,7 @@ export default {
           }
 
           if (include) {
-            let layer = L.geoJson(road.geometry, {
+            L.geoJson(road.geometry, {
               style: opt.styleAcc(road.count, hasPve),
               onEachFeature: function (feature, lay) {
                 lay.on({
@@ -344,11 +343,25 @@ export default {
                   },
                   mouseout (event) {
                     vm.map.closePopup()
-                    layer.resetStyle(lay)
+                    lay.setStyle({ weight: lay.feature.weight })
+                  },
+                  click (event) {
+                    vm.roadAccidentsLayerGroup.clearLayers()
+                    if (roadId === vm.accidentsOfRoadId) {
+                      lay.setStyle({ opacity: feature.opacity })
+                      vm.accidentsOfRoadId = null
+                      vm.roadAccidentsLayerGroup.clearLayers()
+                    } else {
+                      lay.setStyle({ opacity: 0.3 })
+                      vm.accidentsOfRoadId = roadId
+                      vm.$store.dispatch('getAccidentsFromRoadId', roadId).then(function (res) {
+                        vm.roadAccidentsLayerGroup.addLayer(vm.createClusterLocal('acc', res))
+                      })
+                    }
                   }
                 })
               }
-            }).addTo(this.detailedContentLayerGroup) // .bringToFront()
+            }).addTo(this.detailedContentLayerGroup)
           }
         }
       }
@@ -445,13 +458,6 @@ export default {
       this.displayContours(this.setStyle(colorOptions), this.myOnEachFeature)
       this.zoomBounds(this.contourLayerGroup.getLayers()[0])
     },
-    setCluster (type, cluster) {
-      if (type === 'acc') {
-        this.detailedContentLayer = cluster
-      } else if (type === 'pve') {
-        this.cluster_Pve = cluster
-      }
-    },
     showRadars () {
       L.geoJson(this.$store.state.radars_geojson, {
         onEachFeature: function (feature, layer) {
@@ -477,9 +483,9 @@ export default {
         style: styleAccidents
       }).addTo(this.detailedContentLayerGroup)
     },
-    createClusterLocal (type) {
+    createClusterLocal (type, data) {
       // cluster des accidents individuels
-      this.detailedContentLayer = L.geoJson(this.accidentsLocal, {
+      let datalayer = L.geoJson(data, {
         onEachFeature: function (feature, layer) {
           layer.bindPopup()
           layer.on({
@@ -533,13 +539,11 @@ export default {
         },
         style: styleAccidents
       })
-      let cluster = L.markerClusterGroup({
+      return L.markerClusterGroup({
         maxClusterRadius: 30,
         singleMarkerMode: false,
         iconCreateFunction: accidentIconCreateFunction
-        // spiderfyDistanceMultiplier: 1
-      }).addLayer(this.detailedContentLayer)
-      this.setCluster(type, cluster)
+      }).addLayer(datalayer)
     },
     setStyle (options) {
       let vm = this
@@ -682,6 +686,7 @@ export default {
 
     this.map.addLayer(this.contourLayerGroup)
     this.map.addLayer(this.detailedContentLayerGroup)
+    this.map.addLayer(this.roadAccidentsLayerGroup)
 
     // On met l’état initial dans l’historique
     this.$router.push(this.$route.path)

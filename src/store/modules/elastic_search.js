@@ -184,12 +184,15 @@ function generateGraphAgg (criteriaList, type, view, roadID, aggKey) {
   return query
 }
 
-function generateQuery (criteriaList, type, view) {
+function generateQuery (criteriaList, type, view, roadID = null) {
   // Génération de la query ES
   let query = getQueryBase(10000)
   let must = []
   if (criteriaList) {
     must = generateFilter(criteriaList, type)
+  }
+  if (roadID) {
+    addFilter(must, aggregationLevelsInfos.data[type][view.data.group_by], roadID)
   }
   addAdditionalFilters(must, type, view)
   query.query.constant_score.filter.bool.must = must

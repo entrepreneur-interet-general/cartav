@@ -270,6 +270,11 @@ export default new Vuex.Store({
     getRadars (context, dep) {
       let query = es.generateQuery(null, 'radars', context.getters.view)
       return es.searchAsGeoJson('radars', query, 'Coordonnées GPS cabine - latitude', 'Coordonnées GPS cabine - longitude', radarsFields)
+    },
+    getAccidentsFromRoadId (context, roadId) {
+      let state = context.state
+      let query = es.generateQuery(state.criteria_list, 'acc', context.getters.view, roadId)
+      return es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields)
     }
   },
   getters: {
