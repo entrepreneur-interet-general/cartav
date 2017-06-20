@@ -12,11 +12,10 @@ let communesGeoJsonFields = {
 }
 
 let index = {
-  acc: 'es5_2005_2015_accidents_custom_mapping',
-  pve: 'es5_2015_pve_sr_regions_custom_mapping',
-  commune: 'es5_2016_geohisto_communes_complete2',
-  acc_usagers: 'es2_accidents_usagers',
-  acc_vehicules: 'es2_accidents_vehicules',
+  acc: 'es5dev_2005_2015_accidents',
+  pve: 'es5dev_2014_2015_pve',
+  acc_usagers: 'es5dev_accidents_usagers',
+  acc_vehicules: 'es5dev_accidents_vehicules',
   radars: 'es5dev_radars'
 }
 
