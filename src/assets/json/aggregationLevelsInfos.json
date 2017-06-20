@@ -17,14 +17,14 @@
         "acc": {
             "régional": "NOM_REG",
             "départemental": "dep",
-            "routier": "num_route_or_id",
+            "routier": "num_route_com_id",
             "communal": "current_city_code",
             "circonscriptif": "nom_circonscription_police"
         },
         "pve": {
             "régional": "NOM_REG",
             "départemental": "DEPARTEMENT_INFRACTION",
-            "routier": "num_route_or_id",
+            "routier": "num_route_com_id",
             "communal": "CODE_INSEE_INFRACTION",
             "circonscriptif": "nom_circonscription_police"
         },

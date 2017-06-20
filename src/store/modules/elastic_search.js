@@ -52,7 +52,8 @@ function toRoadsDict (json) {
       let geometry = JSON.parse(geometryString)
       dict[bucket.key] = {
         geometry: geometry,
-        count: bucket.doc_count
+        count: bucket.doc_count,
+        nom_route: _.get(bucket, 'top_agg_hits.hits.hits[0]._source.num_route_or_id', undefined)
       }
     }
   })
@@ -97,7 +98,7 @@ function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
   return must
 }
 
-function generateAggs (type, fieldName, size, topAgghitsField = null) {
+function generateAggs (type, fieldName, size, topAgghitsFields = null) {
   // Génère le champ aggrégation de la requête ES
   let aggs = {
     group_by: {
@@ -109,14 +110,12 @@ function generateAggs (type, fieldName, size, topAgghitsField = null) {
     }
   }
 
-  if (topAgghitsField) {
+  if (topAgghitsFields) {
     aggs.group_by.aggs = {
       top_agg_hits: {
         top_hits: {
           _source: {
-            include: [
-              topAgghitsField
-            ]
+            include: topAgghitsFields
           },
           size: 1
         }
