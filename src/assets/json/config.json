@@ -167,6 +167,21 @@
           "some": "accident avec moto(s)"
         }
       },
+      "vélo" : {
+        "field_name_acc": "velo_nb",
+        "type": "vehiculeFilter",
+        "values": {
+          "0": true,
+          "1": true,
+          "2": true,
+          "3+": true
+        },
+        "choices": {
+          "any": "Indifférent",
+          "none": "accident sans vélo",
+          "some": "accident avec vélo(s)"
+        }
+      },
       "piéton" : {
         "field_name_acc": "pietons_nb",
         "type": "vehiculeFilter",
