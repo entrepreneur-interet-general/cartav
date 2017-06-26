@@ -556,7 +556,8 @@ export default {
       let source = {
         'accidents': this.accidents.aggregations.group_by.buckets,
         'PVE': this.verbalisations.aggregations.group_by.buckets,
-        'habitants': this.contour
+        'habitants': this.contour,
+        'longueur_routes': this.contour
       }
 
       if (type === 'habitants') {
@@ -565,6 +566,16 @@ export default {
         for (let f of source[type].features) {
           if (id === f.properties[idName]) {
             res = f.properties.population
+            break
+          }
+        }
+        return res
+      } else if (type === 'longueur_routes') {
+        let idName = this.$store.getters.contourIdFieldName
+        let res = 0
+        for (let f of source[type].features) {
+          if (id === f.properties[idName]) {
+            res = f.properties.longueur_routes
             break
           }
         }
@@ -589,6 +600,7 @@ export default {
       feature.countElements.accidents = this.count('accidents', id)
       feature.countElements.PVE = this.count('PVE', id)
       feature.countElements.habitants = this.count('habitants', id)
+      feature.countElements.longueur_routes = this.count('longueur_routes', id)
 
       if (feature.countElements[options.dividende] || feature.countElements[options.divisor]) {
         feature.countElements.ratio = feature.countElements[options.dividende] / feature.countElements[options.divisor]
