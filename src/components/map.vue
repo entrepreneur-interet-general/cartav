@@ -160,7 +160,8 @@ export default {
           areaMouseOver: '',
           ratio: '',
           accidentsN: '',
-          pveN: ''
+          pveN: '',
+          km_voie: ''
         },
         showGraph: true,
         graphData: {}
@@ -638,6 +639,7 @@ export default {
 
       layer.geoId = feature.properties[id]
       layer.displayName = feature.properties[displayName]
+      layer.km_voie = feature.properties.longueur_routes
       if (vm.view.content !== 'detailedContent' || vm.view.data.filter.value !== layer.geoId) {
         // disable mouseover effect on the current administrative shape when displaying detailedContent
         layer.on({
@@ -672,6 +674,7 @@ export default {
         vm.infoSidebarData.hoverInfoData.ratio = feature.countElements ? feature.countElements.ratio : ''
         vm.infoSidebarData.hoverInfoData.accidentsN = feature.countElements ? feature.countElements.accidents : ''
         vm.infoSidebarData.hoverInfoData.pveN = feature.countElements ? feature.countElements.PVE : ''
+        vm.infoSidebarData.hoverInfoData.km_voie = layer.km_voie
       })
     }
   },

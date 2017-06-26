@@ -4,6 +4,7 @@
     {{ ratioLabel }}: <strong> {{ ratio }}</strong> </br>
     Nombre d’accidents: <strong>{{ accidentsN }}</strong> </br>
     Nombre de pve: <strong>{{ pveN }}</strong> </br>
+    Kilomètres de voirie: <strong>{{ km_voie }} km</strong> </br>
   </div>
 </template>
 
@@ -23,6 +24,9 @@ export default {
     },
     pveN () {
       return nd.niceDisplay(this.data.pveN)
+    },
+    km_voie () {
+      return Math.round(this.data.km_voie)
     },
     ratioLabel () {
       return this.$store.getters.ratioLabel
