@@ -1878,7 +1878,8 @@
         "code": "11",
         "NOM_REG": "Île-de-France",
         "population": 12073914,
-        "superficie": 12011
+        "superficie": 12011,
+        "longueur_routes": 53576
       }
     },
     {
@@ -5278,7 +5279,8 @@
         "code": "24",
         "NOM_REG": "Centre-Val de Loire",
         "population": 2582374,
-        "superficie": 39151
+        "superficie": 39151,
+        "longueur_routes": 72202
       }
     },
     {
@@ -9254,7 +9256,8 @@
         "code": "27",
         "NOM_REG": "Bourgogne-Franche-Comté",
         "population": 2821042,
-        "superficie": 47784
+        "superficie": 47784,
+        "longueur_routes": 86793
       }
     },
     {
@@ -12314,7 +12317,8 @@
         "code": "28",
         "NOM_REG": "Normandie",
         "population": 3334657,
-        "superficie": 29906
+        "superficie": 29906,
+        "longueur_routes": 80346
       }
     },
     {
@@ -15230,7 +15234,8 @@
         "code": "32",
         "NOM_REG": "Hauts-de-France",
         "population": 6006853,
-        "superficie": 31913
+        "superficie": 31913,
+        "longueur_routes": 84237
       }
     },
     {
@@ -19562,7 +19567,8 @@
         "code": "44",
         "NOM_REG": "Grand Est",
         "population": 5560405,
-        "superficie": 57433
+        "superficie": 57433,
+        "longueur_routes": 94353
       }
     },
     {
@@ -23016,7 +23022,8 @@
         "code": "52",
         "NOM_REG": "Pays de la Loire",
         "population": 3716068,
-        "superficie": 32082
+        "superficie": 32082,
+        "longueur_routes": 89949
       }
     },
     {
@@ -28030,7 +28037,8 @@
         "code": "53",
         "NOM_REG": "Bretagne",
         "population": 3294302,
-        "superficie": 27208
+        "superficie": 27208,
+        "longueur_routes": 93218
       }
     },
     {
@@ -33904,7 +33912,8 @@
         "code": "75",
         "NOM_REG": "Nouvelle-Aquitaine",
         "population": 5904843,
-        "superficie": 84061
+        "superficie": 84061,
+        "longueur_routes": 192834
       }
     },
     {
@@ -35054,7 +35063,8 @@
         "code": "01",
         "NOM_REG": "Guadeloupe",
         "population": 400132,
-        "superficie": 1628
+        "superficie": 1628,
+        "longueur_routes": 18093
       }
     },
     {
@@ -36578,7 +36588,8 @@
         "code": "02",
         "NOM_REG": "Martinique",
         "population": 378243,
-        "superficie": 1128
+        "superficie": 1128,
+        "longueur_routes": 18093
       }
     },
     {
@@ -38796,7 +38807,8 @@
         "code": "03",
         "NOM_REG": "Guyane",
         "population": 254541,
-        "superficie": 83846
+        "superficie": 83846,
+        "longueur_routes": 18093
       }
     },
     {
@@ -39244,7 +39256,8 @@
         "code": "04",
         "NOM_REG": "La Réunion",
         "population": 843529,
-        "superficie": 2504
+        "superficie": 2504,
+        "longueur_routes": 18093
       }
     },
     {
@@ -40534,7 +40547,8 @@
         "code": "06",
         "NOM_REG": "Mayotte",
         "population": 248656,
-        "superficie": 376
+        "superficie": 376,
+        "longueur_routes": 18093
       }
     },
     {
@@ -45494,7 +45508,8 @@
         "code": "76",
         "NOM_REG": "Occitanie",
         "population": 5791865,
-        "superficie": 72724
+        "superficie": 72724,
+        "longueur_routes": 148485
       }
     },
     {
@@ -51208,7 +51223,8 @@
         "code": "84",
         "NOM_REG": "Auvergne-Rhône-Alpes",
         "population": 7874586,
-        "superficie": 69711
+        "superficie": 69711,
+        "longueur_routes": 166329
       }
     },
     {
@@ -55280,7 +55296,8 @@
         "code": "93",
         "NOM_REG": "Provence-Alpes-Côte d'Azur",
         "population": 4989435,
-        "superficie": 31400
+        "superficie": 31400,
+        "longueur_routes": 58738
       }
     },
     {
@@ -57230,7 +57247,8 @@
         "code": "94",
         "NOM_REG": "Corse",
         "population": 326898,
-        "superficie": 8680
+        "superficie": 8680,
+        "longueur_routes": 7359
       }
     }
   ]
