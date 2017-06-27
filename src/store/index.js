@@ -243,8 +243,8 @@ export default new Vuex.Store({
       context.commit('set_zoomActive', options.zoomActive)
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
-        let queryAcc = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view, 'geojson')
-        let queryPve = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view, 'geojson')
+        let queryAcc = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view, ['geojson', 'num_route_or_id'])
+        let queryPve = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view, ['geojson', 'num_route_or_id'])
         let promises = [
           es.search('acc', queryAcc),
           es.search('pve', queryPve),

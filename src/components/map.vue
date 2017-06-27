@@ -338,7 +338,7 @@ export default {
                   mouseover: function (event) {
                     lay.setStyle({ weight: 10 })
                     L.popup()
-                    .setContent('<strong>' + roadId + '</strong><br><span class="accHighlight">' + road.count + '</span> accidents')
+                    .setContent('<strong>' + road.nom_route + '</strong><br><span class="accHighlight">' + road.count + '</span> accidents')
                     .setLatLng(event.latlng)
                     .openOn(vm.map)
                   },
@@ -376,7 +376,7 @@ export default {
                   mouseover: function (event) {
                     lay.setStyle({ weight: 10 })
                     L.popup()
-                    .setContent('<strong>' + roadId + '</strong><br><span class="pveHighlight">' + road.count + '</span> pve')
+                    .setContent('<strong>' + road.nom_route + '</strong><br><span class="pveHighlight">' + road.count + '</span> pve')
                     .setLatLng(event.latlng)
                     .openOn(vm.map)
                   },

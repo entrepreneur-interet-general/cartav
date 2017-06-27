@@ -12,11 +12,10 @@ let communesGeoJsonFields = {
 }
 
 let index = {
-  acc: 'es5_2005_2015_accidents_custom_mapping',
-  pve: 'es5_2015_pve_sr_regions_custom_mapping',
-  commune: 'es5_2016_geohisto_communes_complete2',
-  acc_usagers: 'es2_accidents_usagers',
-  acc_vehicules: 'es2_accidents_vehicules',
+  acc: 'es5dev_2005_2015_accidents',
+  pve: 'es5dev_2014_2015_pve',
+  acc_usagers: 'es5dev_accidents_usagers',
+  acc_vehicules: 'es5dev_accidents_vehicules',
   radars: 'es5dev_radars'
 }
 
@@ -52,7 +51,8 @@ function toRoadsDict (json) {
       let geometry = JSON.parse(geometryString)
       dict[bucket.key] = {
         geometry: geometry,
-        count: bucket.doc_count
+        count: bucket.doc_count,
+        nom_route: _.get(bucket, 'top_agg_hits.hits.hits[0]._source.num_route_or_id', undefined)
       }
     }
   })
@@ -97,7 +97,7 @@ function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
   return must
 }
 
-function generateAggs (type, fieldName, size, topAgghitsField = null) {
+function generateAggs (type, fieldName, size, topAgghitsFields = null) {
   // Génère le champ aggrégation de la requête ES
   let aggs = {
     group_by: {
@@ -109,14 +109,12 @@ function generateAggs (type, fieldName, size, topAgghitsField = null) {
     }
   }
 
-  if (topAgghitsField) {
+  if (topAgghitsFields) {
     aggs.group_by.aggs = {
       top_agg_hits: {
         top_hits: {
           _source: {
-            include: [
-              topAgghitsField
-            ]
+            include: topAgghitsFields
           },
           size: 1
         }
