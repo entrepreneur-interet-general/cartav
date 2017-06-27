@@ -171,7 +171,6 @@ export default {
       slcBlack: this.setLineColor('black'),
       slcWhite: this.setLineColor('white'),
       keepLocalDataOnChange: false,
-      accidentsOfRoadId: null,
       roadAccidentsLayerGroup: L.layerGroup()
     }
   },
@@ -334,6 +333,7 @@ export default {
             L.geoJson(road.geometry, {
               style: opt.styleAcc(road.count, hasPve),
               onEachFeature: function (feature, lay) {
+                lay.roadId = roadId
                 lay.on({
                   mouseover: function (event) {
                     lay.setStyle({ weight: 10 })
@@ -348,16 +348,23 @@ export default {
                   },
                   click (event) {
                     vm.roadAccidentsLayerGroup.clearLayers()
-                    if (roadId === vm.accidentsOfRoadId) {
-                      lay.setStyle({ opacity: feature.opacity })
-                      vm.accidentsOfRoadId = null
-                      vm.roadAccidentsLayerGroup.clearLayers()
-                    } else {
+                    let previousRoadId = vm.highlightedRoadLayer ? vm.highlightedRoadLayer.roadId : undefined
+                    if (roadId !== previousRoadId) {
+                      // First click : display cluster
                       lay.setStyle({ opacity: 0.3 })
-                      vm.accidentsOfRoadId = roadId
+                      if (vm.highlightedRoadLayer) {
+                        // restore previously selected road
+                        vm.highlightedRoadLayer.setStyle({ opacity: feature.opacity })
+                      }
+                      vm.highlightedRoadLayer = lay
                       vm.$store.dispatch('getAccidentsFromRoadId', roadId).then(function (res) {
                         vm.roadAccidentsLayerGroup.addLayer(vm.createClusterLocal('acc', res))
                       })
+                    } else {
+                      // Second click on same road : reset display
+                      lay.setStyle({ opacity: feature.opacity })
+                      vm.highlightedRoadLayer = null
+                      vm.roadAccidentsLayerGroup.clearLayers()
                     }
                   }
                 })
