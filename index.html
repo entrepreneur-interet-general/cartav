@@ -9,13 +9,13 @@
   </head>
   <script>
     try {
-      let obj = {}
+      var obj = {};
       Object.defineProperty(obj, 'key', {
         testVueCompatibility: true
-      })
+      });
     }
     catch (e) {
-     alert('Votre navigateur n\'est pas compatible avec cet outil. Pour en profiter il vous faudra le mettre à jour. Désolé !')
+     alert('Votre navigateur n\'est pas compatible avec cet outil. Pour en profiter il vous faudra le mettre à jour. Désolé !');
     }
   </script>
   <body>

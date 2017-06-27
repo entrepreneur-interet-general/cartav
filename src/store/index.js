@@ -270,14 +270,20 @@ export default new Vuex.Store({
     getRadars (context, dep) {
       let query = es.generateQuery(null, 'radars', context.getters.view)
       return es.searchAsGeoJson('radars', query, 'Coordonnées GPS cabine - latitude', 'Coordonnées GPS cabine - longitude', radarsFields)
+    },
+    getAccidentsFromRoadId (context, roadId) {
+      let state = context.state
+      let query = es.generateQuery(state.criteria_list, 'acc', context.getters.view, roadId)
+      return es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields)
     }
   },
   getters: {
     // Renvoie la view décrite dans views.json correspondant à l'url de la page
     view (state) {
-      let viewName = state.route.params.view || 'france'
+      let viewName = state.route.params.view || 'régions'
       let id = state.route.params.id || null
       let view = views[viewName]
+      view.name = viewName
 
       if (id) {
         if (view.contour.filter.activated) {
@@ -291,7 +297,7 @@ export default new Vuex.Store({
       return view
     },
     viewName (state) {
-      return state.route.params.view || 'france'
+      return state.route.params.view || 'régions'
     },
     contourIdFieldName (state, getters) {
       let decoupage = getters.view.contour.decoupage
