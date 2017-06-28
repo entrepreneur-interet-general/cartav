@@ -12,76 +12,24 @@
 
     <!-- Tab panes -->
     <div class="sidebar-content">
-      <div class="sidebar-pane" id="timeFilters">
+
+      <div v-for="tab in tabs" class="sidebar-pane" :id="tab.id">
         <h1 class="sidebar-header">
-          Filtres temporels (accidents et pve)
+          {{ tab.tabTitle }}
           <span class="sidebar-close"><i class="glyphicon glyphicon-triangle-left"></i></span>
         </h1>
 
         <div>
           <span v-for="(category, categoryName) in criteria_list">
-            <span v-if="categoryName === 'PVE et accidents'">
-
+            <span v-if="categoryName === tab.category">
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
                 <span v-for="(criteria, criteriaName) in category">
-
                 <div class="row s-rows">
                   <div class="col-lg-11">
                     <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h4>
                   </div>
                   <div class="col-lg-1">
-                    <abbr v-if=criteria.description class="description-info-circle" v-bind:title=criteria.description><i class='fa fa-info-circle'></i></abbr>
-                  </div>
-                </div>
-                  <span v-for="(val, valName) in criteria.values">
-                    <div class="row s-rows">
-                      <div class="col-lg-8 funkyradio">
-                        <div class="funkyradio-default">
-                            <input type="checkbox" name="checkbox" v-bind:id=criteriaName+valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
-                            <label v-bind:for=criteriaName+valName>{{ criteria.labels && criteria.labels[valName] ? criteria.labels[valName] : valName}}</label>
-                        </div>
-                      </div>
-                      <div class="col-lg-2 agg_acc">
-                        <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
-                        <abbr v-bind:title="valName + ' : ' + agg_acc_value(categoryName, criteriaName, valName, false) + ' accidents'">{{ agg_acc_value(categoryName, criteriaName, valName) }}</abbr>
-                        </span>
-                      </div>
-                      <div class="col-lg-2 agg_pve">
-                        <span v-if="agg_pve_value(categoryName, criteriaName, valName)">
-                        <abbr v-bind:title="valName + ' : ' + agg_pve_value(categoryName, criteriaName, valName, false) + ' PVE'">{{ agg_pve_value(categoryName, criteriaName, valName) }}</abbr>
-                        </span>
-                      </div>
-                      <br>
-                    </div>
-                  </span>
-                </span>
-              </span>
-              <hr>
-            </span>
-          </span>
-        </div>
-      </div>
-
-      <div class="sidebar-pane" id="accidentsFilters">
-        <h1 class="sidebar-header">
-          Filtres accidents
-          <span class="sidebar-close"><i class="glyphicon glyphicon-triangle-left"></i></span>
-        </h1>
-
-        <div>
-          <span v-for="(category, categoryName) in criteria_list">
-            <span v-if="categoryName === 'Accidents'">
-
-              <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
-
-                <span v-for="(criteria, criteriaName) in category">
-
-                <div class="row s-rows">
-                  <div class="col-lg-11">
-                    <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h4>
-                  </div>
-                  <div class="col-lg-1">
-                    <abbr v-if=criteria.description class="description-info-circle" v-bind:title=criteria.description><i class='fa fa-info-circle'></i></abbr>
+                    <abbr v-if="criteria.description" class="description-info-circle" v-bind:title="criteria.description"><i class='fa fa-info-circle'></i></abbr>
                   </div>
                 </div>
 
@@ -92,13 +40,12 @@
                   </vehiculeCheckbox>
                 </span>
                 <span v-else>
-
                   <span v-for="(val, valName) in criteria.values">
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
                         <div class="funkyradio-default">
-                            <input type="checkbox" name="checkbox" v-bind:id=criteriaName+valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
-                            <label v-bind:for=criteriaName+valName>{{ criteria.labels && criteria.labels[valName] ? criteria.labels[valName] : valName }}</label>
+                            <input type="checkbox" name="checkbox" v-bind:id="criteriaName+valName" v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
+                            <label v-bind:for="criteriaName+valName">{{ criteria.labels && criteria.labels[valName] ? criteria.labels[valName] : valName }}</label>
                         </div>
                       </div>
                       <div class="col-lg-2 agg_acc">
@@ -115,60 +62,7 @@
                     </div>
                   </span>
                   <br>
-
                 </span>
-
-                </span>
-              </span>
-              <hr>
-            </span>
-          </span>
-        </div>
-      </div>
-
-      <div class="sidebar-pane" id="pveFilters">
-        <h1 class="sidebar-header">
-          Filtres PVE
-          <span class="sidebar-close"><i class="glyphicon glyphicon-triangle-left"></i></span>
-        </h1>
-
-        <div>
-          <span v-for="(category, categoryName) in criteria_list">
-            <span v-if="categoryName === 'PVE'">
-
-              <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
-                <span v-for="(criteria, criteriaName) in category">
-
-                <div class="row s-rows">
-                  <div class="col-lg-11">
-                    <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h4>
-                  </div>
-                  <div class="col-lg-1">
-                    <abbr v-if=criteria.description class="description-info-circle" v-bind:title=criteria.description><i class='fa fa-info-circle'></i></abbr>
-                  </div>
-                </div>
-
-                  <span v-for="(val, valName) in criteria.values">
-                    <div class="row s-rows">
-                      <div class="col-lg-8 funkyradio">
-                        <div class="funkyradio-default">
-                            <input type="checkbox" name="checkbox" v-bind:id=criteriaName+valName v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
-                            <label v-bind:for=criteriaName+valName>{{ criteria.labels && criteria.labels[valName] ? criteria.labels[valName] : valName }}</label>
-                        </div>
-                      </div>
-                      <div class="col-lg-2 agg_acc">
-                        <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
-                        <abbr v-bind:title="valName + ' : ' + agg_acc_value(categoryName, criteriaName, valName, false) + ' accidents'">{{ agg_acc_value(categoryName, criteriaName, valName) }}</abbr>
-                        </span>
-                      </div>
-                      <div class="col-lg-2 agg_pve">
-                        <span v-if="agg_pve_value(categoryName, criteriaName, valName)">
-                        <abbr v-bind:title="valName + ' : ' + agg_pve_value(categoryName, criteriaName, valName, false) + ' PVE'">{{ agg_pve_value(categoryName, criteriaName, valName) }}</abbr>
-                        </span>
-                      </div>
-                      <br>
-                    </div>
-                  </span>
                 </span>
               </span>
               <hr>
@@ -279,6 +173,15 @@ export default {
     ratio: ratio,
     VueMarkdown,
     vehiculeCheckbox
+  },
+  data () {
+    return {
+      tabs: [
+        {id: 'timeFilters', tabTitle: 'Filtres temporels (accidents et pve)', category: 'PVE et accidents'},
+        {id: 'accidentsFilters', tabTitle: 'Filtres accidents', category: 'Accidents'},
+        {id: 'pveFilters', tabTitle: 'Filtres PVE', category: 'PVE'}
+      ]
+    }
   },
   computed: {
     criteria_list () {
