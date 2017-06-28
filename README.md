@@ -56,5 +56,8 @@ yarn
 # Servir avec rechargement à chaud hot sur localhost:8080
 npm run dev
 
-# Construite pour la production avec minification
-npm run build
+# Construire pour la production avec minification
+npm run build-production
+
+# Construire pour l’instance de production de développement avec minification
+npm run build-dev
