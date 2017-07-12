@@ -1,7 +1,8 @@
 // https://github.com/shelljs/shelljs
 require('./check-versions')()
 require('shelljs/global')
-env.NODE_ENV = 'production'
+
+env.NODE_ENV = process.argv[2] || 'production'
 
 var path = require('path')
 var config = require('../config')
@@ -15,7 +16,7 @@ console.log(
   '  Opening index.html over file:// won\'t work.\n'
 )
 
-var spinner = ora('building for production...')
+var spinner = ora(`building for ${env.NODE_ENV}...`)
 spinner.start()
 
 var assetsPath = path.join(config.build.assetsRoot, config.build.assetsSubDirectory)
