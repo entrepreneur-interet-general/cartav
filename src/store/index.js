@@ -341,8 +341,10 @@ export default new Vuex.Store({
           let filter = getters.view.contour.filter.value
           let field = getters.contourIdFieldName
           res['habitants'] = _(agg).map(x => (x.properties[field] === filter) ? x.properties.population : 0).sum()
+          res['longueur_routes'] = _(agg).map(x => (x.properties[field] === filter) ? x.properties.longueur_routes : 0).sum()
         } else {
           res['habitants'] = _(agg).map(x => x.properties.population).sum()
+          res['longueur_routes'] = _(agg).map(x => x.properties.longueur_routes).sum()
         }
       } else {
         res['habitants'] = undefined

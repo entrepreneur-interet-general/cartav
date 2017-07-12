@@ -160,7 +160,8 @@ export default {
           areaMouseOver: '',
           ratio: '',
           accidentsN: '',
-          pveN: ''
+          pveN: '',
+          km_voie: ''
         },
         showGraph: true,
         graphData: {}
@@ -555,7 +556,8 @@ export default {
       let source = {
         'accidents': this.accidents.aggregations.group_by.buckets,
         'PVE': this.verbalisations.aggregations.group_by.buckets,
-        'habitants': this.contour
+        'habitants': this.contour,
+        'longueur_routes': this.contour
       }
 
       if (type === 'habitants') {
@@ -564,6 +566,16 @@ export default {
         for (let f of source[type].features) {
           if (id === f.properties[idName]) {
             res = f.properties.population
+            break
+          }
+        }
+        return res
+      } else if (type === 'longueur_routes') {
+        let idName = this.$store.getters.contourIdFieldName
+        let res = 0
+        for (let f of source[type].features) {
+          if (id === f.properties[idName]) {
+            res = f.properties.longueur_routes
             break
           }
         }
@@ -588,6 +600,7 @@ export default {
       feature.countElements.accidents = this.count('accidents', id)
       feature.countElements.PVE = this.count('PVE', id)
       feature.countElements.habitants = this.count('habitants', id)
+      feature.countElements.longueur_routes = this.count('longueur_routes', id)
 
       if (feature.countElements[options.dividende] || feature.countElements[options.divisor]) {
         feature.countElements.ratio = feature.countElements[options.dividende] / feature.countElements[options.divisor]
@@ -638,6 +651,7 @@ export default {
 
       layer.geoId = feature.properties[id]
       layer.displayName = feature.properties[displayName]
+      layer.km_voie = feature.properties.longueur_routes
       if (vm.view.content !== 'detailedContent' || vm.view.data.filter.value !== layer.geoId) {
         // disable mouseover effect on the current administrative shape when displaying detailedContent
         layer.on({
@@ -672,6 +686,7 @@ export default {
         vm.infoSidebarData.hoverInfoData.ratio = feature.countElements ? feature.countElements.ratio : ''
         vm.infoSidebarData.hoverInfoData.accidentsN = feature.countElements ? feature.countElements.accidents : ''
         vm.infoSidebarData.hoverInfoData.pveN = feature.countElements ? feature.countElements.PVE : ''
+        vm.infoSidebarData.hoverInfoData.km_voie = layer.km_voie
       })
     }
   },

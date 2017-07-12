@@ -8,6 +8,7 @@
         <option>accidents</option>
         <option>PVE</option>
         <option>habitants</option>
+        <option value="longueur_routes">km de voirie</option>
       </select>
     </div>
     <div class="form-group">
@@ -16,6 +17,7 @@
         <option>accidents</option>
         <option>PVE</option>
         <option>habitants</option>
+        <option value="longueur_routes">km de voirie</option>
       </select>
     </div>
     <br>
