@@ -1,11 +1,12 @@
 module.exports = {
   NODE_ENV: '"production"',
   ES_HOST: '"http://beta.datalab.mi"',
+  PATH: '"/av"',
   indices: {
-    acc: 'es5_2005_2015_accidents',
-    pve: 'es5_2014_2015_pve',
-    acc_usagers: 'es5_accidents_usagers',
-    acc_vehicules: 'es5_accidents_vehicules',
-    radars: 'es5_radars'
+    acc: '"es5_prod_accidents"',
+    pve: '"es5_prod_pve"',
+    acc_usagers: '"es5_prod_accidents_usagers"',
+    acc_vehicules: '"es5_prod_accidents_vehicules"',
+    radars: '"es5_prod_radars"'
   }
 }
