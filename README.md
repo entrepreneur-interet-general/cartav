@@ -59,5 +59,5 @@ npm run dev
 # Construire pour la production avec minification
 npm run build-production
 
-# Construire pour l’instance de production de développement avec minification
-npm run build-dev
+# Construire pour l’instance de pré-production avec minification
+npm run build-pre-prod
