@@ -1,7 +1,6 @@
 module.exports = {
   NODE_ENV: '"production"',
   ES_HOST: '"http://beta.datalab.mi"',
-  PATH: '"/av"',
   indices: {
     acc: '"es5_prod_accidents"',
     pve: '"es5_prod_pve"',

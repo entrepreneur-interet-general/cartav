@@ -2,7 +2,8 @@
 require('./check-versions')()
 require('shelljs/global')
 
-env.NODE_ENV = process.argv[2] || 'production'
+env.NODE_ENV = 'production'
+env.prod_type = process.argv[2]
 
 var path = require('path')
 var config = require('../config')
