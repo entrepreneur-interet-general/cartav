@@ -1,17 +1,18 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 var path = require('path')
-var assetsPublicPath, es_conf
+var assetsPublicPath
+var env_path = './prod.env'
 if (process.env.prod_type === 'production') {
   assetsPublicPath = '/av/'
-  es_conf = './prod.env'
+  env_path = './prod.env'
 } else if (process.env.prod_type === 'pre-production') {
   assetsPublicPath = '/av/test/'
-  es_conf = './pre-prod.env'
+  env_path = './pre-prod.env'
 }
 
 module.exports = {
   build: {
-    env: require(es_conf),
+    env: require(env_path),
     index: path.resolve(__dirname, '../dist/index.html'),
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
