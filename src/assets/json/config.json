@@ -223,6 +223,18 @@
           "blessé léger": true
         }
       },
+      "Type de route" : {
+        "field_name_acc": "catr",
+        "values": {
+          "autoroute": true,
+          "route nationale": true,
+          "route départementale": true,
+          "voie communale": true,
+          "autre route": true,
+          "parking": true,
+          "hors réseau public": true
+        }
+      },
       "luminosité" : {
         "field_name_acc": "lum",
         "values": {
