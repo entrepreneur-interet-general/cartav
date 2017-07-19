@@ -124,13 +124,11 @@
     },
     "Accidents" : {
       "voiture" : {
-        "field_name_acc": "voiture_nb",
+        "field_name_acc": "has_voiture",
         "type": "vehiculeFilter",
         "values": {
-          "0": true,
-          "1": true,
-          "2": true,
-          "3+": true
+          "true": true,
+          "false": true
         },
         "choices": {
           "any": "Indifférent",
@@ -139,13 +137,11 @@
         }
       },
       "poids lourd" : {
-        "field_name_acc": "poidslourd_nb",
+        "field_name_acc": "has_poidslourd",
         "type": "vehiculeFilter",
         "values": {
-          "0": true,
-          "1": true,
-          "2": true,
-          "3+": true
+          "true": true,
+          "false": true
         },
         "choices": {
           "any": "Indifférent",
@@ -154,13 +150,11 @@
         }
       },
       "moto" : {
-        "field_name_acc": "deuxrouesmotorises_nb",
+        "field_name_acc": "has_deuxrouesmotorises",
         "type": "vehiculeFilter",
         "values": {
-          "0": true,
-          "1": true,
-          "2": true,
-          "3+": true
+          "true": true,
+          "false": true
         },
         "choices": {
           "any": "Indifférent",
@@ -169,13 +163,11 @@
         }
       },
       "vélo" : {
-        "field_name_acc": "velo_nb",
+        "field_name_acc": "has_velo",
         "type": "vehiculeFilter",
         "values": {
-          "0": true,
-          "1": true,
-          "2": true,
-          "3+": true
+          "true": true,
+          "false": true
         },
         "choices": {
           "any": "Indifférent",
@@ -184,13 +176,11 @@
         }
       },
       "piéton" : {
-        "field_name_acc": "pietons_nb",
+        "field_name_acc": "has_pietons",
         "type": "vehiculeFilter",
         "values": {
-          "0": true,
-          "1": true,
-          "2": true,
-          "3+": true
+          "true": true,
+          "false": true
         },
         "choices": {
           "any": "Indifférent",
@@ -199,14 +189,12 @@
         }
       },
       "autre véhicule" : {
-        "field_name_acc": "vehiculeautre_nb",
+        "field_name_acc": "has_vehiculeautre",
         "description": "Tous les autres véhicules (tracteur, bus, quad, engin spécial, train)",
         "type": "vehiculeFilter",
         "values": {
-          "0": true,
-          "1": true,
-          "2": true,
-          "3+": true
+          "true": true,
+          "false": true
         },
         "choices": {
           "any": "Indifférent",
@@ -221,6 +209,18 @@
           "tué": true,
           "hospitalisé": true,
           "blessé léger": true
+        }
+      },
+      "Type de route" : {
+        "field_name_acc": "catr",
+        "values": {
+          "autoroute": true,
+          "route nationale": true,
+          "route départementale": true,
+          "voie communale": true,
+          "autre route": true,
+          "parking": true,
+          "hors réseau public": true
         }
       },
       "luminosité" : {
