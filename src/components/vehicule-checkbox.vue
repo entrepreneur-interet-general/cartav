@@ -14,10 +14,8 @@ export default {
     return {
       choice: this.criteria.choices['any'],
       options: [
-        {label: '0', value: true},
-        {label: '1', value: true},
-        {label: '2', value: true},
-        {label: '3+', value: true}
+        {label: 'false', value: true},
+        {label: 'true', value: true}
       ]
     }
   },
@@ -30,19 +28,11 @@ export default {
         }
       } else if (this.choice === this.criteria.choices['none']) {
         for (let option of this.options) {
-          if (option.label === '0') {
-            option.value = true
-          } else {
-            option.value = false
-          }
+          option.value = option.label !== 'true'
         }
       } else if (this.choice === this.criteria.choices['some']) {
         for (let option of this.options) {
-          if (option.label === '0') {
-            option.value = false
-          } else {
-            option.value = true
-          }
+          option.value = option.label === 'true'
         }
       }
       this.$store.dispatch('set_criteria', {criteriaPath: this.criteriaPath, criterias: this.options, type: 'bulk'})
