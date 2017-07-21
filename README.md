@@ -11,7 +11,7 @@ mieux comprendre l’accidentologie et faire des actions de prévention et répr
 ## Contexte de développement
 
 Ce projet a initialement été développé par Francis Chabouis et Tristram Gräbener dans le cadre
-du programme (Entrepreneurs d’Intérêt Général 2017)[https://www.etalab.gouv.fr/entrepreneurs-dinteret-general].
+du programme [Entrepreneurs d’Intérêt Général 2017](https://www.etalab.gouv.fr/entrepreneurs-dinteret-general).
 
 Il est porté par le datalab de la MGMSIC du ministère de l’Intérieur.
 
@@ -19,12 +19,12 @@ Il est porté par le datalab de la MGMSIC du ministère de l’Intérieur.
 
 Les données sont un ensemble de données ouvertes :
 
-* Accidents de la route (fiches BAAC)[http://www.data.gouv.fr/fr/datasets/base-de-donnees-accidents-corporels-de-la-circulation/],
+* Accidents de la route [fiches BAAC](http://www.data.gouv.fr/fr/datasets/base-de-donnees-accidents-corporels-de-la-circulation/),
 * OpenStreetMap,
-* Découpage territorial (Geofla IGN)[http://www.data.gouv.fr/fr/datasets/geofla-r/],
-* Historique des communes (Geohisto)[http://www.data.gouv.fr/fr/reuses/geohisto-historique-des-niveaux-administratifs-francais/]
-* Base adresse nationale (BAN)[http://www.data.gouv.fr/fr/datasets/ban-base-adresse-nationale/]
-* Base adresse nationale Ouverte (BANO)[http://www.data.gouv.fr/fr/datasets/base-d-adresses-nationale-ouverte-bano/]
+* Découpage territorial [Geofla IGN](http://www.data.gouv.fr/fr/datasets/geofla-r/),
+* Historique des communes [Geohisto](http://www.data.gouv.fr/fr/reuses/geohisto-historique-des-niveaux-administratifs-francais/)
+* Base adresse nationale [BAN](http://www.data.gouv.fr/fr/datasets/ban-base-adresse-nationale/)
+* Base adresse nationale Ouverte [BANO](http://www.data.gouv.fr/fr/datasets/base-d-adresses-nationale-ouverte-bano/)
 
 Ainsi que des données propriétaires :
 * Position des radars fixes,
