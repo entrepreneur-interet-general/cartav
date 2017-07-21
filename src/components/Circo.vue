@@ -16,7 +16,6 @@
 
 <script>
 import circonscriptions from '../assets/json/circonscriptions.json'
-// import some from 'lodash/some'
 
 export default {
   name: 'circo',
