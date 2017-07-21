@@ -5,7 +5,7 @@
   },
   "filters": {
     "PVE et accidents" : {
-      "année" : {
+      "Année" : {
         "field_name_pve": "ANNEE_INFRACTION",
         "field_name_acc": "ANNEE",
         "values": {
@@ -23,7 +23,7 @@
           "2016": false
         }
       },
-      "jour" : {
+      "Jour" : {
         "field_name_pve": "LIBELLE_JOUR_INFRACTION",
         "field_name_acc": "LIBELLE_JOUR",
         "values": {
@@ -36,7 +36,7 @@
           "Dimanche": true
         }
       },
-      "plage horaire" : {
+      "Plage horaire" : {
         "field_name_acc": "LIBELLE_PLAGE_HORAIRE",
         "field_name_pve": "LIBELLE_PLAGE_HORAIRE",
         "values": {
@@ -109,21 +109,21 @@
           "AUTRE": true
         },
         "labels": {
-          "VP": "voiture",
-          "CTTE": "camionnette",
-          "CYCLO": "cyclomoteur",
-          "PL": "poids lourd",
-          "MOTO": "moto",
-          "AUTRE": "autre",
-          "CYCLE": "cycle",
-          "PIETON": "piéton",
-          "TAXI": "taxi",
-          "TCP": "transport en commun de personnes"
+          "VP": "Voiture",
+          "CTTE": "Camionnette",
+          "CYCLO": "Cyclomoteur",
+          "PL": "Poids lourd",
+          "MOTO": "Moto",
+          "AUTRE": "Autre",
+          "CYCLE": "Cycle",
+          "PIETON": "Piéton",
+          "TAXI": "Taxi",
+          "TCP": "Transport en commun de personnes"
         }
       }
     },
     "Accidents" : {
-      "voiture" : {
+      "Voiture" : {
         "field_name_acc": "has_voiture",
         "type": "vehiculeFilter",
         "values": {
@@ -132,11 +132,11 @@
         },
         "choices": {
           "any": "Indifférent",
-          "none": "accident sans voiture",
-          "some": "accident avec voiture(s)"
+          "none": "Accident sans voiture",
+          "some": "Accident avec voiture(s)"
         }
       },
-      "poids lourd" : {
+      "Poids lourd" : {
         "field_name_acc": "has_poidslourd",
         "type": "vehiculeFilter",
         "values": {
@@ -145,11 +145,11 @@
         },
         "choices": {
           "any": "Indifférent",
-          "none": "accident sans poids lourd",
-          "some": "accident avec poids lourd(s)"
+          "none": "Accident sans poids lourd",
+          "some": "Accident avec poids lourd(s)"
         }
       },
-      "moto" : {
+      "Moto" : {
         "field_name_acc": "has_deuxrouesmotorises",
         "type": "vehiculeFilter",
         "values": {
@@ -158,11 +158,11 @@
         },
         "choices": {
           "any": "Indifférent",
-          "none": "accident sans moto",
-          "some": "accident avec moto(s)"
+          "none": "Accident sans moto",
+          "some": "Accident avec moto(s)"
         }
       },
-      "vélo" : {
+      "Vélo" : {
         "field_name_acc": "has_velo",
         "type": "vehiculeFilter",
         "values": {
@@ -171,11 +171,11 @@
         },
         "choices": {
           "any": "Indifférent",
-          "none": "accident sans vélo",
-          "some": "accident avec vélo(s)"
+          "none": "Accident sans vélo",
+          "some": "Accident avec vélo(s)"
         }
       },
-      "piéton" : {
+      "Piéton" : {
         "field_name_acc": "has_pietons",
         "type": "vehiculeFilter",
         "values": {
@@ -184,11 +184,11 @@
         },
         "choices": {
           "any": "Indifférent",
-          "none": "accident sans piéton",
-          "some": "accident avec piéton(s)"
+          "none": "Accident sans piéton",
+          "some": "Accident avec piéton(s)"
         }
       },
-      "autre véhicule" : {
+      "Autre véhicule" : {
         "field_name_acc": "has_vehiculeautre",
         "description": "Tous les autres véhicules (tracteur, bus, quad, engin spécial, train)",
         "type": "vehiculeFilter",
@@ -198,11 +198,11 @@
         },
         "choices": {
           "any": "Indifférent",
-          "none": "accident sans autre véhicule",
-          "some": "accident avec autre véhicule(s)"
+          "none": "Accident sans autre véhicule",
+          "some": "Accident avec autre véhicule(s)"
         }
       },
-      "gravité" : {
+      "Gravité" : {
         "field_name_acc": "gravite_accident",
         "description": "Tué: au moins une personne a été tuée. Hospitalisé: au moins une personne a été hospitalisée. Blessé léger: uniquement des blessés légers.",
         "values": {
@@ -223,7 +223,7 @@
           "hors réseau public": true
         }
       },
-      "luminosité" : {
+      "Luminosité" : {
         "field_name_acc": "lum",
         "values": {
           "plein jour": true,

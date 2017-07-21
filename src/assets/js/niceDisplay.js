@@ -26,5 +26,6 @@ function niceDisplay (n) {
 }
 
 function capitalize (s) {
+  // Met une majuscule à la première lettre
   return s.replace(/\b\w/, l => l.toUpperCase())
 }
