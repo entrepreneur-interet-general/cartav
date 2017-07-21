@@ -1,7 +1,7 @@
 {
   "name": "vue-webpack",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "Cartographie accidents et verbalisation",
   "author": "Francis Chabouis <francis.chabouis@interieur.gouv.fr>",
   "private": true,
   "scripts": {
