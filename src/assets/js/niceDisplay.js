@@ -1,32 +1,30 @@
-export default { niceDisplay }
+export default { niceDisplay, capitalize }
 
 function isNumber (n) {
   return !isNaN(parseFloat(n)) && isFinite(n)
 }
 
+function format (n) {
+  return n.toLocaleString('fr-FR', {
+    maximumSignificantDigits: 3
+  })
+}
+
 function niceDisplay (n) {
-  // Gère l'affichage des nombres dans les clusters
+  // Met en forme les nombre joliment et correctement typographiquement
   if (!isNumber(n)) {
     return n
+  } else if (n > 1000 * 1000) {
+    return format(n / 1000000) + ' M'
+  } else if (n > 1000) {
+    return format(n / 1000) + ' k'
+  } else if (n > 1) {
+    return format(n)
+  } else {
+    return format(n * 1000) + ' ‰'
   }
-  if (n > 1000000) {
-    n = Math.round(n / 10000) / 100 + 'm'
-  }
-  if (n > 10000) {
-    n = Math.round(n / 1000) + 'k'
-  }
-  if (n > 1000) {
-    n = Math.round(n / 100) / 10 + 'k'
-  }
-  if (n > 10) {
-    n = Math.round(n * 10) / 10
-  }
-  if (n > 1) {
-    n = Math.round(n * 100) / 100
-  }
-  if (n < 1 && n >= 0) {
-    let k = Math.round(-Math.log(n))
-    n = Math.round(n * Math.pow(10, k)) / Math.pow(10, k)
-  }
-  return n
+}
+
+function capitalize (s) {
+  return s.replace(/\b\w/, l => l.toUpperCase())
 }
