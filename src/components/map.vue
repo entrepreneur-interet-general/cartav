@@ -1,6 +1,10 @@
 <template>
     <div id="map2">
         <infoSidebar id="info-sidebar" :infoSidebarData="infoSidebarData" class=""></infoSidebar>
+        <legende></legende>
+        <div v-if="infoSidebarData.showGraph">
+          <chartComponent :chartData="infoSidebarData.graphData"></chartComponent>
+        </div>
     </div>
 </template>
 
@@ -16,6 +20,8 @@ import '../../node_modules/sidebar-v2/js/leaflet-sidebar.js'
 import es from '../store/modules/elastic_search'
 import '../../node_modules/font-awesome/css/font-awesome.min.css'
 import infoSidebar from './info-sidebar'
+import legend from './legend'
+import chartComponent from './chartComponent'
 
 function styleAccidents (feature) {
   return {
@@ -145,6 +151,8 @@ function accidentIconCreateFunction (cluster) {
 
 export default {
   components: {
+    legende: legend,
+    chartComponent: chartComponent,
     infoSidebar
   },
   data () {
@@ -550,7 +558,9 @@ export default {
       return L.markerClusterGroup({
         maxClusterRadius: 30,
         singleMarkerMode: false,
-        iconCreateFunction: accidentIconCreateFunction
+        iconCreateFunction: accidentIconCreateFunction,
+        spiderfyDistanceMultiplier: 1.5
+
       }).addLayer(datalayer)
     },
     setStyle (options) {

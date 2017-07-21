@@ -1,14 +1,11 @@
 <template>
-  <div id='legende'>
-    <hr>
-    <span v-if='hasScale && !localLevel'>
-      <h4>{{ ratioLabel }}</h4>
-      <div> valeur moyenne: {{ ratioAverage }}</div>
-      <div v-for='(color, i) in colors'>
-        <span class='oneColor' v-bind:style="'background-color:'+color+';'"></span>
-        <span class='legendNumber'>{{ getRange(i) }}</span>
-      </div>
-    </span>
+  <div id='legende' v-if='hasScale && !localLevel'>
+    <h4>{{ ratioLabel }}</h4>
+    <div> valeur moyenne: {{ ratioAverage }}</div>
+    <div v-for='(color, i) in colors' class='colorScale'>
+      <span class='oneColor' v-bind:style="'background-color:'+color+';'"></span>
+      <span class='legendNumber'>{{ getRange(i) }}</span>
+    </div>
   </div>
 </template>
 
@@ -51,9 +48,10 @@ export default {
 </script>
 
 <style>
-#legende div {
-  padding-bottom: 10px;
+.colorScale {
+  padding-top: 10px;
 }
+
 #legende h4 {
   font-size: 16px;
 }
@@ -64,9 +62,25 @@ export default {
 .legendNumber {
   padding-left: 10px;
 }
+
 #legende {
   position: absolute;
-  bottom: 0px;
+  bottom: 0;
+  right: 0;
   width: 100%;
+  overflow: hidden;
+  z-index: 2000;
+  background-color: rgba(255, 255, 255, 0.90);
+  cursor: auto;
+}
+@media (min-width: 768px) {
+  #legende {
+    padding: 10px;
+    border-radius: 4px; 
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    bottom: 20px;
+    right: 10px;
+    width: 300px;
+  }
 }
 </style>
