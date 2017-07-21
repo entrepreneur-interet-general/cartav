@@ -11,18 +11,12 @@
       <button type="button" class="btn btn-default" v-on:click='restore'><i class="fa fa-level-up"></i> Niveau supérieur</button>
       <circo v-if="levelIsCirco"></circo>
       <hoverInfo :data="infoSidebarData.hoverInfoData"></hoverInfo>
-      <div v-if="infoSidebarData.showGraph">
-        <pieChart :chart-data="infoSidebarData.graphData" :options="{legend: {display: true, position: 'bottom', labels: {boxWidth: 10, padding: 3, fontColor: '#333'}}}"></pieChart>
-      </div>
-      <legende></legende>
     </div>
   </div>
 </template>
 
 <script>
 import hoverInfo from './hoverInfo'
-import legend from './legend'
-import pieChart from '../assets/js/pieChart.js'
 import circo from './Circo'
 
 export default {
@@ -33,8 +27,6 @@ export default {
   },
   components: {
     hoverInfo: hoverInfo,
-    legende: legend,
-    pieChart: pieChart,
     circo
   },
   computed: {
@@ -55,10 +47,8 @@ export default {
 #info-sidebar {
   position: absolute;
   top: 0;
-  bottom: 0;
   right: 0;
   width: 100%;
-  overflow: hidden;
   z-index: 2000;
   background-color: rgba(255, 255, 255, 0.90);
   cursor: auto;
@@ -68,10 +58,10 @@ export default {
     border-radius: 4px; 
     border: 2px solid rgba(0, 0, 0, 0.2);
     top: 10px;
-    bottom: 10px;
     right: 10px;
     transition: width 500ms;
     width: 300px;
+    padding-bottom: 10px;
   }
 }
 #info-sidebar.collapsed {
