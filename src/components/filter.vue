@@ -23,10 +23,20 @@
           <span v-for="(category, categoryName) in criteria_list">
             <span v-if="categoryName === tab.category">
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
-                <span v-for="(criteria, criteriaName) in category">
+                <span v-for="(criteria, criteriaName) in category" class="criteriaSpan">
                 <div class="row s-rows">
                   <div class="col-lg-11">
-                    <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}</h4>
+                    <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}
+                      <span class="selectAll">sélectionner: 
+                        <span class="" v-on:click="selectAll(categoryName, criteriaName, true)">
+                          tout
+                        </span>
+                        /
+                        <span class="" v-on:click="selectAll(categoryName, criteriaName, false)">
+                          rien
+                        </span>
+                      </span>
+                    </h4>
                   </div>
                   <div class="col-lg-1">
                     <abbr v-if="criteria.description" class="description-info-circle" v-bind:title="criteria.description"><i class='fa fa-info-circle'></i></abbr>
@@ -44,8 +54,11 @@
                     <div class="row s-rows">
                       <div class="col-lg-8 funkyradio">
                         <div class="funkyradio-default">
-                            <input type="checkbox" name="checkbox" v-bind:id="criteriaName+valName" v-on:click="set_criteria(categoryName, criteriaName, valName, !val)" :checked="val"/>
-                            <label v-bind:for="criteriaName+valName">{{ criteria.labels && criteria.labels[valName] ? criteria.labels[valName] : valName }}</label>
+                            <input type="checkbox" name="checkbox" v-bind:id="criteriaName+valName" :checked="val"/>
+                            <label v-bind:for="criteriaName+valName" v-on:click.self="set_criteria($event,categoryName, criteriaName, valName, !val)">
+                              {{ criteria.labels && criteria.labels[valName] ? criteria.labels[valName] : valName }}
+                              <div class="seul" v-on:click.prevent="selectAlone($event, categoryName, criteriaName, valName)"> seul </div>
+                            </label>
                         </div>
                       </div>
                       <div class="col-lg-2 agg_acc">
@@ -195,7 +208,26 @@ export default {
     }
   },
   methods: {
-    set_criteria (categoryName, criteriaName, valName, value) {
+    selectAlone (event, categoryName, criteriaName, valName) {
+      // Idée, copyright Martin Gross, head of ux consulting at Ministère de l'interieur
+      let criteriaPath = `${categoryName}.${criteriaName}`
+      let crits = []
+      for (let c in this.criteria_list[categoryName][criteriaName].values) {
+        crits.push({label: c, value: c === valName})
+      }
+      let args = {type: 'bulk', criteriaPath: criteriaPath, criterias: crits}
+      this.$store.dispatch('set_criteria', args)
+    },
+    selectAll (categoryName, criteriaName, val) {
+      let criteriaPath = `${categoryName}.${criteriaName}`
+      let crits = []
+      for (let c in this.criteria_list[categoryName][criteriaName].values) {
+        crits.push({label: c, value: val})
+      }
+      let args = {type: 'bulk', criteriaPath: criteriaPath, criterias: crits}
+      this.$store.dispatch('set_criteria', args)
+    },
+    set_criteria (e, categoryName, criteriaName, valName, value) {
       let criteriaPath = `${categoryName}.${criteriaName}.values.${valName}`
       this.$store.dispatch('set_criteria', {criteriaPath: criteriaPath, value: value})
     },
@@ -317,6 +349,34 @@ export default {
 
 .funkyradio input[type="checkbox"] ~ label:hover {
   border : 1px solid #979798;
+}
+
+.seul, .selectAll {
+  display: none;
+}
+
+.criteriaSpan:hover > div > div > h4 > .selectAll {
+  display: inline;
+  padding-left: 20px;
+  font-size: 12px;
+  color: grey;
+}
+
+label:hover > .seul, .seul:hover{
+  display: inline-block;
+  background-color: white;
+  font-size: 12px;
+  color: grey;
+  position: absolute;
+  padding: 0 3px 0 3px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.seul:hover, .selectAll > span:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .funkyradio-default input[type="checkbox"]:checked ~ label:before {
