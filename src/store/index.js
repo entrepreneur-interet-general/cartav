@@ -19,6 +19,8 @@ let accidentsFields = {
   'numéro accident': 'Num_Acc',
   adresse: 'adr',
   ville: 'current_name',
+  'origine géolocalisation': 'geo_source_display',
+  'point de repère (PR)': 'PR_display',
   date: 'date_formated',
   heure: 'heures_minutes',
   luminosité: 'lum',
