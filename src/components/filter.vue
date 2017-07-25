@@ -27,7 +27,7 @@
                 <div class="row s-rows">
                   <div class="col-lg-11">
                     <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}
-                      <span class="selectAll">sélectionner: 
+                      <span v-if="criteria.type !== 'vehiculeFilter'" class="selectAll">sélectionner: 
                         <span class="" v-on:click="selectAll(categoryName, criteriaName, true)">
                           tout
                         </span>
