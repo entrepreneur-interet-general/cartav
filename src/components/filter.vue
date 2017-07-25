@@ -27,7 +27,7 @@
                 <div class="row s-rows">
                   <div class="col-lg-11">
                     <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}
-                      <span v-if="criteria.type !== 'vehiculeFilter'" class="selectAll">sélectionner: 
+                      <span v-if="criteria.type !== 'vehiculeFilter'" class="selectAll">sélectionner:
                         <span class="" v-on:click="selectAll(categoryName, criteriaName, true)">
                           tout
                         </span>
@@ -44,9 +44,9 @@
                 </div>
 
                 <span v-if="criteria.type == 'vehiculeFilter'">
-                  <vehiculeCheckbox 
+                  <vehiculeCheckbox
                     :criteriaPath="categoryName+'.'+criteriaName"
-                    :criteria="criteria"> 
+                    :criteria="criteria">
                   </vehiculeCheckbox>
                 </span>
                 <span v-else>
@@ -290,6 +290,7 @@ export default {
   border-radius: 3px;
   border: 1px solid #D1D3D4;
   font-weight: normal;
+  padding: 0.5em;
 }
 
 .funkyradio input[type="checkbox"]:empty {
@@ -298,7 +299,6 @@ export default {
 
 .funkyradio input[type="checkbox"]:empty ~ label {
   position: relative;
-  line-height: 2.5em;
   /*text-indent: 3.25em;*/
   padding-left: 3.25em;
   /*margin-top: 2em;*/
@@ -377,6 +377,11 @@ label:hover > .seul, .seul:hover{
 .seul:hover, .selectAll > span:hover {
   text-decoration: underline;
   cursor: pointer;
+}
+
+.funkyradio-default input[type="checkbox"] ~ label:before {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
 
 .funkyradio-default input[type="checkbox"]:checked ~ label:before {
