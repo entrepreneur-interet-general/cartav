@@ -9,9 +9,6 @@
 <script>
 import carte from './map'
 import filters from './filter'
-import jQuery from 'jquery'
-global.jQuery = jQuery
-require('bootstrap')
 
 export default {
   name: 'app',
