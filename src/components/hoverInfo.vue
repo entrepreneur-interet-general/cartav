@@ -1,10 +1,10 @@
 <template>
   <div id='hoverInfo'>
-    {{ decoupage }}: <strong>{{ data.areaMouseOver }}</strong> </br>
-    {{ ratioLabel }}: <strong> {{ ratio }}</strong> </br>
-    Nombre d’accidents: <strong>{{ accidentsN }}</strong> </br>
-    Nombre de pve: <strong>{{ pveN }}</strong> </br>
-    Kilomètres de voirie: <strong>{{ km_voie }} km</strong> </br>
+    {{ decoupage }}&nbsp;: <strong>{{ data.areaMouseOver }}</strong> </br>
+    {{ ratioLabel }}&nbsp;: <strong> {{ ratio }}</strong> </br>
+    Nombre d’accidents&nbsp;: <strong>{{ accidentsN }}</strong> </br>
+    Nombre de PVEs&nbsp;: <strong>{{ pveN }}</strong> </br>
+    Kilomètres de voirie&nbsp;: <strong>{{ km_voie }} km</strong> </br>
   </div>
 </template>
 
@@ -14,7 +14,7 @@ import nd from '../assets/js/niceDisplay'
 export default {
   computed: {
     decoupage () {
-      return this.$store.getters.view.linksTo
+      return nd.capitalize(this.$store.getters.view.linksTo)
     },
     ratio () {
       return nd.niceDisplay(this.data.ratio)
@@ -26,7 +26,7 @@ export default {
       return nd.niceDisplay(this.data.pveN)
     },
     km_voie () {
-      return Math.round(this.data.km_voie)
+      return Math.round(this.data.km_voie).toLocaleString('fr-FR')
     },
     ratioLabel () {
       return this.$store.getters.ratioLabel
