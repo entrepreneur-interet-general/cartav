@@ -298,6 +298,10 @@ export default new Vuex.Store({
       let decoupage = getters.view.contour.decoupage
       return aggregationLevelsInfos.contour[decoupage].name
     },
+    contourFilterDisplayFieldName (state, getters) {
+      let decoupage = getters.view.contour.filter.filterCriteria
+      return aggregationLevelsInfos.contour[decoupage].name
+    },
     contourFilterFieldName (state, getters) {
       let filterCriteria = getters.view.contour.filter.filterCriteria
       if (filterCriteria) {
@@ -330,7 +334,7 @@ export default new Vuex.Store({
       if (agg !== undefined) {
         if (getters.view.data.filter.activated) {
           let filter = getters.view.contour.filter.value
-          let field = getters.contourIdFieldName
+          let field = getters.contourFilterDisplayFieldName
           res['habitants'] = _(agg).map(x => (x.properties[field] === filter) ? x.properties.population : 0).sum()
           res['longueur_routes'] = _(agg).map(x => (x.properties[field] === filter) ? x.properties.longueur_routes : 0).sum()
         } else {
@@ -340,7 +344,6 @@ export default new Vuex.Store({
       } else {
         res['habitants'] = undefined
       }
-
       return res
     },
     ratioAverage (state, getters) {
