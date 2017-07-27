@@ -6,20 +6,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="static/css/bootstrap.min.css">
     <link rel="stylesheet" href="static/css/leaflet-sidebar.css">
+    <style>
+      #info {
+        text-align: center;
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 300px;
+      }
+      #infoNotWorking {
+        display: none;
+      }
+    </style>
   </head>
   <script>
-    try {
-      var obj = {};
-      Object.defineProperty(obj, 'key', {
-        testVueCompatibility: true
-      });
-    }
-    catch (e) {
-     alert('Votre navigateur n\'est pas compatible avec cet outil. Pour en profiter il vous faudra le mettre à jour. Désolé !');
-    }
+    setTimeout(function(){
+      document.getElementById("infoNotWorking").style.display = "block";
+    }, 4500);
   </script>
   <body>
     <div id="app">
+    <div id = "info">
+        Cartographie accidents - verbalisations
+        <br>
+        <br>
+      <div id="infoNotWorking">
+        Si vous avez le temps de lire ce message, cela signifie probablement que votre navigateur n'est pas compatible...
+        <br>
+        Pour profiter de l'outil, il vous faudra le mettre à jour (Firefox 45 ou supérieur).
+      </div>
+    </div>
       <router-view></router-view>
     </div>
     <!-- built files will be auto injected -->
