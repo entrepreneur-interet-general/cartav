@@ -85,7 +85,8 @@ export default new Vuex.Store({
     zoomActive: true,
     colorScale: Object.keys(colors)[0],
     colorScaleInverted: true,
-    basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]]
+    basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]],
+    showSpinner: false
   },
   mutations: {
     set_localLevelDisplay (state, localLevelDisplay) {
@@ -151,6 +152,9 @@ export default new Vuex.Store({
     },
     set_basemapUrl (state, basemapUrl) {
       state.basemapUrl = basemapUrl
+    },
+    set_showSpinner (state, show) {
+      state.showSpinner = show
     }
   },
   actions: {
@@ -232,6 +236,7 @@ export default new Vuex.Store({
     getLocalData (context, options) {
       let state = context.state
       context.commit('set_zoomActive', options.zoomActive)
+      context.commit('set_showSpinner', true)
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
         let queryAcc = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view, ['geojson', 'num_route_or_id'])
@@ -245,11 +250,13 @@ export default new Vuex.Store({
           context.commit('accidents_agg_by_road', es.toRoadsDict(values[0]))
           context.commit('pve_agg_by_road', es.toRoadsDict(values[1]))
           context.commit('radars_geojson', values[2])
+          context.commit('set_showSpinner', false)
         })
       } else {
         let query = es.generateQuery(state.criteria_list, 'acc', context.getters.view)
         es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields).then(function (res) {
           context.commit('accidents_geojson', res)
+          context.commit('set_showSpinner', false)
         })
       }
     },
