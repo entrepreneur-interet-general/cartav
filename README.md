@@ -57,7 +57,25 @@ yarn
 npm run dev
 
 # Construire pour la production avec minification
-npm run build-production
+make prod
 
 # Construire pour l’instance de pré-production avec minification
-npm run build-pre-prod
+make pre-prod
+
+## Déployer
+
+Selon la cible, exécutez au choix :
+```
+make deploy-prod
+make deploy-pre-prod
+```
+
+Il est nécessaire de configurer `~/.ssh/config` afin d’identifier le serveur et votre nom d’utilisateur.
+
+Par exemple :
+
+```
+Host fa-gate-adm
+    User grabenertr
+    Hostname 10.237.7.16
+```
