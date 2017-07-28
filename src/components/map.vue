@@ -5,6 +5,7 @@
         <div v-if="infoSidebarData.showGraph">
           <chartComponent :chartData="infoSidebarData.graphData"></chartComponent>
         </div>
+        <Spinner></Spinner>
     </div>
 </template>
 
@@ -22,6 +23,7 @@ import es from '../store/modules/elastic_search'
 import infoSidebar from './info-sidebar'
 import legend from './legend'
 import chartComponent from './chartComponent'
+import Spinner from './Spinner'
 
 function styleAccidents (feature) {
   return {
@@ -153,7 +155,8 @@ export default {
   components: {
     legende: legend,
     chartComponent: chartComponent,
-    infoSidebar
+    infoSidebar,
+    Spinner
   },
   data () {
     return {
