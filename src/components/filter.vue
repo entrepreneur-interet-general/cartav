@@ -2,11 +2,11 @@
   <div>
     <div class="sidebar-tabs">
       <ul role="tablist">
-        <li><a href="#ratio" role="tab"><i class="fa fa-sliders"></i></a></li>
-        <li><a href="#timeFilters" role="tab"><i class="fa fa-clock-o"></i></a></li>
-        <li><a href="#accidentsFilters" role="tab"><i class="fa fa-car fa-rotate-90"></i><i class="fa fa-male"></i></a></li>
-        <li><a href="#pveFilters" role="tab"><strong>PVE</strong></a></li>
-        <li><a href="#help" role="tab"><i class="glyphicon glyphicon-question-sign"></i></a></li>
+        <li><a href="#ratio" role="tab"><abbr title="Sélectionner le contenu à afficher sur la cartue"><i class="fa fa-sliders"></i></abbr></a></li>
+        <li><a href="#timeFilters" role="tab"><abbr title="Spécifier la date ou moment des accidents et PV"><i class="fa fa-clock-o"></i></abbr></a></li>
+        <li><a href="#accidentsFilters" role="tab"><abbr title="Filtrer les accidents"><i class="fa fa-car fa-rotate-90"></i><i class="fa fa-male"></i></abbr></a></li>
+        <li><a href="#pveFilters" role="tab"><abbr title="Filtrer les PV électroniques"><strong>PVE</strong></abbr></a></li>
+        <li><a href="#help" role="tab"><abbr title="Aide"><i class="glyphicon glyphicon-question-sign"></i></abbr></a></li>
       </ul>
     </div>
 
