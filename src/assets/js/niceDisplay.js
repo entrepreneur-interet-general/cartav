@@ -18,7 +18,7 @@ function niceDisplay (n) {
     return format(n / 1000000) + ' M'
   } else if (n > 1000) {
     return format(n / 1000) + ' k'
-  } else if (n > 1) {
+  } else if (n >= 0.1) {
     return format(n)
   } else {
     return format(n * 1000) + ' ‰'
