@@ -76,7 +76,7 @@ export default {
 @media (min-width: 768px) {
   #legende {
     padding: 10px;
-    border-radius: 4px; 
+    border-radius: 4px;
     border: 2px solid rgba(0, 0, 0, 0.2);
     bottom: 20px;
     right: 10px;

@@ -1,4 +1,7 @@
 {
+  "colors": {
     "greenToRed": ["rgba(46, 255, 0, 0.3)", "rgba(187, 255, 0, 0.3)", "rgba(255, 183, 0, 0.3)", "rgba(255, 73, 1, 0.3)"],
     "whiteToBlue": ["rgba(159,153,255,0.3)", "rgba(64,50,255,0.5)", "rgba(13,0,204,0.5)", "rgba(6,0,102,0.6)"]
+  },
+  "defaultColor": "whiteToBlue"
 }

@@ -83,7 +83,7 @@ export default new Vuex.Store({
     localLevelDisplay: 'aggregatedByRoad',
     localLevelData: 'accidentsOnly',
     zoomActive: true,
-    colorScale: Object.keys(colors)[0],
+    colorScale: colors.defaultColor,
     colorScaleInverted: true,
     basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]],
     showSpinner: false
@@ -366,7 +366,7 @@ export default new Vuex.Store({
       }
     },
     colors (state) {
-      let cs = colors[state.colorScale].slice()
+      let cs = colors.colors[state.colorScale].slice()
       if (state.colorScaleInverted) { cs.reverse() }
       return cs
     },

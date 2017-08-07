@@ -93,7 +93,7 @@ export default {
       localLevelDisplay: this.$store.state.localLevelDisplay,
       localLevelData: this.$store.state.localLevelData,
       colorScale: this.$store.state.colorScale,
-      colors: colors,
+      colors: colors.colors,
       colorScaleInverted: this.$store.state.colorScaleInverted,
       basemaps: criteriaList.basemaps,
       basemapUrl: this.$store.state.basemapUrl
