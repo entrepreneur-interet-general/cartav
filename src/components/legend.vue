@@ -40,7 +40,7 @@ export default {
       } else if (i === nd.niceDisplay(this.legendScale.length)) {
         return '> ' + nd.niceDisplay(this.legendScale[this.legendScale.length - 1])
       } else {
-        return nd.niceDisplay(this.legendScale[i - 1]) + ' - ' + nd.niceDisplay(this.legendScale[i])
+        return nd.niceDisplay(this.legendScale[i - 1]) + ' – ' + nd.niceDisplay(this.legendScale[i])
       }
     }
   }
