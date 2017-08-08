@@ -1,7 +1,7 @@
 <template>
   <div id='legende' v-if='hasScale && !localLevel'>
     <h4>{{ ratioLabel }}</h4>
-    <div> valeur moyenne: {{ ratioAverage }}</div>
+    <div> Valeur moyenne: {{ ratioAverage }}</div>
     <div v-for='(color, i) in colors' class='colorScale'>
       <span class='oneColor' v-bind:style="'background-color:'+color+';'"></span>
       <span class='legendNumber'>{{ getRange(i) }}</span>
