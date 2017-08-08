@@ -6,7 +6,7 @@
       <label for="dividende">Nombre de</label>
       <select v-model="dividende" class="form-control" id="dividende">
         <option>accidents</option>
-        <option>PVE</option>
+        <option>PV électroniques</option>
         <option>habitants</option>
         <option value="longueur_routes">km de voirie</option>
       </select>
@@ -15,7 +15,7 @@
       <label for="divisor">par</label>
       <select v-model="divisor" class="form-control" id="divisor">
         <option>accidents</option>
-        <option>PVE</option>
+        <option>PV électroniques</option>
         <option>habitants</option>
         <option value="longueur_routes">km de voirie</option>
       </select>
@@ -43,16 +43,16 @@
     <label for="accidentsOnly">Accidents</label>
     <br>
     <input type="radio" id="pveOnly" value="pveOnly" v-model="localLevelData">
-    <label for="pveOnly">PVE</label>
+    <label for="pveOnly">PV électroniques</label>
     <br>
     <input type="radio" id="accidentsAndPve" value="accidentsAndPve" v-model="localLevelData">
-    <label for="accidentsAndPve">Accidents et PVE</label>
+    <label for="accidentsAndPve">Accidents et PV électroniques</label>
     <br>
     <input type="radio" id="accidentsNoPve" value="accidentsNoPve" v-model="localLevelData">
-    <label for="accidentsNoPve">Axes avec accidents, sans PVE</label>
+    <label for="accidentsNoPve">Axes avec accidents, sans PV électroniques</label>
     <br>
     <input type="radio" id="pveNoAccidents" value="pveNoAccidents" v-model="localLevelData">
-    <label for="pveNoAccidents">Axes avec PVE, sans accidents</label>
+    <label for="pveNoAccidents">Axes avec PV électroniques, sans accidents</label>
     <br>
     <br>
 

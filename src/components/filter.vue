@@ -72,7 +72,7 @@
                       </div>
                       <div class="col-lg-2 agg_pve">
                         <span v-if="agg_pve_value(categoryName, criteriaName, valName)">
-                        <abbr v-bind:title="valName + ' : ' + agg_pve_value(categoryName, criteriaName, valName, false) + ' PVE'">{{ agg_pve_value(categoryName, criteriaName, valName) }}</abbr>
+                        <abbr v-bind:title="valName + ' : ' + agg_pve_value(categoryName, criteriaName, valName, false) + ' PV électronique'">{{ agg_pve_value(categoryName, criteriaName, valName) }}</abbr>
                         </span>
                       </div>
                       <br>
@@ -112,9 +112,9 @@ export default {
   data () {
     return {
       tabs: [
-        {id: 'timeFilters', tabTitle: 'Filtres temporels (accidents et pve)', category: 'PVE et accidents'},
+        {id: 'timeFilters', tabTitle: 'Filtres temporels (accidents et PVE)', category: 'PV électroniques et accidents'},
         {id: 'accidentsFilters', tabTitle: 'Filtres accidents', category: 'Accidents'},
-        {id: 'pveFilters', tabTitle: 'Filtres PVE', category: 'PVE'}
+        {id: 'pveFilters', tabTitle: 'Filtres PV électroniques', category: 'PV électroniques'}
       ]
     }
   },

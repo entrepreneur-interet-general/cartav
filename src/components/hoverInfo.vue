@@ -3,7 +3,7 @@
     {{ decoupage }}&nbsp;: <strong>{{ data.areaMouseOver }}</strong> </br>
     {{ ratioLabel }}&nbsp;: <strong> {{ ratio }}</strong> </br>
     Nombre d’accidents&nbsp;: <strong>{{ accidentsN }}</strong> </br>
-    Nombre de PVEs&nbsp;: <strong>{{ pveN }}</strong> </br>
+    Nombre de PV élecroniques&nbsp;: <strong>{{ pveN }}</strong> </br>
     Kilomètres de voirie&nbsp;: <strong>{{ km_voie }} km</strong> </br>
   </div>
 </template>

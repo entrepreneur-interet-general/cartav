@@ -78,7 +78,7 @@ export default new Vuex.Store({
     accidents_agg_by_road: {},
     pve_agg_by_road: {},
     pve_geojson: {},
-    dividende: 'PVE',
+    dividende: 'PV électroniques',
     divisor: 'accidents',
     localLevelDisplay: 'aggregatedByRoad',
     localLevelData: 'accidentsOnly',
@@ -332,9 +332,9 @@ export default new Vuex.Store({
 
       agg = _.get(state.verbalisations, 'aggregations.group_by.buckets', undefined)
       if (agg !== undefined) {
-        res['PVE'] = _(agg).map(x => x.doc_count).sum()
+        res['PV électroniques'] = _(agg).map(x => x.doc_count).sum()
       } else {
-        res['PVE'] = undefined
+        res['PV électroniques'] = undefined
       }
 
       agg = _.get(state.contour, 'features', undefined)

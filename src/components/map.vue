@@ -575,7 +575,7 @@ export default {
     count (type, id) {
       let source = {
         'accidents': this.accidents.aggregations.group_by.buckets,
-        'PVE': this.verbalisations.aggregations.group_by.buckets,
+        'PV électroniques': this.verbalisations.aggregations.group_by.buckets,
         'habitants': this.contour,
         'longueur_routes': this.contour
       }
@@ -618,7 +618,7 @@ export default {
 
       feature.countElements = {}
       feature.countElements.accidents = this.count('accidents', id)
-      feature.countElements.PVE = this.count('PVE', id)
+      feature.countElements['PV électroniques'] = this.count('PV électroniques', id)
       feature.countElements.habitants = this.count('habitants', id)
       feature.countElements.longueur_routes = this.count('longueur_routes', id)
 
@@ -705,7 +705,7 @@ export default {
         vm.infoSidebarData.hoverInfoData.areaMouseOver = layer.displayName
         vm.infoSidebarData.hoverInfoData.ratio = feature.countElements ? feature.countElements.ratio : ''
         vm.infoSidebarData.hoverInfoData.accidentsN = feature.countElements ? feature.countElements.accidents : ''
-        vm.infoSidebarData.hoverInfoData.pveN = feature.countElements ? feature.countElements.PVE : ''
+        vm.infoSidebarData.hoverInfoData.pveN = feature.countElements ? feature.countElements['PV électroniques'] : ''
         vm.infoSidebarData.hoverInfoData.km_voie = layer.km_voie
       })
     }

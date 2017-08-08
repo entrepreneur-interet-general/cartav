@@ -4,7 +4,7 @@
     "OSM noir & blanc": "https://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaXN0b3BvcG9raSIsImEiOiJjaW12eWw2ZHMwMGFxdzVtMWZ5NHcwOHJ4In0.VvZvyvK0UaxbFiAtak7aVw"
   },
   "filters": {
-    "PVE et accidents" : {
+    "PV électroniques et accidents" : {
       "Année" : {
         "field_name_pve": "ANNEE_INFRACTION",
         "field_name_acc": "ANNEE",
@@ -67,7 +67,7 @@
         }
       }
     },
-    "PVE" : {
+    "PV électroniques" : {
       "LIBELLE_FAMILLE" : {
         "display_name": "Famille Infraction",
         "field_name_pve": "LIBELLE_FAMILLE",
