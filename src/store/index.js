@@ -371,7 +371,13 @@ export default new Vuex.Store({
       return cs
     },
     ratioLabel (state) {
-      return 'Nombre de ' + state.dividende + ' par ' + state.divisor
+      let label = {
+        'PV électroniques': 'de PV électroniques',
+        'accidents': 'd’accidents',
+        'habitants': 'd’habitants',
+        'longueur_routes': 'de km de voirie'
+      }
+      return 'Rapport entre le nombre ' + label[state.dividende] + ' et le nombre ' + label[state.divisor]
     }
   }
 })
