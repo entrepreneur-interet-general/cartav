@@ -45,9 +45,6 @@
     <input type="radio" id="pveOnly" value="pveOnly" v-model="localLevelData">
     <label for="pveOnly">PV électroniques</label>
     <br>
-    <input type="radio" id="accidentsAndPve" value="accidentsAndPve" v-model="localLevelData">
-    <label for="accidentsAndPve">Accidents et PV électroniques</label>
-    <br>
     <input type="radio" id="accidentsNoPve" value="accidentsNoPve" v-model="localLevelData">
     <label for="accidentsNoPve">Axes avec accidents, sans PV électroniques</label>
     <br>

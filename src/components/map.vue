@@ -59,37 +59,6 @@ function styleAccidentsRoads (count) {
   }
 }
 
-function styleAccidentsRoadsDashed (count, dashed) {
-  return function () {
-    let res = {
-      color: 'rgb(255, 0, 0)',
-      opacity: 0.8,
-      weight: 3
-    }
-    if (dashed) {
-      res.dashArray = [20, 20]
-      res.lineCap = 'butt'
-    }
-    return res
-  }
-}
-
-function stylePveRoadsDashed (count, dashed) {
-  return function () {
-    let res = {
-      color: 'rgb(0, 0, 255)',
-      opacity: 0.8,
-      weight: 3
-    }
-    if (dashed) {
-      res.dashArray = [20, 20]
-      res.lineCap = 'butt'
-      res.dashOffset = 20
-    }
-    return res
-  }
-}
-
 function stylePveRoads (count) {
   let opacity, weight
 
@@ -318,7 +287,6 @@ export default {
       let options = {
         accidentsOnly: {showAcc: true, styleAcc: styleAccidentsRoads, showPve: false},
         pveOnly: {showAcc: false, showPve: true, stylePve: stylePveRoads},
-        accidentsAndPve: {showAcc: true, styleAcc: styleAccidentsRoadsDashed, showPve: true, stylePve: stylePveRoadsDashed},
         accidentsNoPve: {showAcc: true, styleAcc: styleAccidentsRoads, showPve: false},
         pveNoAccidents: {showAcc: false, showPve: true, stylePve: stylePveRoads}
       }
@@ -335,9 +303,6 @@ export default {
             include = !hasPve
           } else if (vm.localLevelData === 'accidentsOnly') {
             include = true
-          } else if (vm.localLevelData === 'accidentsAndPve') {
-            include = true
-            hasPve = dataPve[roadId] !== undefined
           }
 
           if (include) {
@@ -395,9 +360,6 @@ export default {
             include = !hasAcc
           } else if (vm.localLevelData === 'pveOnly') {
             include = true
-          } else if (vm.localLevelData === 'accidentsAndPve') {
-            include = true
-            hasAcc = dataAcc[roadId] !== undefined
           }
 
           if (include) {
