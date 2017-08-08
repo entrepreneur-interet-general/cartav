@@ -37,7 +37,7 @@ export default {
     getRange (i) {
       if (i === 0) {
         return '< ' + nd.niceDisplay(this.legendScale[0])
-      } else if (i === nd.niceDisplay(this.legendScale.length)) {
+      } else if (i === this.legendScale.length) {
         return '> ' + nd.niceDisplay(this.legendScale[this.legendScale.length - 1])
       } else {
         return nd.niceDisplay(this.legendScale[i - 1]) + ' – ' + nd.niceDisplay(this.legendScale[i])
