@@ -18,6 +18,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import 'sidebar-v2/js/leaflet-sidebar.js'
 import 'font-awesome/css/font-awesome.min.css'
+import '../vendor/leaflet.pattern.js'
 
 import es from '../store/modules/elastic_search'
 import infoSidebar from './info-sidebar'
@@ -436,7 +437,7 @@ export default {
         dividende: this.$store.state.dividende,
         divisor: this.$store.state.divisor
       }
-      this.displayContours(this.setStyle(colorOptions), this.myOnEachFeature)
+      this.displayContours((feature) => this.customStyle(feature, colorOptions), this.myOnEachFeature)
       this.zoomBounds(this.contourLayerGroup.getLayers()[0])
     },
     showRadars () {
@@ -528,12 +529,6 @@ export default {
 
       }).addLayer(datalayer)
     },
-    setStyle (options) {
-      let vm = this
-      return function (feature) {
-        return vm.customStyle(feature, options)
-      }
-    },
     count (type, id) {
       let source = {
         'accidents': this.accidents.aggregations.group_by.buckets,
@@ -590,25 +585,24 @@ export default {
         feature.countElements.ratio = undefined
       }
 
-      let fillColor = options.color
-      let fillOpacity = 1
-      if (feature.countElements.ratio !== undefined && !isNaN(feature.countElements.ratio)) {
-        if (feature.countElements.ratio < this.legendScale[0]) {
-          fillColor = this.colors[0]
-        } else if (feature.countElements.ratio < this.legendScale[1]) {
-          fillColor = this.colors[1]
-        } else if (feature.countElements.ratio < this.legendScale[2]) {
-          fillColor = this.colors[2]
-        } else {
-          fillColor = this.colors[3]
-        }
+      let stripesParams = {
+        spaceColor: '#000000',
+        spaceOpacity: 0.8
       }
+      if (feature.countElements.ratio !== undefined && !isNaN(feature.countElements.ratio)) {
+        let index = this.legendScale.findIndex(s => feature.countElements.ratio < s)
+        index = (index === -1) ? this.legendScale.length : index
+        stripesParams.color = this.colors[index]
+        stripesParams.weight = this.$store.getters.stripes[index].weight
+        stripesParams.angle = this.$store.getters.stripes[index].angle
+      }
+      let stripes = new L.StripePattern(stripesParams).addTo(this.map)
       return {
         color: 'white',
         weight: 2,
         opacity: 0.5,
-        fillOpacity: fillOpacity,
-        fillColor: fillColor
+        fillOpacity: 0.5,
+        fillPattern: stripes
       }
     },
     setOpacity (opacity) {

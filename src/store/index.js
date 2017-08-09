@@ -370,6 +370,14 @@ export default new Vuex.Store({
       if (state.colorScaleInverted) { cs.reverse() }
       return cs
     },
+    stripes (state) {
+      if (state.colorScaleInverted) {
+        // Le slice() créé une copie et ne modifie donc pas l’état
+        return colors.stripes.slice().reverse()
+      } else {
+        return colors.stripes
+      }
+    },
     ratioLabel (state) {
       let label = {
         'PV électroniques': 'de PV électroniques',

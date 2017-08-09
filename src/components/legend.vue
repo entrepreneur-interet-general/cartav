@@ -3,7 +3,7 @@
     <h4>{{ ratioLabel }}</h4>
     <div> Valeur moyenne: {{ ratioAverage }}</div>
     <div v-for='(color, i) in colors' class='colorScale'>
-      <span class='oneColor' v-bind:style="'background-color:'+color+';'"></span>
+      <span class='oneColor' v-bind:style="style(i)"></span>
       <span class='legendNumber'>{{ getRange(i) }}</span>
     </div>
   </div>
@@ -42,6 +42,15 @@ export default {
       } else {
         return nd.niceDisplay(this.legendScale[i - 1]) + ' – ' + nd.niceDisplay(this.legendScale[i])
       }
+    },
+    style (i) {
+      let stripes = this.$store.getters.stripes[i]
+      let angle = stripes.angle
+      let weight = stripes.weight
+      let color = this.colors[i]
+      let res = `background: repeating-linear-gradient(${angle}deg, ${color}, ${color} ${weight}px, rgba(0, 0, 0, 0.8) ${8 - weight}px, rgba(0, 0, 0, 0.8) 8px);`
+      console.log(res)
+      return res
     }
   }
 }
