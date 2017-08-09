@@ -29,21 +29,19 @@
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
                 <span v-for="(criteria, criteriaName) in category" class="criteriaSpan">
                 <div class="row s-rows">
-                  <div class="col-lg-11">
+                  <div class="col-lg-12">
                     <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}
-                      <span v-if="criteria.type !== 'vehiculeFilter'" class="selectAll">sélectionner:
-                        <span class="" v-on:click="selectAll(categoryName, criteriaName, true)">
+                      <abbr v-if="criteria.description" class="description-info-circle" v-bind:title="criteria.description"><i class='fa fa-info-circle'></i></abbr>
+                      <span v-if="criteria.type !== 'vehiculeFilter'" class="selectAll">Sélectionner&nbsp;:
+                        <span v-on:click="selectAll(categoryName, criteriaName, true)">
                           tout
                         </span>
                         /
-                        <span class="" v-on:click="selectAll(categoryName, criteriaName, false)">
+                        <span v-on:click="selectAll(categoryName, criteriaName, false)">
                           rien
                         </span>
                       </span>
                     </h4>
-                  </div>
-                  <div class="col-lg-1">
-                    <abbr v-if="criteria.description" class="description-info-circle" v-bind:title="criteria.description"><i class='fa fa-info-circle'></i></abbr>
                   </div>
                 </div>
 
