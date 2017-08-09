@@ -17,109 +17,16 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import 'sidebar-v2/js/leaflet-sidebar.js'
+import 'sidebar-v2/css/leaflet-sidebar.css'
 import 'font-awesome/css/font-awesome.min.css'
 import '../vendor/leaflet.pattern.js'
 
 import es from '../store/modules/elastic_search'
+import helpers from '../store/modules/map_helpers'
 import infoSidebar from './info-sidebar'
 import legend from './legend'
 import chartComponent from './chartComponent'
 import Spinner from './Spinner'
-
-function styleAccidents (feature) {
-  return {
-    opacity: 0,
-    fillOpacity: 0
-  }
-}
-
-function styleAccidentsRoads (count) {
-  return function (feature) {
-    let opacity, weight
-    if (count >= 10) {
-      opacity = 1
-      weight = 6
-    } else if (count >= 5) {
-      opacity = 0.8
-      weight = 4
-    } else if (count >= 2) {
-      opacity = 0.7
-      weight = 3
-    } else {
-      opacity = 0.5
-      weight = 2
-    }
-    // store opacity, weight here to be able to reset it
-    feature.opacity = opacity
-    feature.weight = weight
-    return {
-      color: 'rgb(255, 0, 0)',
-      opacity: opacity,
-      weight: weight
-    }
-  }
-}
-
-function stylePveRoads (count) {
-  let opacity, weight
-
-  if (count >= 200) {
-    opacity = 1
-    weight = 8
-  } else if (count >= 100) {
-    opacity = 0.9
-    weight = 6
-  } else if (count >= 50) {
-    opacity = 0.8
-    weight = 4
-  } else if (count >= 20) {
-    opacity = 0.7
-    weight = 3
-  } else {
-    opacity = 0.5
-    weight = 2
-  }
-  return {
-    color: 'rgb(0, 0, 255)',
-    opacity: opacity,
-    weight: weight
-  }
-}
-
-let vehiculesIcons = {
-  _catv_voiture_nb: 'car',
-  _catv_utilitaire_nb: 'car',
-  _catv_deuxrouesmotorises_nb: 'motorcycle',
-  _catv_velo_nb: 'bicycle',
-  _catv_poidslourd_nb: 'truck',
-  _catv_vehiculeautre_nb: 'car',
-  _catv_pietons_nb: 'male'
-}
-
-function accidentIconCreateFunction (cluster) {
-  let n = cluster.getAllChildMarkers().length
-  let c = ' marker-cluster-'
-  if (n < 3) {
-    c += 'size1'
-  } else if (n < 5) {
-    c += 'size2'
-  } else if (n < 10) {
-    c += 'size3'
-  } else if (n < 20) {
-    c += 'size4'
-  } else if (n < 30) {
-    c += 'size5'
-  } else if (n < 50) {
-    c += 'size6'
-  } else {
-    c += 'size7'
-  }
-  return new L.DivIcon({
-    html: '<div><span>' + n + '</span></div>',
-    className: 'cluster-acc marker-cluster' + c,
-    iconSize: new L.Point(30, 30)
-  })
-}
 
 export default {
   components: {
@@ -286,10 +193,10 @@ export default {
       let dataPve = this.pveLocalAgg
 
       let options = {
-        accidentsOnly: {showAcc: true, styleAcc: styleAccidentsRoads, showPve: false},
-        pveOnly: {showAcc: false, showPve: true, stylePve: stylePveRoads},
-        accidentsNoPve: {showAcc: true, styleAcc: styleAccidentsRoads, showPve: false},
-        pveNoAccidents: {showAcc: false, showPve: true, stylePve: stylePveRoads}
+        accidentsOnly: {showAcc: true, styleAcc: helpers.styleAccidentsRoads, showPve: false},
+        pveOnly: {showAcc: false, showPve: true, stylePve: helpers.stylePveRoads},
+        accidentsNoPve: {showAcc: true, styleAcc: helpers.styleAccidentsRoads, showPve: false},
+        pveNoAccidents: {showAcc: false, showPve: true, stylePve: helpers.stylePveRoads}
       }
 
       let opt = options[vm.localLevelData]
@@ -462,7 +369,7 @@ export default {
           let myIcon = L.divIcon({className: 'radar-div-icon', html: content, iconSize: null})
           return L.marker(latlng, {icon: myIcon})
         },
-        style: styleAccidents
+        style: helpers.styleAccidents
       }).addTo(this.detailedContentLayerGroup)
     },
     createClusterLocal (type, data) {
@@ -512,19 +419,19 @@ export default {
           for (let p in feature.properties) {
             if (p.startsWith('_catv_')) {
               for (let i = 0; i < feature.properties[p]; ++i) {
-                content += '<i class="fa fa-' + vehiculesIcons[p] + ' aria-hidden="true"></i> '
+                content += '<i class="fa fa-' + helpers.vehiculesIcons[p] + ' aria-hidden="true"></i> '
               }
             }
           }
           let myIcon = L.divIcon({className: 'my-div-icon', html: content, iconSize: null})
           return L.marker(latlng, {icon: myIcon})
         },
-        style: styleAccidents
+        style: helpers.styleAccidents
       })
       return L.markerClusterGroup({
         maxClusterRadius: 30,
         singleMarkerMode: false,
-        iconCreateFunction: accidentIconCreateFunction,
+        iconCreateFunction: helpers.accidentIconCreateFunction,
         spiderfyDistanceMultiplier: 1.5
 
       }).addLayer(datalayer)
