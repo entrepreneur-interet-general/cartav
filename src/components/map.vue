@@ -20,6 +20,7 @@ import 'sidebar-v2/js/leaflet-sidebar.js'
 import 'sidebar-v2/css/leaflet-sidebar.css'
 import 'font-awesome/css/font-awesome.min.css'
 import '../vendor/leaflet.pattern.js'
+import { mapState } from 'vuex'
 
 import helpers from '../store/modules/map_helpers'
 import infoSidebar from './info-sidebar'
@@ -56,44 +57,26 @@ export default {
       roadAccidentsLayerGroup: L.layerGroup()
     }
   },
-  computed: {
+  computed: mapState({
+    contour: 'contour',
+    accidents: 'accidents',
+    accidentsLocal: 'accidents_geojson',
+    accidentsLocalAgg: 'accidents_agg_by_road',
+    dividende: 'dividende',
+    divisor: 'divisor',
+    localLevelDisplay: 'localLevelDisplay',
+    localLevelData: 'localLevelData',
+    basemapUrl: 'basemapUrl',
     view () {
       return this.$store.getters.view
-    },
-    contour () {
-      return this.$store.state.contour
-    },
-    accidents () {
-      return this.$store.state.accidents
-    },
-    accidentsLocal () {
-      return this.$store.state.accidents_geojson
-    },
-    accidentsLocalAgg () {
-      return this.$store.state.accidents_agg_by_road
-    },
-    dividende () {
-      return this.$store.state.dividende
-    },
-    divisor () {
-      return this.$store.state.divisor
     },
     legendScale () {
       return this.$store.getters.legendScale
     },
-    localLevelDisplay () {
-      return this.$store.state.localLevelDisplay
-    },
-    localLevelData () {
-      return this.$store.state.localLevelData
-    },
     colors () {
       return this.$store.getters.colors
-    },
-    basemapUrl () {
-      return this.$store.state.basemapUrl
     }
-  },
+  }),
   watch: {
     colors () {
       this.colorMap()
