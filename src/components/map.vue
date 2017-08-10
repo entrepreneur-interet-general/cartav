@@ -54,11 +54,6 @@ export default {
         showGraph: true,
         graphData: {}
       },
-      so6: this.setOpacity(0.6),
-      so3: this.setOpacity(0.3),
-      slcBlack: this.setLineColor('black'),
-      slcWhite: this.setLineColor('white'),
-      keepLocalDataOnChange: false,
       roadAccidentsLayerGroup: L.layerGroup()
     }
   },
@@ -315,13 +310,11 @@ export default {
       }
     },
     heatMap () {
-      let l = this.accidentsLocal.features.map(function (feature) {
-        return [
-          feature.geometry.coordinates[1],
-          feature.geometry.coordinates[0],
-          1
-        ]
-      })
+      let l = this.accidentsLocal.features.map(feature => [
+        feature.geometry.coordinates[1],
+        feature.geometry.coordinates[0],
+        1
+      ])
       this.detailedContentLayer = L.heatLayer(l, {radius: 25, blur: 30, minOpacity: 0.5})
       this.detailedContentLayer.addTo(this.detailedContentLayerGroup)
     },
@@ -433,7 +426,6 @@ export default {
         singleMarkerMode: false,
         iconCreateFunction: helpers.accidentIconCreateFunction,
         spiderfyDistanceMultiplier: 1.5
-
       }).addLayer(datalayer)
     },
     count (type, id) {
@@ -512,13 +504,6 @@ export default {
         fillPattern: stripes
       }
     },
-    setOpacity (opacity) {
-      return function (e) {
-        e.target.setStyle({
-          fillOpacity: opacity
-        })
-      }
-    },
     setLineColor (color) {
       return function (e) {
         e.target.bringToFront()
@@ -538,8 +523,8 @@ export default {
       if (vm.view.content !== 'detailedContent' || vm.view.data.filter.value !== layer.geoId) {
         // disable mouseover effect on the current administrative shape when displaying detailedContent
         layer.on({
-          mouseover: vm.slcBlack,
-          mouseout: vm.slcWhite
+          mouseover: this.setLineColor('black'),
+          mouseout: this.setLineColor('white')
         })
       }
 
