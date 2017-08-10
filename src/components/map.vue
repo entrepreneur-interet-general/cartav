@@ -21,7 +21,6 @@ import 'sidebar-v2/css/leaflet-sidebar.css'
 import 'font-awesome/css/font-awesome.min.css'
 import '../vendor/leaflet.pattern.js'
 
-import es from '../store/modules/elastic_search'
 import helpers from '../store/modules/map_helpers'
 import infoSidebar from './info-sidebar'
 import legend from './legend'
@@ -342,83 +341,16 @@ export default {
     },
     showRadars () {
       L.geoJson(this.$store.state.radars_geojson, {
-        onEachFeature: function (feature, layer) {
-          layer.bindPopup()
-          layer.on({
-            click: function () {
-              let content = ''
-              for (let p in feature.properties) {
-                if (feature.properties[p]) {
-                  content += p + ': ' + feature.properties[p] + '</br>'
-                }
-              }
-              content += '<a target="_blank" href=http://beta.datalab.mi/av/streetview2.html?posLat=' + feature.geometry.coordinates[1] + '+&posLng=' + feature.geometry.coordinates[0] + '>voir dans streetview</a></br>'
-              layer.bindPopup(content)
-            }
-          })
-        },
-        pointToLayer: function (feature, latlng) {
-          let content = '<i class="fa fa-camera aria-hidden="true"></i>'
-          let myIcon = L.divIcon({className: 'radar-div-icon', html: content, iconSize: null})
-          return L.marker(latlng, {icon: myIcon})
-        },
+        onEachFeature: helpers.radar_popup,
+        pointToLayer: helpers.radar_marker,
         style: helpers.styleAccidents
       }).addTo(this.detailedContentLayerGroup)
     },
     createClusterLocal (type, data) {
       // cluster des accidents individuels
       let datalayer = L.geoJson(data, {
-        onEachFeature: function (feature, layer) {
-          layer.bindPopup()
-          layer.on({
-            click: function () {
-              let content = '<i class="fa fa-info-circle" aria-hidden="true"></i></br>'
-              for (let p in feature.properties) {
-                if (!p.startsWith('_catv_') && feature.properties[p]) {
-                  content += p + ': ' + feature.properties[p] + '</br>'
-                }
-              }
-              content += '<a target="_blank" href=http://beta.datalab.mi/av/streetview2.html?posLat=' + feature.geometry.coordinates[1] + '+&posLng=' + feature.geometry.coordinates[0] + '>voir dans streetview</a></br>'
-              layer.bindPopup(content)
-              es.searchSimpleFilter('acc_usagers', 'Num_Acc', feature.properties['numéro accident']).then(function (resp) {
-                content += '</br><i class="fa fa-users" aria-hidden="true"></i></br>'
-                let hits = resp.hits.hits
-                for (let h of hits) {
-                  content += h._source['sexe'] + ', ' + h._source['catu'] + ' ' + ', ' + h._source['grav'] + '</br>'
-                }
-                es.searchSimpleFilter('acc_vehicules', 'Num_Acc', feature.properties['numéro accident']).then(function (resp) {
-                  content += '</br><i class="fa fa-car" aria-hidden="true"></i></br>'
-                  let hits = resp.hits.hits
-                  for (let h of hits) {
-                    let catv = h._source['catv'] ? h._source['catv'] : ''
-                    let choc = h._source['choc'] ? 'choc ' + h._source['choc'] : ''
-                    let manv = h._source['manv'] ? h._source['manv'] : ''
-                    if (catv && choc) {
-                      choc = ', ' + choc
-                    }
-                    if ((catv || choc) && manv) {
-                      manv = ', ' + manv
-                    }
-                    content += catv + choc + ' ' + manv + '</br>'
-                  }
-                  layer.bindPopup(content)
-                })
-              })
-            }
-          })
-        },
-        pointToLayer: function (feature, latlng) {
-          let content = ''
-          for (let p in feature.properties) {
-            if (p.startsWith('_catv_')) {
-              for (let i = 0; i < feature.properties[p]; ++i) {
-                content += '<i class="fa fa-' + helpers.vehiculesIcons[p] + ' aria-hidden="true"></i> '
-              }
-            }
-          }
-          let myIcon = L.divIcon({className: 'my-div-icon', html: content, iconSize: null})
-          return L.marker(latlng, {icon: myIcon})
-        },
+        onEachFeature: helpers.accident_popup,
+        pointToLayer: helpers.accident_marker,
         style: helpers.styleAccidents
       })
       return L.markerClusterGroup({
