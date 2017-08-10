@@ -176,7 +176,7 @@ export default {
       if (this.$store.state.zoomActive) {
         this.map.fitBounds(this.detailedContentLayerGroup.getBounds())
       }
-      this.displayContours(() => { return style }, this.myOnEachFeature)
+      this.displayContours(() => style, this.myOnEachFeature)
       if (this.localLevelData !== 'accidentsOnly') {
         this.showRadars()
       }
@@ -368,47 +368,33 @@ export default {
         'longueur_routes': this.contour
       }
 
-      if (type === 'habitants') {
+      let agg = source[type]
+      if (type === 'habitants' || type === 'longueur_routes') {
         let idName = this.$store.getters.contourIdFieldName
-        let res = 0
-        for (let f of source[type].features) {
+        for (let f of agg.features) {
           if (id === f.properties[idName]) {
-            res = f.properties.population
-            break
+            return type === 'habitants' ? f.properties.population : f.properties.longueur_routes
           }
         }
-        return res
-      } else if (type === 'longueur_routes') {
-        let idName = this.$store.getters.contourIdFieldName
-        let res = 0
-        for (let f of source[type].features) {
-          if (id === f.properties[idName]) {
-            res = f.properties.longueur_routes
-            break
-          }
-        }
-        return res
       } else {
-        let agg = source[type]
-        let res = 0
-        for (let i = 0; i < agg.length; ++i) {
-          if (id === agg[i].key) {
-            res = agg[i].doc_count
-            break
+        for (let el of agg) {
+          if (id === el.key) {
+            return el.doc_count
           }
         }
-        return res
       }
+      return 0
     },
     customStyle (feature, options) {
       let idName = this.$store.getters.contourIdFieldName
       let id = feature.properties[idName]
 
-      feature.countElements = {}
-      feature.countElements.accidents = this.count('accidents', id)
-      feature.countElements['PV électroniques'] = this.count('PV électroniques', id)
-      feature.countElements.habitants = this.count('habitants', id)
-      feature.countElements.longueur_routes = this.count('longueur_routes', id)
+      feature.countElements = {
+        accidents: this.count('accidents', id),
+        'PV électroniques': this.count('PV électroniques', id),
+        habitants: this.count('habitants', id),
+        longueur_routes: this.count('longueur_routes', id)
+      }
 
       if (feature.countElements[options.dividende] || feature.countElements[options.divisor]) {
         feature.countElements.ratio = feature.countElements[options.dividende] / feature.countElements[options.divisor]
