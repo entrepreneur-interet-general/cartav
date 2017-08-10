@@ -1,6 +1,7 @@
 <template>
   <div v-if="show" id='spinner'>
     <i class="fa fa-refresh fa-spin fa-3x fa-fw"></i>
+    <h2>En train de récupérer les données</h2>
   </div>
 </template>
 
