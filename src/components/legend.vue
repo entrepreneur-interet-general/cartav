@@ -48,9 +48,7 @@ export default {
       let angle = stripes.angle
       let weight = stripes.weight
       let color = this.colors[i]
-      let res = `background: repeating-linear-gradient(${angle}deg, ${color}, ${color} ${weight}px, rgba(0, 0, 0, 0.8) ${8 - weight}px, rgba(0, 0, 0, 0.8) 8px);`
-      console.log(res)
-      return res
+      return `background: repeating-linear-gradient(${angle}deg, ${color}, ${color} ${weight}px, rgba(0, 0, 0, 0.8) ${8 - weight}px, rgba(0, 0, 0, 0.8) 8px);`
     }
   }
 }
