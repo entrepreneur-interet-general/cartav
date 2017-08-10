@@ -66,20 +66,11 @@ export default {
     accidents () {
       return this.$store.state.accidents
     },
-    verbalisations () {
-      return this.$store.state.verbalisations
-    },
-    criteria_list () {
-      return this.$store.state.criteria_list
-    },
     accidentsLocal () {
       return this.$store.state.accidents_geojson
     },
     accidentsLocalAgg () {
       return this.$store.state.accidents_agg_by_road
-    },
-    pveLocalAgg () {
-      return this.$store.state.pve_agg_by_road
     },
     dividende () {
       return this.$store.state.dividende
@@ -184,7 +175,7 @@ export default {
     aggByRoad (type) {
       let vm = this
       let dataAcc = this.accidentsLocalAgg
-      let dataPve = this.pveLocalAgg
+      let dataPve = this.$store.state.pve_agg_by_road
 
       let options = {
         accidentsOnly: {showAcc: true, styleAcc: helpers.styleAccidentsRoads, showPve: false},
@@ -363,7 +354,7 @@ export default {
     count (type, id) {
       let source = {
         'accidents': this.accidents.aggregations.group_by.buckets,
-        'PV électroniques': this.verbalisations.aggregations.group_by.buckets,
+        'PV électroniques': this.$store.state.verbalisations.aggregations.group_by.buckets,
         'habitants': this.contour,
         'longueur_routes': this.contour
       }
