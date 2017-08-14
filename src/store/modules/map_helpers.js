@@ -18,26 +18,23 @@ export default {
       fillOpacity: 0
     }
   },
-  styleAccidentsRoads (count) {
-    return function (feature) {
-      let values = [
-        {count: 2, weight: 2, opacity: 0.5},
-        {count: 4, weight: 3, opacity: 0.7},
-        {count: 5, weight: 4, opacity: 0.8},
-        {count: Number.MAX_VALUE, weight: 6, opacity: 1}
-      ].find(x => x.count > count)
+  styleAccidentsRoads (feature) {
+    let count = feature.properties.count
+    let values = [
+      {count: 2, weight: 2, opacity: 0.5},
+      {count: 4, weight: 3, opacity: 0.7},
+      {count: 5, weight: 4, opacity: 0.8},
+      {count: Number.MAX_VALUE, weight: 6, opacity: 1}
+    ].find(x => x.count > count)
 
-      // store opacity, weight here to be able to reset it
-      feature.opacity = values.opacity
-      feature.weight = values.weight
-      return {
-        color: 'rgb(255, 0, 0)',
-        opacity: values.opacity,
-        weight: values.weight
-      }
+    return {
+      color: 'rgb(255, 0, 0)',
+      opacity: values.opacity,
+      weight: values.weight
     }
   },
-  stylePveRoads (count) {
+  stylePveRoads (feature) {
+    let count = feature.properties.count
     let values = [
       {count: 20, weight: 2, opacity: 0.5},
       {count: 50, weight: 3, opacity: 0.7},

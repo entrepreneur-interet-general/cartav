@@ -247,8 +247,16 @@ export default new Vuex.Store({
           context.dispatch('getRadars')
         ]
         Promise.all(promises).then(values => {
-          context.commit('accidents_agg_by_road', es.toRoadsDict(values[0]))
-          context.commit('pve_agg_by_road', es.toRoadsDict(values[1]))
+          let accidentsRoadCount = {}
+          let pveRoadCount = {}
+          values[0].aggregations.group_by.buckets.forEach(function (bucket) {
+            accidentsRoadCount[bucket.key] = bucket.doc_count
+          })
+          values[1].aggregations.group_by.buckets.forEach(function (bucket) {
+            pveRoadCount[bucket.key] = bucket.doc_count
+          })
+          context.commit('accidents_agg_by_road', es.toRoadsDict(values[0], pveRoadCount))
+          context.commit('pve_agg_by_road', es.toRoadsDict(values[1], accidentsRoadCount))
           context.commit('radars_geojson', values[2])
           context.commit('set_showSpinner', false)
         })
