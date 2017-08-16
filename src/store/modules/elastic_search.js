@@ -36,18 +36,25 @@ function searchAsGeoJson (type, query, latField, longField, propertyFields) {
   })
 }
 
-function toRoadsDict (json) {
-  let dict = {}
+function toRoadsDict (json, otherCount) {
+  let dict = {
+    type: 'FeatureCollection',
+    features: []
+  }
   let buckets = json.aggregations.group_by.buckets
   buckets.forEach(function (bucket) {
     let geometryString = _.get(bucket, 'top_agg_hits.hits.hits[0]._source.geojson', undefined)
     if (geometryString !== undefined) {
-      let geometry = JSON.parse(geometryString)
-      dict[bucket.key] = {
-        geometry: geometry,
-        count: bucket.doc_count,
-        nom_route: _.get(bucket, 'top_agg_hits.hits.hits[0]._source.num_route_or_id', undefined)
-      }
+      dict.features.push({
+        geometry: JSON.parse(geometryString),
+        type: 'Feature',
+        properties: {
+          count: bucket.doc_count,
+          nom_route: _.get(bucket, 'top_agg_hits.hits.hits[0]._source.num_route_or_id', undefined),
+          id: bucket.key,
+          otherCount: otherCount[bucket.key] || 0
+        }
+      })
     }
   })
   return dict

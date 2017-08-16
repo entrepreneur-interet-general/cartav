@@ -155,131 +155,105 @@ export default {
         this.showRadars()
       }
     },
+    onRoadClickAccident (event) {
+      let vm = this
+      let roadId = event.target.feature.properties.id
+      vm.roadAccidentsLayerGroup.clearLayers()
+      let previousRoadId = vm.highlightedRoadLayer ? vm.highlightedRoadLayer.feature.properties.id : undefined
+      if (roadId !== previousRoadId) {
+        // First click : display cluster
+        event.target.setStyle({ opacity: 0.3 })
+        if (vm.highlightedRoadLayer) {
+          // restore previously selected road
+          vm.highlightedRoadLayer.setStyle(helpers.styleAccidentsRoads(vm.highlightedRoadLayer.feature))
+        }
+        vm.highlightedRoadLayer = event.target
+        vm.$store.dispatch('getAccidentsFromRoadId', roadId).then(function (res) {
+          vm.roadAccidentsLayerGroup.addLayer(vm.createClusterLocal('acc', res))
+        })
+      } else {
+        // Second click on same road : reset display
+        event.target.setStyle(helpers.styleAccidentsRoads(event.target.feature))
+        vm.highlightedRoadLayer = null
+        vm.roadAccidentsLayerGroup.clearLayers()
+      }
+    },
+    onRoadClickPve (event) {
+      let vm = this
+      vm.$store.dispatch('getPVEGraphData', event.target.feature.properties.id).then(function (res) {
+        let aggs = res.aggregations.group_by.buckets
+        let g = {
+          labels: [],
+          datasets: [
+            {
+              label: 'PVE par famille d\'infractions',
+              backgroundColor: ['#FF0505', '#FFFF05', '#FF8205', '#05FFFF', '#0505FF', '#05FF82', '#FF05FF'],
+              data: []
+            }
+          ]
+        }
+        for (let agg of aggs) {
+          g.labels.push(agg.key)
+          g.datasets[0].data.push(agg.doc_count)
+        }
+        vm.infoSidebarData.graphData = g
+      })
+      vm.infoSidebarData.showGraph = true
+    },
     aggByRoad (type) {
       let vm = this
-      let dataAcc = this.accidentsLocalAgg
-      let dataPve = this.$store.state.pve_agg_by_road
 
       let options = {
-        accidentsOnly: {showAcc: true, styleAcc: helpers.styleAccidentsRoads, showPve: false},
-        pveOnly: {showAcc: false, showPve: true, stylePve: helpers.stylePveRoads},
-        accidentsNoPve: {showAcc: true, styleAcc: helpers.styleAccidentsRoads, showPve: false},
-        pveNoAccidents: {showAcc: false, showPve: true, stylePve: helpers.stylePveRoads}
+        accidentsOnly: {showAcc: true, showPve: false},
+        pveOnly: {showAcc: false, showPve: true},
+        accidentsNoPve: {showAcc: true, showPve: false},
+        pveNoAccidents: {showAcc: false, showPve: true}
+      }[vm.localLevelData]
+
+      if (options.showAcc) {
+        L.geoJson(this.accidentsLocalAgg, {
+          style: helpers.styleAccidentsRoads,
+          filter: (feature) => vm.localLevelData === 'accidentsOnly' || feature.properties.otherCount === 0,
+          onEachFeature (feature, layer) {
+            layer.on({
+              mouseover (event) {
+                layer.setStyle({ weight: 10 })
+                L.popup()
+                .setContent('<strong>' + feature.properties.nom_route + '</strong><br><span class="accHighlight">' + feature.properties.count + '</span> accidents')
+                .setLatLng(event.latlng)
+                .openOn(vm.map)
+              },
+              mouseout (event) {
+                vm.map.closePopup()
+                event.target.setStyle(helpers.styleAccidentsRoads(event.target.feature))
+              },
+              click: vm.onRoadClickAccident
+            })
+          }
+        }).addTo(this.detailedContentLayerGroup)
       }
 
-      let opt = options[vm.localLevelData]
-
-      if (opt.showAcc) {
-        for (let roadId of Object.keys(dataAcc)) {
-          let road = dataAcc[roadId]
-          let include = false
-          let hasPve = false
-          if (vm.localLevelData === 'accidentsNoPve') {
-            hasPve = dataPve[roadId] !== undefined
-            include = !hasPve
-          } else if (vm.localLevelData === 'accidentsOnly') {
-            include = true
+      if (options.showPve) {
+        L.geoJson(this.$store.state.pve_agg_by_road, {
+          style: helpers.stylePveRoads,
+          filter: (feature) => vm.localLevelData === 'pveOnly' || feature.properties.otherCount === 0,
+          onEachFeature (feature, layer) {
+            layer.on({
+              mouseover (event) {
+                layer.setStyle({ weight: 10 })
+                L.popup()
+                .setContent('<strong>' + feature.properties.nom_route + '</strong><br><span class="pveHighlight">' + feature.properties.count + '</span> pve')
+                .setLatLng(event.latlng)
+                .openOn(vm.map)
+              },
+              mouseout (event) {
+                vm.map.closePopup()
+                event.target.setStyle(helpers.stylePveRoads(event.target.feature))
+              },
+              click: vm.onRoadClickPve
+            })
           }
-
-          if (include) {
-            L.geoJson(road.geometry, {
-              style: opt.styleAcc(road.count, hasPve),
-              onEachFeature: function (feature, lay) {
-                lay.roadId = roadId
-                lay.on({
-                  mouseover: function (event) {
-                    lay.setStyle({ weight: 10 })
-                    L.popup()
-                    .setContent('<strong>' + road.nom_route + '</strong><br><span class="accHighlight">' + road.count + '</span> accidents')
-                    .setLatLng(event.latlng)
-                    .openOn(vm.map)
-                  },
-                  mouseout (event) {
-                    vm.map.closePopup()
-                    lay.setStyle({ weight: lay.feature.weight })
-                  },
-                  click (event) {
-                    vm.roadAccidentsLayerGroup.clearLayers()
-                    let previousRoadId = vm.highlightedRoadLayer ? vm.highlightedRoadLayer.roadId : undefined
-                    if (roadId !== previousRoadId) {
-                      // First click : display cluster
-                      lay.setStyle({ opacity: 0.3 })
-                      if (vm.highlightedRoadLayer) {
-                        // restore previously selected road
-                        vm.highlightedRoadLayer.setStyle({ opacity: feature.opacity })
-                      }
-                      vm.highlightedRoadLayer = lay
-                      vm.$store.dispatch('getAccidentsFromRoadId', roadId).then(function (res) {
-                        vm.roadAccidentsLayerGroup.addLayer(vm.createClusterLocal('acc', res))
-                      })
-                    } else {
-                      // Second click on same road : reset display
-                      lay.setStyle({ opacity: feature.opacity })
-                      vm.highlightedRoadLayer = null
-                      vm.roadAccidentsLayerGroup.clearLayers()
-                    }
-                  }
-                })
-              }
-            }).addTo(this.detailedContentLayerGroup)
-          }
-        }
-      }
-
-      if (opt.showPve) {
-        for (let roadId of Object.keys(dataPve)) {
-          let road = dataPve[roadId]
-          let include = false
-          let hasAcc = false
-          if (vm.localLevelData === 'pveNoAccidents') {
-            hasAcc = dataAcc[roadId] !== undefined
-            include = !hasAcc
-          } else if (vm.localLevelData === 'pveOnly') {
-            include = true
-          }
-
-          if (include) {
-            let layer = L.geoJson(road.geometry, {
-              style: opt.stylePve(road.count, hasAcc),
-              onEachFeature: function (feature, lay) {
-                lay.on({
-                  mouseover: function (event) {
-                    lay.setStyle({ weight: 10 })
-                    L.popup()
-                    .setContent('<strong>' + road.nom_route + '</strong><br><span class="pveHighlight">' + road.count + '</span> pve')
-                    .setLatLng(event.latlng)
-                    .openOn(vm.map)
-                  },
-                  mouseout (event) {
-                    vm.map.closePopup()
-                    layer.resetStyle(lay)
-                  },
-                  click: function (event) {
-                    vm.$store.dispatch('getPVEGraphData', roadId).then(function (res) {
-                      let aggs = res.aggregations.group_by.buckets
-                      let g = {
-                        labels: [],
-                        datasets: [
-                          {
-                            label: 'PVE par famille d\'infractions',
-                            backgroundColor: ['#FF0505', '#FFFF05', '#FF8205', '#05FFFF', '#0505FF', '#05FF82', '#FF05FF'],
-                            data: []
-                          }
-                        ]
-                      }
-                      for (let agg of aggs) {
-                        g.labels.push(agg.key)
-                        g.datasets[0].data.push(agg.doc_count)
-                      }
-                      vm.infoSidebarData.graphData = g
-                    })
-                    vm.infoSidebarData.showGraph = true
-                  }
-                })
-              }
-            }).addTo(this.detailedContentLayerGroup) // .bringToFront()
-          }
-        }
+        }).addTo(this.detailedContentLayerGroup)
       }
     },
     heatMap () {
