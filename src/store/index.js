@@ -197,18 +197,18 @@ export default new Vuex.Store({
 
       if (view.content === 'detailedContent') {
         context.dispatch('getLocalData', {zoomActive: true})
-        getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value).then(res => context.commit('contour', res))
+        context.commit('contour', getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value))
       } else if (view.content === 'metric') {
         let promises = [
-          getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value),
           context.dispatch('queryESAcc'),
           context.dispatch('queryESPve')
         ]
 
+        context.commit('contour', getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value))
+
         Promise.all(promises).then(function (values) {
-          context.commit('contour', values[0])
-          context.commit('accidents_data', values[1])
-          context.commit('verbalisations_data', values[2])
+          context.commit('accidents_data', values[0])
+          context.commit('verbalisations_data', values[1])
         })
       }
       context.dispatch('getAggregationByfilter')
@@ -315,7 +315,7 @@ export default new Vuex.Store({
     },
     contourFilterDisplayFieldName (state, getters) {
       let decoupage = getters.view.contour.filter.filterCriteria
-      return aggregationLevelsInfos.contour[decoupage].name
+      return decoupage ? aggregationLevelsInfos.contour[decoupage].name : null
     },
     contourFilterFieldName (state, getters) {
       let filterCriteria = getters.view.contour.filter.filterCriteria
@@ -344,7 +344,6 @@ export default new Vuex.Store({
       } else {
         res['PV électroniques'] = undefined
       }
-
       agg = _.get(state.contour, 'features', undefined)
       if (agg !== undefined) {
         if (getters.view.data.filter.activated) {
