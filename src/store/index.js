@@ -11,6 +11,7 @@ import circonscriptions from '../assets/json/circonscriptions.json'
 import colors from '../assets/json/colors.json'
 import views from '../assets/json/views.json'
 import aggregationLevelsInfos from '../assets/json/aggregationLevelsInfos'
+import furl from './modules/filters_in_url'
 
 Vue.use(Vuex)
 
@@ -114,6 +115,9 @@ export default new Vuex.Store({
         _.set(state.criteria_list, cp, crit.value)
       }
     },
+    set_criteria_list (state, encodedFilters) {
+      state.criteria_list = furl.decodeFilters(state.criteria_list, encodedFilters)
+    },
     accidents_data (state, response) {
       state.accidents = response
     },
@@ -177,6 +181,8 @@ export default new Vuex.Store({
       } else {
         context.commit('set_criteria', o)
       }
+      let bin = furl.encodeFilters(context.state.criteria_list)
+      o.router.push({path: context.state.route.path, query: {filters: bin}})
 
       if (context.getters.view.content === 'detailedContent') {
         context.dispatch('getLocalData', {zoomActive: false})

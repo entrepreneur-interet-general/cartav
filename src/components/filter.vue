@@ -135,7 +135,7 @@ export default {
       for (let c in this.criteria_list[categoryName][criteriaName].values) {
         crits.push({label: c, value: c === valName})
       }
-      let args = {type: 'bulk', criteriaPath: criteriaPath, criterias: crits}
+      let args = {type: 'bulk', criteriaPath: criteriaPath, criterias: crits, router: this.$router}
       this.$store.dispatch('set_criteria', args)
     },
     selectAll (categoryName, criteriaName, val) {
@@ -144,12 +144,12 @@ export default {
       for (let c in this.criteria_list[categoryName][criteriaName].values) {
         crits.push({label: c, value: val})
       }
-      let args = {type: 'bulk', criteriaPath: criteriaPath, criterias: crits}
+      let args = {type: 'bulk', criteriaPath: criteriaPath, criterias: crits, router: this.$router}
       this.$store.dispatch('set_criteria', args)
     },
     set_criteria (e, categoryName, criteriaName, valName, value) {
       let criteriaPath = `${categoryName}.${criteriaName}.values.${valName}`
-      this.$store.dispatch('set_criteria', {criteriaPath: criteriaPath, value: value})
+      this.$store.dispatch('set_criteria', {criteriaPath: criteriaPath, value: value, router: this.$router})
     },
     agg_pve_value (categoryName, criteriaName, valName, niceDisplay = true) {
       if (niceDisplay) {

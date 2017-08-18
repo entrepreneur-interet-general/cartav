@@ -4,11 +4,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './components/App.vue'
 import store from './store'
-import ElementUI from 'element-ui'
 import { sync } from 'vuex-router-sync'
-import 'element-ui/lib/theme-default/index.css'
 
-Vue.use(ElementUI)
 Vue.use(VueRouter)
 
 const routes = [
