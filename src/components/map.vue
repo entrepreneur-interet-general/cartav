@@ -108,6 +108,7 @@ export default {
     },
     '$route' (to, from) {
       this.detailedContentLayerGroup.clearLayers()
+      this.roadAccidentsLayerGroup.clearLayers()
       this.$store.dispatch('set_view')
     }
   },
@@ -133,6 +134,8 @@ export default {
     displayLocalLayer () {
       this.contourLayerGroup.clearLayers()
       this.detailedContentLayerGroup.clearLayers()
+      this.roadAccidentsLayerGroup.clearLayers()
+
       let style = {
         color: 'white',
         weight: 2,
@@ -225,7 +228,7 @@ export default {
               },
               mouseout (event) {
                 vm.map.closePopup()
-                event.target.setStyle(helpers.styleAccidentsRoads(event.target.feature))
+                layer.setStyle({ weight: feature.weight })
               },
               click: vm.onRoadClickAccident
             })

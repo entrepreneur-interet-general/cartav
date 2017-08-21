@@ -26,6 +26,7 @@ export default {
       {count: 5, weight: 4, opacity: 0.8},
       {count: Number.MAX_VALUE, weight: 6, opacity: 1}
     ].find(x => x.count > count)
+    feature.weight = values.weight
 
     return {
       color: 'rgb(255, 0, 0)',
