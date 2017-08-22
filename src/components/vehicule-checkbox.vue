@@ -10,32 +10,45 @@
 <script>
 export default {
   name: 'vehiculeFilter',
-  data () {
-    return {
-      choice: this.criteria.choices['any'],
-      options: [
-        {label: 'false', value: true},
-        {label: 'true', value: true}
+  props: ['criteriaPath', 'criteria'],
+  computed: {
+    choice: {
+      get: function () {
+        let selection
+        if (this.criteria.values.true) {
+          selection = this.criteria.values.false ? 'any' : 'some'
+        } else {
+          selection = 'none'
+        }
+        return this.criteria.choices[selection]
+      },
+      set: function (newValue) {
+        if (newValue === this.criteria.choices['any']) {
+          for (let option of this.options) {
+            option.value = true
+          }
+        } else if (newValue === this.criteria.choices['none']) {
+          for (let option of this.options) {
+            option.value = option.label !== 'true'
+          }
+        } else if (newValue === this.criteria.choices['some']) {
+          for (let option of this.options) {
+            option.value = option.label === 'true'
+          }
+        }
+        this.$store.dispatch('set_criteria', {criteriaPath: this.criteriaPath, criterias: this.options, type: 'bulk', router: this.$router})
+      }
+    },
+    options () {
+      return [
+        {label: 'false', value: this.criteria.values.false},
+        {label: 'true', value: this.criteria.values.true}
       ]
     }
   },
-  props: ['criteriaPath', 'criteria'],
   watch: {
     choice () {
-      if (this.choice === this.criteria.choices['any']) {
-        for (let option of this.options) {
-          option.value = true
-        }
-      } else if (this.choice === this.criteria.choices['none']) {
-        for (let option of this.options) {
-          option.value = option.label !== 'true'
-        }
-      } else if (this.choice === this.criteria.choices['some']) {
-        for (let option of this.options) {
-          option.value = option.label === 'true'
-        }
-      }
-      this.$store.dispatch('set_criteria', {criteriaPath: this.criteriaPath, criterias: this.options, type: 'bulk'})
+
     }
   }
 }

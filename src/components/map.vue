@@ -441,14 +441,11 @@ export default {
     this.map.addLayer(this.roadAccidentsLayerGroup)
 
     // On met l’état initial dans l’historique
-    this.$router.push(this.$route.path)
+    this.$router.push(this.$route.fullPath)
+    if (this.$route.query.filters) {
+      this.$store.commit('set_criteria_list', this.$route.query.filters)
+    }
     this.$store.dispatch('set_view')
-
-    /* this.map.on('zoomend', (e) => {
-      if (this.map.getZoom() < this.view.zoomLimit) {
-        this.$router.go(-1)
-      }
-    }) */
 
     // avoid clicking and scrolling when the mouse is over the div
     let div = L.DomUtil.get('info-sidebar')
