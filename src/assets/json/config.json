@@ -3,6 +3,7 @@
     "OSM couleur": "http://osm.psi.minint.fr/{z}/{x}/{y}.png",
     "OSM noir & blanc": "https://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaXN0b3BvcG9raSIsImEiOiJjaW12eWw2ZHMwMGFxdzVtMWZ5NHcwOHJ4In0.VvZvyvK0UaxbFiAtak7aVw"
   },
+  "services_field": "LIBELLE_UNITE",
   "filters": {
     "PV électroniques et accidents" : {
       "Année" : {

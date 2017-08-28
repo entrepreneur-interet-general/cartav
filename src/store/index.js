@@ -71,6 +71,8 @@ export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     criteria_list: criteriaList.filters,
+    services_list: [],
+    services_selected: {fieldName: criteriaList.services_field, list: []},
     accidents: {},
     verbalisations: {},
     contour: {},
@@ -92,6 +94,12 @@ export default new Vuex.Store({
     showSpinner: false
   },
   mutations: {
+    set_services_selected (state, list) {
+      state.services_selected.list = list
+    },
+    set_services_list (state, list) {
+      state.services_list = list
+    },
     set_localLevelDisplay (state, localLevelDisplay) {
       state.localLevelDisplay = localLevelDisplay
     },
@@ -164,6 +172,14 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    set_services_selected (context, o) {
+      context.commit('set_services_selected', o.servicesSelected)
+      context.dispatch('set_url_query', o.router)
+    },
+    set_services_list (context) {
+      let promList = es.keysList('pve', criteriaList.services_field, 10000)
+      promList.then(function (list) { context.commit('set_services_list', list) })
+    },
     set_localLevelDisplay (context, localLevelDisplay) {
       context.commit('set_localLevelDisplay', localLevelDisplay)
       if (localLevelDisplay !== 'aggregatedByRoad') {
@@ -177,43 +193,34 @@ export default new Vuex.Store({
         context.commit('set_localLevelData', localLevelData)
       }
     },
+    set_url_query (context, router) {
+      let state = context.state
+      let sha = context.getters.configDigest
+      let query = {filters: furl.encodeFilters(state.criteria_list), digest: sha}
+      let services = state.services_selected.list.join('|')
+      if (services) {
+        query.services = services
+      }
+      router.push({path: state.route.path, query: query})
+    },
     set_criteria (context, o) {
       if (o.type === 'bulk') {
         context.commit('set_criteria_bulk', o)
       } else {
         context.commit('set_criteria', o)
       }
-      let bin = furl.encodeFilters(context.state.criteria_list)
-      let sha = context.getters.configDigest
-      o.router.push({path: context.state.route.path, query: {filters: bin, digest: sha}})
-
-      if (context.getters.view.content === 'detailedContent') {
-        context.dispatch('getLocalData', {zoomActive: false})
-      } else {
-        let promises = [
-          context.dispatch('queryESAcc'),
-          context.dispatch('queryESPve')
-        ]
-        Promise.all(promises).then(function (values) {
-          context.commit('accidents_data', values[0])
-          context.commit('verbalisations_data', values[1])
-        })
-      }
-      context.dispatch('getAggregationByfilter')
+      context.dispatch('set_url_query', o.router)
     },
     set_view (context) {
       let view = context.getters.view
-
+      context.commit('contour', getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value))
       if (view.content === 'detailedContent') {
         context.dispatch('getLocalData', {zoomActive: true})
-        context.commit('contour', getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value))
       } else if (view.content === 'metric') {
         let promises = [
           context.dispatch('queryESAcc'),
           context.dispatch('queryESPve')
         ]
-
-        context.commit('contour', getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value))
 
         Promise.all(promises).then(function (values) {
           context.commit('accidents_data', values[0])
@@ -224,8 +231,8 @@ export default new Vuex.Store({
     },
     getAggregationByfilter (context) {
       Promise.all([
-        es.generateAggregatedQueryByFilter(context.state.criteria_list, 'acc', context.getters.view),
-        es.generateAggregatedQueryByFilter(context.state.criteria_list, 'pve', context.getters.view)
+        es.generateAggregatedQueryByFilter(context.state.criteria_list, null, 'acc', context.getters.view),
+        es.generateAggregatedQueryByFilter(context.state.criteria_list, context.state.services_selected, 'pve', context.getters.view)
       ]).then(res => {
         context.commit('accidents_value_by_filter', res[0])
         context.commit('pve_value_by_filter', res[1])
@@ -233,13 +240,13 @@ export default new Vuex.Store({
     },
     queryESAcc (context) {
       let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view)
+      let query = es.generateAggregatedQuery(state.criteria_list, null, 'acc', context.getters.view)
 
       return es.search('acc', query)
     },
     queryESPve (context) {
       let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view)
+      let query = es.generateAggregatedQuery(state.criteria_list, state.services_selected, 'pve', context.getters.view)
       return es.search('pve', query)
     },
     getLocalData (context, options) {
@@ -248,8 +255,8 @@ export default new Vuex.Store({
       context.commit('set_showSpinner', true)
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
-        let queryAcc = es.generateAggregatedQuery(state.criteria_list, 'acc', context.getters.view, ['geojson', 'num_route_or_id'])
-        let queryPve = es.generateAggregatedQuery(state.criteria_list, 'pve', context.getters.view, ['geojson', 'num_route_or_id'])
+        let queryAcc = es.generateAggregatedQuery(state.criteria_list, null, 'acc', context.getters.view, ['geojson', 'num_route_or_id'])
+        let queryPve = es.generateAggregatedQuery(state.criteria_list, state.services_selected, 'pve', context.getters.view, ['geojson', 'num_route_or_id'])
         let promises = [
           es.search('acc', queryAcc),
           es.search('pve', queryPve),
@@ -270,7 +277,7 @@ export default new Vuex.Store({
           context.commit('set_showSpinner', false)
         })
       } else {
-        let query = es.generateQuery(state.criteria_list, 'acc', context.getters.view)
+        let query = es.generateQuery(state.criteria_list, null, 'acc', context.getters.view)
         es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields).then(function (res) {
           context.commit('accidents_geojson', res)
           context.commit('set_showSpinner', false)
@@ -279,16 +286,16 @@ export default new Vuex.Store({
     },
     getPVEGraphData (context, roadId) {
       let state = context.state
-      let query = es.generateGraphAgg(state.criteria_list, 'pve', context.getters.view, roadId, 'LIBELLE_FAMILLE')
+      let query = es.generateGraphAgg(state.criteria_list, state.services_selected, 'pve', context.getters.view, roadId, 'LIBELLE_FAMILLE')
       return es.search('pve', query)
     },
     getRadars (context, dep) {
-      let query = es.generateQuery(null, 'radars', context.getters.view)
+      let query = es.generateQuery(null, null, 'radars', context.getters.view)
       return es.searchAsGeoJson('radars', query, 'Coordonnées GPS cabine - latitude', 'Coordonnées GPS cabine - longitude', radarsFields)
     },
     getAccidentsFromRoadId (context, roadId) {
       let state = context.state
-      let query = es.generateQuery(state.criteria_list, 'acc', context.getters.view, roadId)
+      let query = es.generateQuery(state.criteria_list, null, 'acc', context.getters.view, roadId)
       return es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields)
     }
   },

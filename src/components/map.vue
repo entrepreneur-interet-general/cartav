@@ -457,6 +457,9 @@ export default {
         this.showModal = true
       }
     }
+    if (this.$route.query.services) {
+      this.$store.commit('set_services_selected', this.$route.query.services.split('|'))
+    }
     this.$store.dispatch('set_view')
 
     // avoid clicking and scrolling when the mouse is over the div

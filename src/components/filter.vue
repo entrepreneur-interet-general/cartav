@@ -27,6 +27,9 @@
           <span v-for="(category, categoryName) in criteria_list">
             <span v-if="categoryName === tab.category">
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
+                <span v-if="categoryName === 'PV électroniques'">
+                  <services></services>
+                </span>
                 <span v-for="(criteria, criteriaName) in category" class="criteriaSpan">
                 <div class="row s-rows">
                   <div class="col-lg-12">
@@ -101,11 +104,13 @@
 import ratio from './ratio'
 import nd from '../assets/js/niceDisplay'
 import vehiculeCheckbox from './vehicule-checkbox'
+import services from './Services'
 
 export default {
   components: {
     ratio: ratio,
-    vehiculeCheckbox
+    vehiculeCheckbox,
+    services
   },
   data () {
     return {
