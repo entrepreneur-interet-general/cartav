@@ -6,6 +6,11 @@
           <chartComponent :chartData="infoSidebarData.graphData"></chartComponent>
         </div>
         <Spinner></Spinner>
+        <Modal v-if="showModal" @close="showModal = false;">
+          <h3 slot="title">Impossible de restaurer les filtres</h3>
+          <p slot="text">Les paramètres de filtre sont issus d’une autre version de l’application.<br>
+          Les liens partagés ne sont donc pas compatibles.</p>
+        </Modal>
     </div>
 </template>
 
@@ -27,17 +32,20 @@ import infoSidebar from './info-sidebar'
 import legend from './legend'
 import chartComponent from './chartComponent'
 import Spinner from './Spinner'
+import Modal from './Modal'
 
 export default {
   components: {
     legende: legend,
     chartComponent: chartComponent,
     infoSidebar,
-    Spinner
+    Spinner,
+    Modal
   },
   data () {
     return {
       map: null,
+      showModal: false,
       tileLayer: null,
       contourLayerGroup: L.layerGroup(),
       contourLayer: null,
@@ -443,7 +451,11 @@ export default {
     // On met l’état initial dans l’historique
     this.$router.push(this.$route.fullPath)
     if (this.$route.query.filters) {
-      this.$store.commit('set_criteria_list', this.$route.query.filters)
+      if (this.$route.query.digest === this.$store.getters.configDigest) {
+        this.$store.commit('set_criteria_list', this.$route.query.filters)
+      } else {
+        this.showModal = true
+      }
     }
     this.$store.dispatch('set_view')
 
