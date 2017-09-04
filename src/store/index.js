@@ -13,6 +13,8 @@ import views from '../assets/json/views.json'
 import aggregationLevelsInfos from '../assets/json/aggregationLevelsInfos'
 import furl from './modules/filters_in_url'
 
+import CryptoJS from 'crypto-js'
+
 Vue.use(Vuex)
 
 let accidentsFields = {
@@ -182,7 +184,8 @@ export default new Vuex.Store({
         context.commit('set_criteria', o)
       }
       let bin = furl.encodeFilters(context.state.criteria_list)
-      o.router.push({path: context.state.route.path, query: {filters: bin}})
+      let sha = context.getters.configDigest
+      o.router.push({path: context.state.route.path, query: {filters: bin, digest: sha}})
 
       if (context.getters.view.content === 'detailedContent') {
         context.dispatch('getLocalData', {zoomActive: false})
@@ -399,6 +402,9 @@ export default new Vuex.Store({
         'longueur_routes': 'de km de voirie'
       }
       return 'Rapport entre le nombre ' + label[state.dividende] + ' et le nombre ' + label[state.divisor]
+    },
+    configDigest (state) {
+      return String(CryptoJS.SHA256(state.criteriaList)).slice(0, 16)
     }
   }
 })
