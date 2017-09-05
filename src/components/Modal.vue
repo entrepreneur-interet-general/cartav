@@ -1,8 +1,8 @@
 <template>
-  <div id="modal" class="bg-info">
+  <div id="modal">
     <h3><slot name="title">default title</slot></h3>
     <p><slot name="text">default text</slot></p>
-    <button class="modal-default-button" @click="$emit('close')">
+    <button class="btn btn-default" @click="$emit('close')">
       OK
     </button>
   </div>
@@ -10,8 +10,9 @@
 
 <style>
   #modal {
-    border: 1px solid black;
-    border-radius: 25px;
+    border: 1px solid grey;
+    border-radius: 5px;
+    background-color: white;
     padding: 10px;
     z-index: 2000;
     position: absolute;
@@ -19,5 +20,9 @@
     text-align: center;
     width: 40%;
     left: 30%;
+  }
+
+  p {
+    font-size: 16px;
   }
 </style>
