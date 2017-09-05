@@ -411,7 +411,7 @@ export default new Vuex.Store({
       return 'Rapport entre le nombre ' + label[state.dividende] + ' et le nombre ' + label[state.divisor]
     },
     configDigest (state) {
-      return String(CryptoJS.SHA256(state.criteriaList)).slice(0, 16)
+      return String(CryptoJS.SHA256(JSON.stringify(state.criteria_list))).slice(0, 8)
     }
   }
 })
