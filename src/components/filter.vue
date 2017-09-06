@@ -91,6 +91,9 @@
 
       <div class="sidebar-pane" id="help">
         <h1 class="sidebar-header">Aide<span class="sidebar-close"><i class="glyphicon glyphicon-triangle-left"></i></span></h1>
+        <h3>Version du logiciel</h3>
+        <p>{{version}}</p>
+        <h3>Aide</h3>
         <p>
           La documentation de cet outil est disponible
           <a href="./static/doc/index.html">en suivant ce lien</a>.
@@ -105,6 +108,7 @@ import ratio from './ratio'
 import nd from '../assets/js/niceDisplay'
 import vehiculeCheckbox from './vehicule-checkbox'
 import services from './Services'
+import version from '../assets/json/version.json'
 
 export default {
   components: {
@@ -114,6 +118,7 @@ export default {
   },
   data () {
     return {
+      version: version.version,
       tabs: [
         {id: 'timeFilters', tabTitle: 'Filtres temporels (accidents et PVE)', category: 'PV électroniques et accidents'},
         {id: 'accidentsFilters', tabTitle: 'Filtres accidents', category: 'Accidents'},
