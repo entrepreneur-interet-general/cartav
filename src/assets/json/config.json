@@ -121,6 +121,15 @@
           "TAXI": "Taxi",
           "TCP": "Transport en commun de personnes"
         }
+      },
+      "LIBELLE_TYPE_VOIE_DEDUIT": {
+        "display_name": "Type de voirie",
+        "field_name_pve": "LIBELLE_TYPE_VOIE_DEDUIT",
+        "values": {
+          "Autoroute": "true",
+          "Route Nationale": "true",
+          "Autre Route": "true"
+        }
       }
     },
     "Accidents" : {
