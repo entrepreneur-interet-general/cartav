@@ -7,9 +7,8 @@
         </div>
         <Spinner></Spinner>
         <Modal v-if="showModal" @close="showModal = false;">
-          <h3 slot="title">Impossible de restaurer les filtres</h3>
-          <p slot="text">Les paramètres de filtre sont issus d’une autre version de l’application.<br>
-          Les liens partagés ne sont donc pas compatibles.</p>
+          <h3 slot="title" class="text-info"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></br>Lien obsolète</h3>
+          <p slot="text">Ce lien a été créé par une précédente version de l'application. Nous ne pouvons pas restaurer les filtres à l'identique.</p>
         </Modal>
     </div>
 </template>
@@ -456,6 +455,9 @@ export default {
       } else {
         this.showModal = true
       }
+    }
+    if (this.$route.query.services) {
+      this.$store.commit('set_services_selected', this.$route.query.services.split('|'))
     }
     this.$store.dispatch('set_view')
 

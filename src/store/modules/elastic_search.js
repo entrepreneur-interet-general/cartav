@@ -2,7 +2,7 @@ import elasticsearch from 'elasticsearch'
 import _ from 'lodash'
 import aggregationLevelsInfos from '../../assets/json/aggregationLevelsInfos'
 
-export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getCommunesGeoJson, searchSimpleFilter, toRoadsDict, generateGraphAgg }
+export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getCommunesGeoJson, searchSimpleFilter, toRoadsDict, generateGraphAgg, keysList }
 
 let communesGeoJsonFields = {
   Population: 'Population',
@@ -36,6 +36,22 @@ function searchAsGeoJson (type, query, latField, longField, propertyFields) {
   })
 }
 
+function keysList (type, fieldName, size) {
+  let query = {
+    size: 0,
+    aggs: {
+      group_by: {
+        terms: {
+          field: fieldName,
+          size: size
+        }
+      }
+    }
+  }
+  return search(type, query)
+    .then(resp => resp.aggregations.group_by.buckets.map(bucket => bucket.key))
+}
+
 function toRoadsDict (json, otherCount) {
   let dict = {
     type: 'FeatureCollection',
@@ -60,7 +76,7 @@ function toRoadsDict (json, otherCount) {
   return dict
 }
 
-function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
+function generateFilter (criteriaList, services, type, ExceptThisfield = undefined) {
   // Lit les critères cochés et génère la requête ES correspondante
   let fieldName = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
   var must = []
@@ -94,6 +110,19 @@ function generateFilter (criteriaList, type, ExceptThisfield = undefined) {
         }
       }
     }
+  }
+  if (services) {
+    let criteriaFilters = []
+    for (let service of services.list) {
+      let f = {}
+      f[services.fieldName] = service
+      criteriaFilters.push({ term: f })
+    }
+    must.push({
+      bool: {
+        should: criteriaFilters
+      }
+    })
   }
   return must
 }
@@ -159,10 +188,10 @@ function addFilter (must, field, value) {
   })
 }
 
-function generateAggregatedQuery (criteriaList, type, view, topAgghitsField = null) {
+function generateAggregatedQuery (criteriaList, services, type, view, topAgghitsField = null) {
   // Génération de la query ES
   let query = getQueryBase(0)
-  let must = generateFilter(criteriaList, type)
+  let must = generateFilter(criteriaList, services, type)
   addAdditionalFilters(must, type, view)
   let aggKey = aggregationLevelsInfos.data[type][view.data.group_by]
   let aggs = generateAggs(type, aggKey, 1000, topAgghitsField)
@@ -173,9 +202,9 @@ function generateAggregatedQuery (criteriaList, type, view, topAgghitsField = nu
   return query
 }
 
-function generateGraphAgg (criteriaList, type, view, roadID, aggKey) {
+function generateGraphAgg (criteriaList, services, type, view, roadID, aggKey) {
   let query = getQueryBase(0)
-  let must = generateFilter(criteriaList, type)
+  let must = generateFilter(criteriaList, services, type)
   addAdditionalFilters(must, type, view)
   addFilter(must, aggregationLevelsInfos.data[type][view.data.group_by], roadID)
   let aggs = generateAggs(type, aggKey, 100)
@@ -185,12 +214,12 @@ function generateGraphAgg (criteriaList, type, view, roadID, aggKey) {
   return query
 }
 
-function generateQuery (criteriaList, type, view, roadID = null) {
+function generateQuery (criteriaList, services, type, view, roadID = null) {
   // Génération de la query ES
   let query = getQueryBase(10000)
   let must = []
   if (criteriaList) {
-    must = generateFilter(criteriaList, type)
+    must = generateFilter(criteriaList, services, type)
   }
   if (roadID) {
     addFilter(must, aggregationLevelsInfos.data[type][view.data.group_by], roadID)
@@ -200,7 +229,7 @@ function generateQuery (criteriaList, type, view, roadID = null) {
   return query
 }
 
-function generateAggregatedQueryByFilter (criteriaList, type, view) {
+function generateAggregatedQueryByFilter (criteriaList, services, type, view) {
   let promises = []
   let criteriaPaths = []
   let fieldNameType = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
@@ -211,7 +240,7 @@ function generateAggregatedQueryByFilter (criteriaList, type, view) {
       if (fieldNameType in criteria) {
         let criteriaPath = scopeName + '.' + criteriaName
         let query = getQueryBase(0)
-        let must = generateFilter(criteriaList, type, criteriaPath)
+        let must = generateFilter(criteriaList, services, type, criteriaPath)
         let fieldName = criteria[fieldNameType]
         let aggs = generateAggs(type, fieldName, 150)
 

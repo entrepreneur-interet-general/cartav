@@ -1,8 +1,8 @@
 <template>
   <div id="circo">
     <div>Entrer un nom de circonscription de police:</div>
-    <input v-model.lazy="circoSelected" type="text" list='list' v-on:focus="showWarning=false" autofocus>
-     <datalist id='list'>
+    <input v-model.lazy="circoSelected" type="text" list='circoList' v-on:focus="showWarning=false" autofocus>
+     <datalist id='circoList'>
         <template v-for="circo in circo_liste">
            <option >{{ circo }}</option>
         </template>
