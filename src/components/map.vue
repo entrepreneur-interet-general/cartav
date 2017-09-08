@@ -427,6 +427,7 @@ export default {
     }
   },
   mounted () {
+    let vm = this
     this.map = L.map('map2', {zoomControl: false}).setView([45.853459, 2.349312], 6)
     L.control.sidebar('sidebar').addTo(this.map)
 
@@ -434,6 +435,19 @@ export default {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
       maxZoom: 18
     }).addTo(this.map)
+
+    let setMapViewInUrl = function () {
+      if (vm.$store.getters.localLevel) {
+        let query = Object.assign({}, vm.$route.query)
+        query.zoom = vm.map.getZoom()
+        query.center = vm.map.getCenter().lat + '|' + vm.map.getCenter().lng
+        query.reload = false
+        vm.$router.replace({query: query})
+      }
+    }
+
+    this.map.on('zoomend', setMapViewInUrl)
+    this.map.on('moveend', setMapViewInUrl)
 
     this.map.addLayer(this.contourLayerGroup)
     this.map.addLayer(this.detailedContentLayerGroup)
@@ -451,7 +465,13 @@ export default {
     if (this.$route.query.services) {
       this.$store.commit('set_services_selected', this.$route.query.services.split('|'))
     }
-    this.$store.dispatch('set_view')
+
+    if (this.$route.query && this.$route.query.center && this.$route.query.zoom) {
+      this.$store.dispatch('set_view', false)
+      this.map.setView(this.$route.query.center.split('|'), this.$route.query.zoom)
+    } else {
+      this.$store.dispatch('set_view')
+    }
 
     // avoid clicking and scrolling when the mouse is over the div
     let div = L.DomUtil.get('info-sidebar')

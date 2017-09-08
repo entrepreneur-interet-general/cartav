@@ -211,11 +211,11 @@ export default new Vuex.Store({
       }
       context.dispatch('set_url_query', o.router)
     },
-    set_view (context) {
+    set_view (context, zoomActive = true) {
       let view = context.getters.view
       context.commit('contour', getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value))
       if (view.content === 'detailedContent') {
-        context.dispatch('getLocalData', {zoomActive: true})
+        context.dispatch('getLocalData', {zoomActive: zoomActive})
       } else if (view.content === 'metric') {
         let promises = [
           context.dispatch('queryESAcc'),
