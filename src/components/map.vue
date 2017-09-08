@@ -402,26 +402,18 @@ export default {
           mouseover: this.setLineColor('black'),
           mouseout: this.setLineColor('white')
         })
+        layer.on('click', function (e) {
+          vm.map.closePopup()
+          let linksTo = vm.view.linksTo
+          let route = {
+            name: 'sous-carte',
+            params: { view: linksTo, id: layer.geoId }
+          }
+          vm.$router.push(route)
+        })
       }
 
       this.linkHoverInfoToLayer(feature, layer)
-
-      layer.on('click', function (e) {
-        vm.map.closePopup()
-        let linksTo = vm.view.linksTo
-        let route = {
-          name: 'sous-carte',
-          params: { view: linksTo, id: layer.geoId }
-        }
-
-        // Si on choisit une zone équivalente, on la remplace dans l’historique
-        // En faisant « arrière », on remonte d’un niveau
-        if (vm.$store.getters.viewLinksToItself) {
-          vm.$router.replace(route)
-        } else {
-          vm.$router.push(route)
-        }
-      })
     },
     linkHoverInfoToLayer (feature, layer) {
       let vm = this
