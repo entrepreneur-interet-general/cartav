@@ -25,3 +25,6 @@ cloud: clean
 	git reset -- $(version-file)
 deploy-cloud: cloud
 	scp -r dist/* cloud-mi:/var/www/html
+
+sync-cloud-es:
+	./sync_elastic_search.sh
