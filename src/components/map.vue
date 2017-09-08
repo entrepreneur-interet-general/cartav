@@ -58,7 +58,7 @@ export default {
           pveN: '',
           km_voie: ''
         },
-        showGraph: true,
+        showGraph: false,
         graphData: {}
       },
       roadAccidentsLayerGroup: L.layerGroup()
@@ -114,9 +114,11 @@ export default {
       this.tileLayer.setUrl(this.basemapUrl)
     },
     '$route' (to, from) {
-      this.detailedContentLayerGroup.clearLayers()
-      this.roadAccidentsLayerGroup.clearLayers()
-      this.$store.dispatch('set_view')
+      if (!to.query || to.query.reload !== false) {
+        this.detailedContentLayerGroup.clearLayers()
+        this.roadAccidentsLayerGroup.clearLayers()
+        this.$store.dispatch('set_view')
+      }
     }
   },
   methods: {
@@ -402,26 +404,18 @@ export default {
           mouseover: this.setLineColor('black'),
           mouseout: this.setLineColor('white')
         })
+        layer.on('click', function (e) {
+          vm.map.closePopup()
+          let linksTo = vm.view.linksTo
+          let route = {
+            name: 'sous-carte',
+            params: { view: linksTo, id: layer.geoId }
+          }
+          vm.$router.push(route)
+        })
       }
 
       this.linkHoverInfoToLayer(feature, layer)
-
-      layer.on('click', function (e) {
-        vm.map.closePopup()
-        let linksTo = vm.view.linksTo
-        let route = {
-          name: 'sous-carte',
-          params: { view: linksTo, id: layer.geoId }
-        }
-
-        // Si on choisit une zone équivalente, on la remplace dans l’historique
-        // En faisant « arrière », on remonte d’un niveau
-        if (vm.$store.getters.viewLinksToItself) {
-          vm.$router.replace(route)
-        } else {
-          vm.$router.push(route)
-        }
-      })
     },
     linkHoverInfoToLayer (feature, layer) {
       let vm = this
@@ -435,6 +429,7 @@ export default {
     }
   },
   mounted () {
+    let vm = this
     this.map = L.map('map2', {zoomControl: false}).setView([45.853459, 2.349312], 6)
     L.control.sidebar('sidebar').addTo(this.map)
 
@@ -443,23 +438,56 @@ export default {
       maxZoom: 18
     }).addTo(this.map)
 
+    let setMapViewInUrl = function () {
+      if (vm.$store.getters.localLevel) {
+        let query = Object.assign({}, vm.$route.query)
+        query.zoom = vm.map.getZoom()
+        query.center = vm.map.getCenter().lat + '|' + vm.map.getCenter().lng
+        query.reload = false
+        vm.$router.replace({query: query})
+      }
+    }
+
+    this.map.on('zoomend', setMapViewInUrl)
+    this.map.on('moveend', setMapViewInUrl)
+
     this.map.addLayer(this.contourLayerGroup)
     this.map.addLayer(this.detailedContentLayerGroup)
     this.map.addLayer(this.roadAccidentsLayerGroup)
 
     // On met l’état initial dans l’historique
-    this.$router.push(this.$route.fullPath)
-    if (this.$route.query.filters) {
-      if (this.$route.query.digest === this.$store.getters.configDigest) {
-        this.$store.commit('set_criteria_list', this.$route.query.filters)
-      } else {
-        this.showModal = true
+    // this.$router.push(this.$route.fullPath)
+    if (this.$route.query) {
+      if (this.$route.query.filters) {
+        if (this.$route.query.digest === this.$store.getters.configDigest) {
+          this.$store.commit('set_criteria_list', this.$route.query.filters)
+        } else {
+          this.showModal = true
+        }
+      }
+      if (this.$route.query.services) {
+        this.$store.commit('set_services_selected', this.$route.query.services.split('|'))
+      }
+      if (this.$route.query.data) {
+        this.$store.commit('set_localLevelData', this.$route.query.data)
+      }
+      if (this.$route.query.display) {
+        this.$store.commit('set_localLevelDisplay', this.$route.query.display)
+      }
+      if (this.$route.query.dividende) {
+        this.$store.commit('set_dividende', this.$route.query.dividende)
+      }
+      if (this.$route.query.divisor) {
+        this.$store.commit('set_divisor', this.$route.query.divisor)
       }
     }
-    if (this.$route.query.services) {
-      this.$store.commit('set_services_selected', this.$route.query.services.split('|'))
+
+    if (this.$route.query && this.$route.query.center && this.$route.query.zoom) {
+      this.$store.dispatch('set_view', false)
+      this.map.setView(this.$route.query.center.split('|'), this.$route.query.zoom)
+    } else {
+      this.$store.dispatch('set_view')
     }
-    this.$store.dispatch('set_view')
 
     // avoid clicking and scrolling when the mouse is over the div
     let div = L.DomUtil.get('info-sidebar')

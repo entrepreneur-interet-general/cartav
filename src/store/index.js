@@ -70,7 +70,7 @@ export default new Vuex.Store({
   },
   strict: process.env.NODE_ENV !== 'production',
   state: {
-    criteria_list: criteriaList.filters,
+    criteria_list: JSON.parse(JSON.stringify(criteriaList.filters)),
     services_list: [],
     services_selected: {fieldName: criteriaList.services_field, list: []},
     accidents: {},
@@ -174,34 +174,49 @@ export default new Vuex.Store({
   actions: {
     set_services_selected (context, o) {
       context.commit('set_services_selected', o.servicesSelected)
-      context.dispatch('set_url_query', o.router)
+      context.dispatch('set_url_query', {router: o.router})
     },
     set_services_list (context) {
       let promList = es.keysList('pve', criteriaList.services_field, 10000)
       promList.then(function (list) { context.commit('set_services_list', list) })
     },
-    set_localLevelDisplay (context, localLevelDisplay) {
-      context.commit('set_localLevelDisplay', localLevelDisplay)
-      if (localLevelDisplay !== 'aggregatedByRoad') {
-        context.commit('set_localLevelData', 'accidentsOnly')
-      }
+    set_localLevelDisplay (context, o) {
+      context.commit('set_localLevelDisplay', o.localLevelDisplay)
+      context.dispatch('set_url_query', {router: o.router, reload: false})
       context.dispatch('getLocalData', {zoomActive: false})
     },
-    set_localLevelData (context, localLevelData) {
-      if (context.state.localLevelData !== localLevelData) {
+    set_localLevelData (context, o) {
+      if (context.state.localLevelData !== o.localLevelData) {
         context.commit('set_zoomActive', false)
-        context.commit('set_localLevelData', localLevelData)
+        let reload = false
+        if (context.state.localLevelDisplay !== 'aggregatedByRoad' && o.localLevelData !== 'accidentsOnly') {
+          context.commit('set_localLevelDisplay', 'aggregatedByRoad')
+          reload = true
+        }
+        context.commit('set_localLevelData', o.localLevelData)
+        context.dispatch('set_url_query', {router: o.router, reload: reload})
       }
     },
-    set_url_query (context, router) {
+    set_url_query (context, o) {
       let state = context.state
       let sha = context.getters.configDigest
-      let query = {filters: furl.encodeFilters(state.criteria_list), digest: sha}
+      let query = Object.assign({}, state.route.query)
+      query.filters = furl.encodeFilters(state.criteria_list)
+      query.digest = sha
+      query.reload = o.reload
+
       let services = state.services_selected.list.join('|')
       if (services) {
         query.services = services
       }
-      router.push({path: state.route.path, query: query})
+      if (context.getters.view.content === 'detailedContent') {
+        query.data = state.localLevelData
+        query.display = state.localLevelDisplay
+      } else if (context.getters.view.content === 'metric') {
+        query.dividende = state.dividende
+        query.divisor = state.divisor
+      }
+      o.router.push({path: state.route.path, query: query})
     },
     set_criteria (context, o) {
       if (o.type === 'bulk') {
@@ -209,13 +224,15 @@ export default new Vuex.Store({
       } else {
         context.commit('set_criteria', o)
       }
-      context.dispatch('set_url_query', o.router)
+      // set_view est lancé à la main (reload: false) pour éviter le zoom automatique
+      context.dispatch('set_url_query', {router: o.router, reload: false})
+      context.dispatch('set_view', false)
     },
-    set_view (context) {
+    set_view (context, zoomActive = true) {
       let view = context.getters.view
       context.commit('contour', getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value))
       if (view.content === 'detailedContent') {
-        context.dispatch('getLocalData', {zoomActive: true})
+        context.dispatch('getLocalData', {zoomActive: zoomActive})
       } else if (view.content === 'metric') {
         let promises = [
           context.dispatch('queryESAcc'),
@@ -411,7 +428,10 @@ export default new Vuex.Store({
       return 'Rapport entre le nombre ' + label[state.dividende] + ' et le nombre ' + label[state.divisor]
     },
     configDigest (state) {
-      return String(CryptoJS.SHA256(JSON.stringify(state.criteria_list))).slice(0, 8)
+      return String(CryptoJS.SHA256(JSON.stringify(criteriaList.filters))).slice(0, 8)
+    },
+    localLevel (state, getters) {
+      return getters.view.content === 'detailedContent'
     }
   }
 })

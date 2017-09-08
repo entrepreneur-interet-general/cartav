@@ -85,10 +85,6 @@ import criteriaList from '../assets/json/config.json'
 export default {
   data () {
     return {
-      dividende: this.$store.state.dividende,
-      divisor: this.$store.state.divisor,
-      localLevelDisplay: this.$store.state.localLevelDisplay,
-      localLevelData: this.$store.state.localLevelData,
       colorScale: this.$store.state.colorScale,
       colors: colors.colors,
       colorScaleInverted: this.$store.state.colorScaleInverted,
@@ -97,38 +93,49 @@ export default {
     }
   },
   computed: {
+    localLevelData: {
+      get () {
+        return this.$store.state.localLevelData
+      },
+      set (newValue) {
+        this.$store.dispatch('set_localLevelData', {localLevelData: newValue, router: this.$router})
+      }
+    },
+    localLevelDisplay: {
+      get () {
+        return this.$store.state.localLevelDisplay
+      },
+      set (newValue) {
+        this.$store.dispatch('set_localLevelDisplay', {localLevelDisplay: newValue, router: this.$router})
+      }
+    },
+    dividende: {
+      get () {
+        return this.$store.state.dividende
+      },
+      set (newValue) {
+        this.$store.commit('set_dividende', newValue)
+      }
+    },
+    divisor: {
+      get () {
+        return this.$store.state.divisor
+      },
+      set (newValue) {
+        this.$store.commit('set_divisor', newValue)
+      }
+    },
     localLevel () {
       return this.$store.getters.view.content === 'detailedContent'
     },
     aggregatedByRoad () {
       return this.$store.getters.view.content === 'detailedContent'
     },
-    localLevelDataStore () {
-      return this.$store.state.localLevelData
-    },
     aggregatedByRoadOnly () {
       return this.localLevelData !== 'accidentsOnly'
     }
   },
   watch: {
-    dividende () {
-      this.$store.commit('set_dividende', this.dividende)
-    },
-    divisor () {
-      this.$store.commit('set_divisor', this.divisor)
-    },
-    localLevelDisplay () {
-      this.$store.dispatch('set_localLevelDisplay', this.localLevelDisplay)
-    },
-    localLevelData () {
-      if (this.localLevelData !== 'accidentsOnly') {
-        this.localLevelDisplay = 'aggregatedByRoad'
-      }
-      this.$store.dispatch('set_localLevelData', this.localLevelData)
-    },
-    localLevelDataStore () {
-      this.localLevelData = this.localLevelDataStore
-    },
     colorScale () {
       this.$store.commit('set_colorScale', this.colorScale)
     },
