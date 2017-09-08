@@ -70,7 +70,7 @@ export default new Vuex.Store({
   },
   strict: process.env.NODE_ENV !== 'production',
   state: {
-    criteria_list: criteriaList.filters,
+    criteria_list: JSON.parse(JSON.stringify(criteriaList.filters)),
     services_list: [],
     services_selected: {fieldName: criteriaList.services_field, list: []},
     accidents: {},
@@ -411,7 +411,7 @@ export default new Vuex.Store({
       return 'Rapport entre le nombre ' + label[state.dividende] + ' et le nombre ' + label[state.divisor]
     },
     configDigest (state) {
-      return String(CryptoJS.SHA256(JSON.stringify(state.criteria_list))).slice(0, 8)
+      return String(CryptoJS.SHA256(JSON.stringify(criteriaList.filters))).slice(0, 8)
     },
     localLevel (state, getters) {
       return getters.view.content === 'detailedContent'
