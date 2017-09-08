@@ -11,26 +11,21 @@
 
 <script>
 import nd from '../assets/js/niceDisplay'
+import { mapGetters } from 'vuex'
 
 export default {
   computed: {
-    legendScale () {
-      return this.$store.getters.legendScale
-    },
+    ...mapGetters([
+      'legendScale',
+      'colors',
+      'localLevel',
+      'ratioLabel'
+    ]),
     ratioAverage () {
       return nd.niceDisplay(this.$store.getters.ratioAverage)
     },
-    colors () {
-      return this.$store.getters.colors
-    },
     hasScale () {
       return this.legendScale.length !== 0
-    },
-    localLevel () {
-      return this.$store.getters.view.content === 'detailedContent'
-    },
-    ratioLabel () {
-      return this.$store.getters.ratioLabel
     }
   },
   methods: {

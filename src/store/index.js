@@ -412,6 +412,9 @@ export default new Vuex.Store({
     },
     configDigest (state) {
       return String(CryptoJS.SHA256(JSON.stringify(state.criteria_list))).slice(0, 8)
+    },
+    localLevel (state, getters) {
+      return getters.view.content === 'detailedContent'
     }
   }
 })
