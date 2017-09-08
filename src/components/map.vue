@@ -58,7 +58,7 @@ export default {
           pveN: '',
           km_voie: ''
         },
-        showGraph: true,
+        showGraph: false,
         graphData: {}
       },
       roadAccidentsLayerGroup: L.layerGroup()
