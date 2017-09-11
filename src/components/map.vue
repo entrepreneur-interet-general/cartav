@@ -25,6 +25,7 @@ import 'sidebar-v2/css/leaflet-sidebar.css'
 import 'font-awesome/css/font-awesome.min.css'
 import '../vendor/leaflet.pattern.js'
 import { mapState } from 'vuex'
+import keyboardJS from 'keyboardjs'
 
 import helpers from '../store/modules/map_helpers'
 import infoSidebar from './info-sidebar'
@@ -437,6 +438,10 @@ export default {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
       maxZoom: 18
     }).addTo(this.map)
+
+    keyboardJS.bind('e+s+c', function (e) {
+      window.open(`${process.env.ES_HOST}/_cat/indices/${process.env.indices.acc},${process.env.indices.pve}`, '_blank')
+    })
 
     let setMapViewInUrl = function () {
       if (vm.$store.getters.localLevel) {
