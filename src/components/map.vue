@@ -119,7 +119,7 @@ export default {
         this.detailedContentLayerGroup.clearLayers()
         this.roadAccidentsLayerGroup.clearLayers()
         this.readParamsFromURL()
-        this.$store.dispatch('set_view')
+        this.$store.dispatch('set_view', {router: this.$router})
       }
     }
   },
@@ -490,10 +490,10 @@ export default {
     this.readParamsFromURL()
 
     if (this.$route.query && this.$route.query.center && this.$route.query.zoom) {
-      this.$store.dispatch('set_view', false)
+      this.$store.dispatch('set_view', {router: this.$router, zoomActive: false})
       this.map.setView(this.$route.query.center.split('|'), this.$route.query.zoom)
     } else {
-      this.$store.dispatch('set_view')
+      this.$store.dispatch('set_view', {router: this.$router})
     }
 
     // avoid clicking and scrolling when the mouse is over the div

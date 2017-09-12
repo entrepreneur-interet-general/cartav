@@ -63,6 +63,28 @@ function getLevelShapesGeojson (decoupage, dep) {
   }
 }
 
+function createUrlQuery (context, o) {
+  let state = context.state
+  let sha = context.getters.configDigest
+  let query = Object.assign({}, state.route.query)
+  query.filters = furl.encodeFilters(state.criteria_list)
+  query.digest = sha
+  query.reload = o.reload
+
+  let services = state.services_selected.list.join('|')
+  if (services) {
+    query.services = services
+  }
+  if (context.getters.view.content === 'detailedContent') {
+    query.data = state.localLevelData
+    query.display = state.localLevelDisplay
+  } else if (context.getters.view.content === 'metric') {
+    query.dividende = state.dividende
+    query.divisor = state.divisor
+  }
+  return query
+}
+
 export default new Vuex.Store({
   modules: {
     carte,
@@ -174,7 +196,7 @@ export default new Vuex.Store({
   actions: {
     set_services_selected (context, o) {
       context.commit('set_services_selected', o.servicesSelected)
-      context.dispatch('set_url_query', {router: o.router})
+      context.dispatch('push_url_query', {router: o.router})
     },
     set_services_list (context) {
       let promList = es.keysList('pve', criteriaList.services_field, 10000)
@@ -182,7 +204,7 @@ export default new Vuex.Store({
     },
     set_localLevelDisplay (context, o) {
       context.commit('set_localLevelDisplay', o.localLevelDisplay)
-      context.dispatch('set_url_query', {router: o.router, reload: false})
+      context.dispatch('push_url_query', {router: o.router, reload: false})
       context.dispatch('getLocalData', {zoomActive: false})
     },
     set_localLevelData (context, o) {
@@ -194,29 +216,16 @@ export default new Vuex.Store({
           reload = true
         }
         context.commit('set_localLevelData', o.localLevelData)
-        context.dispatch('set_url_query', {router: o.router, reload: reload})
+        context.dispatch('push_url_query', {router: o.router, reload: reload})
       }
     },
-    set_url_query (context, o) {
-      let state = context.state
-      let sha = context.getters.configDigest
-      let query = Object.assign({}, state.route.query)
-      query.filters = furl.encodeFilters(state.criteria_list)
-      query.digest = sha
-      query.reload = o.reload
-
-      let services = state.services_selected.list.join('|')
-      if (services) {
-        query.services = services
-      }
-      if (context.getters.view.content === 'detailedContent') {
-        query.data = state.localLevelData
-        query.display = state.localLevelDisplay
-      } else if (context.getters.view.content === 'metric') {
-        query.dividende = state.dividende
-        query.divisor = state.divisor
-      }
-      o.router.push({path: state.route.path, query: query})
+    push_url_query (context, o) {
+      let query = createUrlQuery(context, o)
+      o.router.push({path: context.state.route.path, query: query})
+    },
+    replace_url_query (context, o) {
+      let query = createUrlQuery(context, o)
+      o.router.replace({path: context.state.route.path, query: query})
     },
     set_criteria (context, o) {
       if (o.type === 'bulk') {
@@ -225,11 +234,12 @@ export default new Vuex.Store({
         context.commit('set_criteria', o)
       }
       // set_view est lancé à la main (reload: false) pour éviter le zoom automatique
-      context.dispatch('set_url_query', {router: o.router, reload: false})
-      context.dispatch('set_view', false)
+      context.dispatch('push_url_query', {router: o.router, reload: false})
+      context.dispatch('set_view', {router: o.router, zoomActive: false})
     },
-    set_view (context, zoomActive = true) {
+    set_view (context, {router, zoomActive: zoomActive = true}) {
       let view = context.getters.view
+      if (!context.state.query) { context.dispatch('replace_url_query', {router: router, reload: false}) }
       context.commit('contour', getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value))
       if (view.content === 'detailedContent') {
         context.dispatch('getLocalData', {zoomActive: zoomActive})
