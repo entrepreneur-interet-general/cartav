@@ -458,7 +458,7 @@ export default {
   },
   mounted () {
     let vm = this
-    this.map = L.map('map2', {zoomControl: false}).setView([45.853459, 2.349312], 6)
+    this.map = L.map('map2').setView([45.853459, 2.349312], 6)
     L.control.sidebar('sidebar').addTo(this.map)
 
     this.tileLayer = L.tileLayer(this.basemapUrl, {
