@@ -24,6 +24,7 @@
         </h1>
 
         <div>
+          <div v-html="warning(tab.id)"></div>
           <span v-for="(category, categoryName) in criteria_list">
             <span v-if="categoryName === tab.category">
               <span v-bind:id="'id'+categoryName.replace(/ /g,'_')" class="collapse in">
@@ -138,6 +139,15 @@ export default {
     }
   },
   methods: {
+    warning (id) {
+      if (this.$store.getters.localLevel) {
+        if (id === 'pveFilters' && this.$store.state.localLevelData === 'accidentsOnly') {
+          return '<em>Vous visualisez actuellement sur la carte les accidents. Si vous souhaitez voir les PV électroniques, cliquez sur l\'onglet <i class="fa fa-lg fa-sliders">.</i></em>'
+        } else if (id === 'accidentsFilters' && this.$store.state.localLevelData === 'pveOnly') {
+          return '<em>Vous visualisez actuellement sur la carte les PV électroniques. Si vous souhaitez voir les accidents, cliquez sur l\'onglet <i class="fa fa-big fa-sliders">.</i></em>'
+        }
+      }
+    },
     selectAlone (event, categoryName, criteriaName, valName) {
       // Idée, copyright Martin Gross, head of ux consulting at Ministère de l'interieur
       let criteriaPath = `${categoryName}.${criteriaName}`
