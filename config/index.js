@@ -8,6 +8,9 @@ if (process.env.prod_type === 'production') {
 } else if (process.env.prod_type === 'pre-production') {
   assetsPublicPath = '/av/test/'
   env_path = './pre-prod.env'
+} else if (process.env.prod_type === 'cloud') {
+  assetsPublicPath = '/'
+  env_path = './cloud.env'
 }
 
 module.exports = {

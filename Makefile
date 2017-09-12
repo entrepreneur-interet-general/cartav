@@ -18,3 +18,13 @@ prod: clean
 	git reset -- $(version-file)
 deploy-prod: prod
 	scp -r dist/* fa-gate-adm:/data/www/demo/francis/dist
+
+cloud: clean
+	echo "{\"version\": \"cloud-$(date)-$(commit)\"}" > $(version-file)
+	node build/build.js cloud
+	git reset -- $(version-file)
+deploy-cloud: cloud
+	scp -r dist/* cloud-mi:/var/www/html
+
+sync-cloud-es:
+	./sync_elastic_search.sh
