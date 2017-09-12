@@ -21,15 +21,19 @@ export default {
   styleAccidentsRoads (feature) {
     let count = feature.properties.count
     let values = [
-      {count: 2, weight: 2, opacity: 0.5},
-      {count: 4, weight: 3, opacity: 0.7},
-      {count: 5, weight: 4, opacity: 0.8},
+      {count: 2, weight: 2, opacity: 0.4, color: 'rgb(255, 0, 0)'},
+      {count: 4, weight: 2.5, opacity: 0.5, color: 'rgb(255, 0, 0)'},
+      {count: 8, weight: 3, opacity: 0.6, color: 'rgb(200, 0, 0)'},
+      {count: 15, weight: 3.5, opacity: 0.7, color: 'rgb(150, 0, 0)'},
+      {count: 30, weight: 4, opacity: 0.8, color: 'rgb(100, 0, 0)'},
+      {count: 60, weight: 4.5, opacity: 0.85, color: 'rgb(50, 0, 0)'},
+      {count: 100, weight: 5, opacity: 0.9, color: 'rgb(20, 0, 0)'},
       {count: Number.MAX_VALUE, weight: 6, opacity: 1}
     ].find(x => x.count > count)
     feature.weight = values.weight
 
     return {
-      color: 'rgb(255, 0, 0)',
+      color: values.color,
       opacity: values.opacity,
       weight: values.weight
     }
@@ -37,15 +41,19 @@ export default {
   stylePveRoads (feature) {
     let count = feature.properties.count
     let values = [
-      {count: 20, weight: 2, opacity: 0.5},
-      {count: 50, weight: 3, opacity: 0.7},
-      {count: 100, weight: 4, opacity: 0.8},
-      {count: 200, weight: 6, opacity: 0.9},
+      {count: 20, weight: 2, opacity: 0.4, color: 'rgb(0, 97, 255)'},
+      {count: 50, weight: 2.5, opacity: 0.5, color: 'rgb(0, 97, 255)'},
+      {count: 100, weight: 2.5, opacity: 0.6, color: 'rgb(0, 97, 255)'},
+      {count: 200, weight: 3, opacity: 0.7, color: 'rgb(0, 81, 214)'},
+      {count: 400, weight: 3.5, opacity: 0.8, color: 'rgb(0, 66, 175)'},
+      {count: 800, weight: 4, opacity: 0.85, color: 'rgb(0, 50, 120)'},
+      {count: 1500, weight: 4.5, opacity: 0.85, color: 'rgb(0, 40, 110)'},
+      {count: 3000, weight: 5, opacity: 0.9, color: 'rgb(0, 20, 80)'},
       {count: Number.MAX_VALUE, weight: 8, opacity: 1}
     ].find(x => x.count > count)
 
     return {
-      color: 'rgb(0, 0, 255)',
+      color: values.color,
       opacity: values.opacity,
       weight: values.weight
     }
