@@ -118,7 +118,8 @@ export default {
       if (!to.query || to.query.reload !== false) {
         this.detailedContentLayerGroup.clearLayers()
         this.roadAccidentsLayerGroup.clearLayers()
-        this.$store.dispatch('set_view')
+        this.readParamsFromURL()
+        this.$store.dispatch('set_view', {router: this.$router})
       }
     }
   },
@@ -427,11 +428,37 @@ export default {
         vm.infoSidebarData.hoverInfoData.pveN = feature.countElements ? feature.countElements['PV électroniques'] : ''
         vm.infoSidebarData.hoverInfoData.km_voie = layer.km_voie
       })
+    },
+    readParamsFromURL () {
+      if (this.$route.query) {
+        if (this.$route.query.filters) {
+          if (this.$route.query.digest === this.$store.getters.configDigest) {
+            this.$store.commit('set_criteria_list', this.$route.query.filters)
+          } else {
+            this.showModal = true
+          }
+        }
+        if (this.$route.query.services) {
+          this.$store.commit('set_services_selected', this.$route.query.services.split('|'))
+        }
+        if (this.$route.query.data) {
+          this.$store.commit('set_localLevelData', this.$route.query.data)
+        }
+        if (this.$route.query.display) {
+          this.$store.commit('set_localLevelDisplay', this.$route.query.display)
+        }
+        if (this.$route.query.dividende) {
+          this.$store.commit('set_dividende', this.$route.query.dividende)
+        }
+        if (this.$route.query.divisor) {
+          this.$store.commit('set_divisor', this.$route.query.divisor)
+        }
+      }
     }
   },
   mounted () {
     let vm = this
-    this.map = L.map('map2', {zoomControl: false}).setView([45.853459, 2.349312], 6)
+    this.map = L.map('map2').setView([45.853459, 2.349312], 6)
     L.control.sidebar('sidebar').addTo(this.map)
 
     this.tileLayer = L.tileLayer(this.basemapUrl, {
@@ -460,38 +487,13 @@ export default {
     this.map.addLayer(this.detailedContentLayerGroup)
     this.map.addLayer(this.roadAccidentsLayerGroup)
 
-    // On met l’état initial dans l’historique
-    // this.$router.push(this.$route.fullPath)
-    if (this.$route.query) {
-      if (this.$route.query.filters) {
-        if (this.$route.query.digest === this.$store.getters.configDigest) {
-          this.$store.commit('set_criteria_list', this.$route.query.filters)
-        } else {
-          this.showModal = true
-        }
-      }
-      if (this.$route.query.services) {
-        this.$store.commit('set_services_selected', this.$route.query.services.split('|'))
-      }
-      if (this.$route.query.data) {
-        this.$store.commit('set_localLevelData', this.$route.query.data)
-      }
-      if (this.$route.query.display) {
-        this.$store.commit('set_localLevelDisplay', this.$route.query.display)
-      }
-      if (this.$route.query.dividende) {
-        this.$store.commit('set_dividende', this.$route.query.dividende)
-      }
-      if (this.$route.query.divisor) {
-        this.$store.commit('set_divisor', this.$route.query.divisor)
-      }
-    }
+    this.readParamsFromURL()
 
     if (this.$route.query && this.$route.query.center && this.$route.query.zoom) {
-      this.$store.dispatch('set_view', false)
+      this.$store.dispatch('set_view', {router: this.$router, zoomActive: false})
       this.map.setView(this.$route.query.center.split('|'), this.$route.query.zoom)
     } else {
-      this.$store.dispatch('set_view')
+      this.$store.dispatch('set_view', {router: this.$router})
     }
 
     // avoid clicking and scrolling when the mouse is over the div
