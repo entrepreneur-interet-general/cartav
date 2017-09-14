@@ -7,7 +7,7 @@ cache:
 build:
     script:
         - yarn
-        - npm run build
+        - make prod
     artifacts:
         paths:
             - dist/
