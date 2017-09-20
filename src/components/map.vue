@@ -10,6 +10,7 @@
           <h3 slot="title" class="text-info"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></br>Lien obsolète</h3>
           <p slot="text">Ce lien a été créé par une précédente version de l'application. Nous ne pouvons pas restaurer les filtres à l'identique.</p>
         </Modal>
+        <poll></poll>
     </div>
 </template>
 
@@ -33,6 +34,7 @@ import legend from './legend'
 import chartComponent from './chartComponent'
 import Spinner from './Spinner'
 import Modal from './Modal'
+import poll from './poll'
 
 export default {
   components: {
@@ -40,7 +42,8 @@ export default {
     chartComponent: chartComponent,
     infoSidebar,
     Spinner,
-    Modal
+    Modal,
+    poll
   },
   data () {
     return {
