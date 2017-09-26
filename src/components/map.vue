@@ -1,6 +1,6 @@
 <template>
     <div id="map2">
-        <infoSidebar id="info-sidebar" :infoSidebarData="infoSidebarData" class=""></infoSidebar>
+        <infoSidebar v-if="!hideAll" id="info-sidebar" :infoSidebarData="infoSidebarData" class=""></infoSidebar>
         <legende></legende>
         <div v-if="infoSidebarData.showGraph">
           <chartComponent :chartData="infoSidebarData.graphData"></chartComponent>
@@ -10,7 +10,7 @@
           <h3 slot="title" class="text-info"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></br>Lien obsolète</h3>
           <p slot="text">Ce lien a été créé par une précédente version de l'application. Nous ne pouvons pas restaurer les filtres à l'identique.</p>
         </Modal>
-        <poll></poll>
+        <poll v-if="!hideAll"></poll>
     </div>
 </template>
 
@@ -78,6 +78,7 @@ export default {
     localLevelDisplay: 'localLevelDisplay',
     localLevelData: 'localLevelData',
     basemapUrl: 'basemapUrl',
+    hideAll: 'hideAll',
     view () {
       return this.$store.getters.view
     },
@@ -461,8 +462,9 @@ export default {
   },
   mounted () {
     let vm = this
-    this.map = L.map('map2').setView([45.853459, 2.349312], 6)
+    this.map = L.map('map2', {zoomControl: false}).setView([45.853459, 2.349312], 6)
     L.control.sidebar('sidebar').addTo(this.map)
+    let zoomControl = L.control.zoom().addTo(vm.map)
 
     this.tileLayer = L.tileLayer(this.basemapUrl, {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
@@ -471,6 +473,15 @@ export default {
 
     keyboardJS.bind('e+s+c', function (e) {
       window.open(`${process.env.ES_HOST}/_cat/indices/${process.env.indices.acc},${process.env.indices.pve}`, '_blank')
+    })
+
+    keyboardJS.bind('p', function (e) {
+      vm.$store.commit('toggle_hide_all')
+      if (vm.hideAll) {
+        zoomControl.remove()
+      } else {
+        zoomControl.addTo(vm.map)
+      }
     })
 
     let setMapViewInUrl = function () {

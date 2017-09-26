@@ -113,7 +113,8 @@ export default new Vuex.Store({
     colorScale: colors.defaultColor,
     colorScaleInverted: true,
     basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]],
-    showSpinner: false
+    showSpinner: false,
+    hideAll: false
   },
   mutations: {
     set_services_selected (state, list) {
@@ -191,6 +192,9 @@ export default new Vuex.Store({
     },
     set_showSpinner (state, show) {
       state.showSpinner = show
+    },
+    toggle_hide_all (state) {
+      state.hideAll = !state.hideAll
     }
   },
   actions: {
