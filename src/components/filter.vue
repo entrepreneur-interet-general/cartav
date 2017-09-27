@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="!hideAll">
     <div class="sidebar-tabs">
       <ul role="tablist">
         <li><a href="#ratio" role="tab"><abbr title="Sélectionner le contenu à afficher sur la cartue"><i class="fa fa-sliders"></i></abbr></a></li>
@@ -136,6 +136,9 @@ export default {
     },
     agg_pve () {
       return this.$store.state.pve_value_by_filter
+    },
+    hideAll () {
+      return this.$store.state.hideAll
     }
   },
   methods: {
