@@ -99,6 +99,14 @@
           La documentation de cet outil est disponible
           <a href="./static/doc/index.html">en suivant ce lien</a>.
         </p>
+        <h3>Raccourcis</h3>
+        <p>
+          <ul>
+          <li><a href=".#/carte/circonscriptions">Circonscriptions de Police</a></li>
+          <li><a href=".#/carte/départements">Départements</a></li>
+          <li><a href=".#/carte/régions">Régions</a></li>
+          </ul>
+        </p>
       </div>
     </div>
   </div>
