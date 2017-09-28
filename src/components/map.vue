@@ -456,6 +456,12 @@ export default {
         if (this.$route.query.divisor) {
           this.$store.commit('set_divisor', this.$route.query.divisor)
         }
+        if (this.$route.query.accB && this.$route.query.accE) {
+          this.$store.commit('set_acc_dates', [this.$route.query.accB, this.$route.query.accE])
+        }
+        if (this.$route.query.pveB && this.$route.query.pveE) {
+          this.$store.commit('set_pve_dates', [this.$route.query.pveB, this.$route.query.pveE])
+        }
       }
     }
   },
