@@ -152,8 +152,8 @@ export default {
       this.roadAccidentsLayerGroup.clearLayers()
 
       let style = {
-        color: 'white',
-        weight: 2,
+        color: '#09006FFF',
+        weight: 0.5,
         opacity: 1,
         fillOpacity: 0
       }
@@ -381,18 +381,18 @@ export default {
       }
       let stripes = new L.StripePattern(stripesParams).addTo(this.map)
       return {
-        color: 'white',
-        weight: 2,
-        opacity: 0.5,
+        color: '#09006FFF',
+        weight: 0.5,
+        opacity: 1,
         fillOpacity: 0.5,
         fillPattern: stripes
       }
     },
-    setLineColor (color) {
+    setLineWeight (weight) {
       return function (e) {
         e.target.bringToFront()
         e.target.setStyle({
-          color: color
+          weight: weight
         })
       }
     },
@@ -407,8 +407,8 @@ export default {
       if (vm.view.content !== 'detailedContent' || vm.view.data.filter.value !== layer.geoId) {
         // disable mouseover effect on the current administrative shape when displaying detailedContent
         layer.on({
-          mouseover: this.setLineColor('black'),
-          mouseout: this.setLineColor('white')
+          mouseover: this.setLineWeight(3),
+          mouseout: this.setLineWeight(0.5)
         })
         layer.on('click', function (e) {
           vm.map.closePopup()
