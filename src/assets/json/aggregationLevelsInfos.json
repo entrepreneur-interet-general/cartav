@@ -11,6 +11,10 @@
         "circonscriptif": {
             "id": "nom_circo",
             "name": "nom_circo"
+        },
+        "communal": {
+            "id": "insee",
+            "name": "nom"
         }
     },
     "data": {
@@ -31,6 +35,9 @@
         "radars": {
             "départemental": "departement_num",
             "circonscriptif": "nom_circonscription_police"
+        },
+        "communes": {
+            "départemental": "CODE_DEPT"
         }
     }
 }

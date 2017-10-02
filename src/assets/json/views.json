@@ -104,5 +104,43 @@
         },
         "content": "detailedContent",
         "linksTo": "circonscription"
+    },
+    "département_communes": {
+        "description": "les communes d'un département",
+        "contour": {
+            "decoupage": "communal",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "départemental"
+            }
+        },
+        "data": {
+            "group_by": "communal",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "départemental"
+            }
+        },
+        "content": "metric",
+        "linksTo": "commune"
+    },
+    "commune": {
+        "description": "vue détaillée d'une commune",
+        "contour": {
+            "decoupage": "communal",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "départemental"
+            }
+        },
+        "data": {
+            "group_by": "routier",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "communal"
+            }
+        },
+        "content": "detailedContent",
+        "linksTo": "commune"
     }
 }
