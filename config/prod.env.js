@@ -6,6 +6,7 @@ module.exports = {
     pve: '"es5_prod_pve"',
     acc_usagers: '"es5_prod_accidents_usagers"',
     acc_vehicules: '"es5_prod_accidents_vehicules"',
-    radars: '"es5_prod_radars"'
+    radars: '"es5_prod_radars"',
+    communes: '"es5dev_communes_boundaries"'
   }
 }

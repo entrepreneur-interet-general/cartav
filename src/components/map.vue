@@ -164,7 +164,7 @@ export default {
       } else if (this.localLevelDisplay === 'aggregatedByRoad') {
         this.aggByRoad()
       }
-      if (this.$store.state.zoomActive) {
+      if (this.$store.state.zoomActive && this.detailedContentLayerGroup.getBounds().isValid()) {
         this.map.fitBounds(this.detailedContentLayerGroup.getBounds())
       }
       this.displayContours(() => style, this.myOnEachFeature)
