@@ -474,7 +474,8 @@ export default {
       window.open(`${process.env.ES_HOST}/_cat/indices/${process.env.indices.acc},${process.env.indices.pve}`, '_blank')
     })
 
-    keyboardJS.bind('p', function (e) {
+    keyboardJS.bind('c+e', function (e) {
+      // permet la Copie d'Écran
       vm.$store.commit('toggle_hide_all')
       if (vm.hideAll) {
         zoomControl.remove()
