@@ -465,6 +465,9 @@ export default {
       }
     }
   },
+  created () {
+    this.readParamsFromURL()
+  },
   mounted () {
     let vm = this
     this.map = L.map('map2', {zoomControl: false}).setView([45.853459, 2.349312], 6)
@@ -506,8 +509,6 @@ export default {
     this.map.addLayer(this.contourLayerGroup)
     this.map.addLayer(this.detailedContentLayerGroup)
     this.map.addLayer(this.roadAccidentsLayerGroup)
-
-    this.readParamsFromURL()
 
     if (this.$route.query && this.$route.query.center && this.$route.query.zoom) {
       this.$store.dispatch('set_view', {router: this.$router, zoomActive: false})
