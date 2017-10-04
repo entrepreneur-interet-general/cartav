@@ -71,10 +71,8 @@ function createUrlQuery (context, o) {
   query.digest = sha
   query.reload = o.reload
 
-  let services = state.services_selected.list.join('|')
-  if (services) {
-    query.services = services
-  }
+  query.services = state.services_selected.list.join('|')
+
   if (context.getters.view.content === 'detailedContent') {
     query.data = state.localLevelData
     query.display = state.localLevelDisplay
