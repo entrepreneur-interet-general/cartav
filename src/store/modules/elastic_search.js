@@ -194,7 +194,8 @@ function generateAggregatedQuery (criteriaList, services, type, view, topAgghits
   let must = generateFilter(criteriaList, services, type)
   addAdditionalFilters(must, type, view)
   let aggKey = aggregationLevelsInfos.data[type][view.data.group_by]
-  let aggs = generateAggs(type, aggKey, 1000, topAgghitsField)
+  // 73000 = nombre de rues dans le departement qui en a le plus (29)
+  let aggs = generateAggs(type, aggKey, 73000, topAgghitsField)
 
   query.query.constant_score.filter.bool.must = must
   query.aggs = aggs
