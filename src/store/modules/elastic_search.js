@@ -76,16 +76,27 @@ function toRoadsDict (json, otherCount) {
   return dict
 }
 
-function generateFilter (criteriaList, services, type, ExceptThisfield = undefined) {
+function generateFilter (criteriaList, dates, services, type, ExceptThisfield = undefined) {
   // Lit les critères cochés et génère la requête ES correspondante
   let fieldName = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
   var must = []
+
+  if (type === 'pve' || type === 'acc') {
+    let range = {}
+    let field = criteriaList['PV électroniques et accidents']['Période temporelle'][fieldName]
+    range[field] = {
+      gte: dates[type][0],
+      lt: dates[type][1],
+      format: 'yyyy-MM-dd'
+    }
+    must.push({range: range})
+  }
 
   for (let scopeName in criteriaList) {
     let scope = criteriaList[scopeName]
     for (let criteriaName in scope) {
       let criteria = scope[criteriaName]
-      if (fieldName in criteria) {
+      if (fieldName in criteria && !criteria.specificFilter) {
         let criteriaPath = scopeName + '.' + criteriaName
         if (criteriaPath !== ExceptThisfield) {
           let criteriaFilters = []
@@ -188,10 +199,10 @@ function addFilter (must, field, value) {
   })
 }
 
-function generateAggregatedQuery (criteriaList, services, type, view, topAgghitsField = null) {
+function generateAggregatedQuery (criteriaList, dates, services, type, view, topAgghitsField = null) {
   // Génération de la query ES
   let query = getQueryBase(0)
-  let must = generateFilter(criteriaList, services, type)
+  let must = generateFilter(criteriaList, dates, services, type)
   addAdditionalFilters(must, type, view)
   let aggKey = aggregationLevelsInfos.data[type][view.data.group_by]
   // 73000 = nombre de rues dans le departement qui en a le plus (29)
@@ -203,9 +214,9 @@ function generateAggregatedQuery (criteriaList, services, type, view, topAgghits
   return query
 }
 
-function generateGraphAgg (criteriaList, services, type, view, roadID, aggKey) {
+function generateGraphAgg (criteriaList, dates, services, type, view, roadID, aggKey) {
   let query = getQueryBase(0)
-  let must = generateFilter(criteriaList, services, type)
+  let must = generateFilter(criteriaList, dates, services, type)
   addAdditionalFilters(must, type, view)
   addFilter(must, aggregationLevelsInfos.data[type][view.data.group_by], roadID)
   let aggs = generateAggs(type, aggKey, 100)
@@ -215,12 +226,12 @@ function generateGraphAgg (criteriaList, services, type, view, roadID, aggKey) {
   return query
 }
 
-function generateQuery (criteriaList, services, type, view, roadID = null) {
+function generateQuery (criteriaList, dates, services, type, view, roadID = null) {
   // Génération de la query ES
   let query = getQueryBase(10000)
   let must = []
   if (criteriaList) {
-    must = generateFilter(criteriaList, services, type)
+    must = generateFilter(criteriaList, dates, services, type)
   }
   if (roadID) {
     addFilter(must, aggregationLevelsInfos.data[type][view.data.group_by], roadID)
@@ -230,7 +241,7 @@ function generateQuery (criteriaList, services, type, view, roadID = null) {
   return query
 }
 
-function generateAggregatedQueryByFilter (criteriaList, services, type, view) {
+function generateAggregatedQueryByFilter (criteriaList, dates, services, type, view) {
   let promises = []
   let criteriaPaths = []
   let fieldNameType = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
@@ -241,7 +252,7 @@ function generateAggregatedQueryByFilter (criteriaList, services, type, view) {
       if (fieldNameType in criteria) {
         let criteriaPath = scopeName + '.' + criteriaName
         let query = getQueryBase(0)
-        let must = generateFilter(criteriaList, services, type, criteriaPath)
+        let must = generateFilter(criteriaList, dates, services, type, criteriaPath)
         let fieldName = criteria[fieldNameType]
         let aggs = generateAggs(type, fieldName, 150)
 

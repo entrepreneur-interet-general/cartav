@@ -456,8 +456,17 @@ export default {
         if (this.$route.query.divisor) {
           this.$store.commit('set_divisor', this.$route.query.divisor)
         }
+        if (this.$route.query.accB && this.$route.query.accE) {
+          this.$store.commit('set_acc_dates', [this.$route.query.accB, this.$route.query.accE])
+        }
+        if (this.$route.query.pveB && this.$route.query.pveE) {
+          this.$store.commit('set_pve_dates', [this.$route.query.pveB, this.$route.query.pveE])
+        }
       }
     }
+  },
+  created () {
+    this.readParamsFromURL()
   },
   mounted () {
     let vm = this
@@ -500,8 +509,6 @@ export default {
     this.map.addLayer(this.contourLayerGroup)
     this.map.addLayer(this.detailedContentLayerGroup)
     this.map.addLayer(this.roadAccidentsLayerGroup)
-
-    this.readParamsFromURL()
 
     if (this.$route.query && this.$route.query.center && this.$route.query.zoom) {
       this.$store.dispatch('set_view', {router: this.$router, zoomActive: false})

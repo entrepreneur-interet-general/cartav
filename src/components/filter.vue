@@ -46,6 +46,9 @@
                         </span>
                       </span>
                     </h4>
+                    <div v-if="criteria.type == 'slider'">
+                      <year-slider></year-slider>
+                    </div>
                   </div>
                 </div>
 
@@ -118,12 +121,14 @@ import nd from '../assets/js/niceDisplay'
 import vehiculeCheckbox from './vehicule-checkbox'
 import services from './Services'
 import version from '../assets/json/version.json'
+import yearSlider from './yearSlider'
 
 export default {
   components: {
     ratio: ratio,
     vehiculeCheckbox,
-    services
+    services,
+    yearSlider
   },
   data () {
     return {

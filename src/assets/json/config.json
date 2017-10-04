@@ -12,24 +12,17 @@
   "services_field": "LIBELLE_UNITE",
   "filters": {
     "PV électroniques et accidents" : {
-      "Année" : {
-        "field_name_pve": "ANNEE_INFRACTION",
-        "field_name_acc": "ANNEE",
-        "values": {
-          "2005": false,
-          "2006": false,
-          "2007": false,
-          "2008": false,
-          "2009": false,
-          "2010": false,
-          "2011": false,
-          "2012": false,
-          "2013": false,
-          "2014": false,
-          "2015": false,
-          "2016": true,
-          "2017": true
-        }
+      "Période temporelle": {
+        "field_name_pve": "DATE_JOUR_REEL_INFRACTION",
+        "field_name_acc": "date",
+        "type": "slider",
+        "specificFilter": true,
+        "bounds": {
+         "pve": [[2015, 1], [2017, 7]],
+         "acc": [[2005, 1], [2017, 1]]
+        },
+        "pve": [[2016, 1], [2017, 7]],
+        "acc": [[2015, 1], [2017, 1]]
       },
       "Jour" : {
         "field_name_pve": "LIBELLE_JOUR_INFRACTION",
