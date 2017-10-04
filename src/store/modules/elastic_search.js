@@ -210,7 +210,6 @@ function generateAggregatedQuery (criteriaList, dates, services, type, view, top
   let aggKey = aggregationLevelsInfos.data[type][view.data.group_by]
   // 73000 = nombre de rues dans le departement qui en a le plus (29)
   let aggs = generateAggs(type, aggKey, 73000, topAgghitsField)
-
   query.query.constant_score.filter.bool.must = must
   query.aggs = aggs
 

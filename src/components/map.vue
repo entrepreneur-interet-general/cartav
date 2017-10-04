@@ -26,6 +26,8 @@ import 'font-awesome/css/font-awesome.min.css'
 import '../vendor/leaflet.pattern.js'
 import { mapState } from 'vuex'
 import keyboardJS from 'keyboardjs'
+import 'leaflet-contextmenu'
+import 'leaflet-contextmenu/dist/leaflet.contextmenu.css'
 
 import helpers from '../store/modules/map_helpers'
 import infoSidebar from './info-sidebar'
@@ -119,6 +121,7 @@ export default {
     },
     '$route' (to, from) {
       if (!to.query || to.query.reload !== false) {
+        this.map.contextmenu.hide()
         this.detailedContentLayerGroup.clearLayers()
         this.roadAccidentsLayerGroup.clearLayers()
         this.readParamsFromURL()
@@ -395,6 +398,14 @@ export default {
         })
       }
     },
+    pushLinkTarget (view, geoId) {
+      this.map.closePopup()
+      let route = {
+        name: 'sous-carte',
+        params: { view: view, id: geoId }
+      }
+      this.$router.push(route)
+    },
     myOnEachFeature (feature, layer) {
       let vm = this
       let id = this.$store.getters.contourIdFieldName
@@ -410,15 +421,20 @@ export default {
           mouseout: this.setLineWeight(0.5)
         })
         layer.on('click', function (e) {
-          vm.map.closePopup()
-          let linksTo = vm.view.linksTo
-          let route = {
-            name: 'sous-carte',
-            params: { view: linksTo, id: layer.geoId }
-          }
-          vm.$router.push(route)
+          // by default, links to the first available view
+          vm.pushLinkTarget(vm.view.linksTo[0].view, layer.geoId)
         })
       }
+
+      layer.on('contextmenu', function (e) {
+        // on right click, you can choose which view to link to.
+        vm.map.contextmenu.removeAllItems()
+        if (vm.view.linksTo.length > 1) {
+          for (let link of vm.view.linksTo) {
+            vm.map.contextmenu.addItem({ text: link.text, callback: (e) => vm.pushLinkTarget(link.view, layer.geoId) })
+          }
+        }
+      })
 
       this.linkHoverInfoToLayer(feature, layer)
     },
@@ -470,7 +486,14 @@ export default {
   },
   mounted () {
     let vm = this
-    this.map = L.map('map2', {zoomControl: false}).setView([45.853459, 2.349312], 6)
+
+    this.map = L.map('map2', {
+      zoomControl: false,
+      contextmenu: true,
+      contextmenuWidth: 160
+    })
+    .setView([45.853459, 2.349312], 6)
+
     L.control.sidebar('sidebar').addTo(this.map)
     let zoomControl = L.control.zoom().addTo(vm.map)
 
