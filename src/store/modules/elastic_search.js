@@ -2,14 +2,7 @@ import elasticsearch from 'elasticsearch'
 import _ from 'lodash'
 import aggregationLevelsInfos from '../../assets/json/aggregationLevelsInfos'
 
-export default { search, searchAsGeoJson, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, getCommunesGeoJson, searchSimpleFilter, toRoadsDict, generateGraphAgg, keysList }
-
-let communesGeoJsonFields = {
-  Population: 'Population',
-  nom: 'Commune',
-  code: 'Code INSEE',
-  CODE_DEPT: 'Code Département'
-}
+export default { search, searchAsGeoJsonPoints, searchAsGeoJsonGeom, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, querySimpleFilter, searchSimpleFilter, toRoadsDict, generateGraphAgg, keysList }
 
 let index = process.env.indices
 
@@ -25,12 +18,22 @@ function search (type, query) {
   })
 }
 
-function searchAsGeoJson (type, query, latField, longField, propertyFields) {
+function searchAsGeoJsonPoints (type, query, latField, longField, propertyFields) {
   return search(type, query).then(function (resp) {
-    return generateGeoJson(
+    return generateGeoJsonPoints(
       resp.hits.hits,
       latField,
       longField,
+      propertyFields
+    )
+  })
+}
+
+function searchAsGeoJsonGeom (type, query, geomField, propertyFields) {
+  return search(type, query).then(function (resp) {
+    return generateGeoJsonGeom(
+      resp.hits.hits,
+      geomField,
       propertyFields
     )
   })
@@ -207,7 +210,6 @@ function generateAggregatedQuery (criteriaList, dates, services, type, view, top
   let aggKey = aggregationLevelsInfos.data[type][view.data.group_by]
   // 73000 = nombre de rues dans le departement qui en a le plus (29)
   let aggs = generateAggs(type, aggKey, 73000, topAgghitsField)
-
   query.query.constant_score.filter.bool.must = must
   query.aggs = aggs
 
@@ -275,7 +277,26 @@ function generateAggregatedQueryByFilter (criteriaList, dates, services, type, v
   })
 }
 
-function generateGeoJson (hits, latField, longField, propertyFields) {
+function generateGeoJsonGeom (hits, geomField, propertyFields) {
+  let features = []
+  for (let hit of hits) {
+    let properties = {}
+    for (let prop in propertyFields) {
+      properties[prop] = hit._source[propertyFields[prop]]
+    }
+    features.push({
+      type: 'Feature',
+      geometry: JSON.parse(hit._source[geomField]),
+      properties: properties
+    })
+  }
+  return {
+    type: 'FeatureCollection',
+    features: features
+  }
+}
+
+function generateGeoJsonPoints (hits, latField, longField, propertyFields) {
   let features = []
   for (let hit of hits) {
     let long = parseFloat(hit._source[longField])
@@ -298,44 +319,12 @@ function generateGeoJson (hits, latField, longField, propertyFields) {
   }
 }
 
-function getCommunesGeoJson (dep) {
-  let query = {
-    size: 1000,
-    _source: [
-      'Population',
-      'Commune',
-      'Code INSEE',
-      'Code Département',
-      'latitude',
-      'longitude'
-    ],
-    query: {
-      constant_score: {
-        filter: {
-          bool: {
-            must: [{
-              bool: {
-                should: [{
-                  term: {
-                    'Code Département': dep
-                  }
-                }]
-              }
-            }]
-          }
-        }
-      }
-    }
-  }
-  return searchAsGeoJson('commune', query, 'latitude', 'longitude', communesGeoJsonFields)
-}
-
-function searchSimpleFilter (type, field, ref) {
+function querySimpleFilter (field, ref, size = 1000) {
   let term = {}
   term[field] = ref
 
   let query = {
-    size: 100,
+    size: size,
     query: {
       constant_score: {
         filter: {
@@ -348,5 +337,10 @@ function searchSimpleFilter (type, field, ref) {
       }
     }
   }
+  return query
+}
+
+function searchSimpleFilter (type, field, ref) {
+  let query = querySimpleFilter(field, ref)
   return search(type, query)
 }

@@ -14,7 +14,7 @@ import nd from '../assets/js/niceDisplay'
 export default {
   computed: {
     decoupage () {
-      return nd.capitalize(this.$store.getters.view.linksTo)
+      return nd.capitalize(this.$store.getters.view.linksTo[0].view)
     },
     ratio () {
       return nd.niceDisplay(this.data.ratio)

@@ -50,16 +50,28 @@ let radarsFields = {
   'Commune': 'Commune',
   'Code INSEE': 'Code INSEE',
   'Environnement de la voie': 'Environnement de la voie'
+}
+
+let communesFields = {
+  nom: 'NOM_COM',
+  insee: 'INSEE_COM',
+  code: 'Code INSEE',
+  CODE_DEPT: 'CODE_DEPT',
+  population: 'POPULATION'
 
 }
 
-function getLevelShapesGeojson (decoupage, dep) {
+function getLevelShapesGeojson (decoupage, view) {
   if (decoupage === 'régional') {
-    return regionsFrontieres
+    return Promise.resolve(regionsFrontieres)
   } else if (decoupage === 'départemental') {
-    return departementsFrontieres
+    return Promise.resolve(departementsFrontieres)
   } else if (decoupage === 'circonscriptif') {
-    return circonscriptions
+    return Promise.resolve(circonscriptions)
+  } else if (decoupage === 'communal') {
+    let filterName = aggregationLevelsInfos.contour[view.contour.filter.filterCriteria].id
+    let query = es.querySimpleFilter(filterName, view.contour.filter.value)
+    return es.searchAsGeoJsonGeom('communes', query, 'st_asgeojson', communesFields)
   }
 }
 
@@ -258,18 +270,24 @@ export default new Vuex.Store({
     set_view (context, {router, zoomActive: zoomActive = true}) {
       let view = context.getters.view
       if (!context.state.query) { context.dispatch('replace_url_query', {router: router, reload: false}) }
-      context.commit('contour', getLevelShapesGeojson(view.contour.decoupage, view.contour.filter.value))
+
       if (view.content === 'detailedContent') {
+        getLevelShapesGeojson(view.contour.decoupage, view).then(function (res) {
+          context.commit('contour', res)
+        })
+
         context.dispatch('getLocalData', {zoomActive: zoomActive})
       } else if (view.content === 'metric') {
         let promises = [
+          getLevelShapesGeojson(view.contour.decoupage, view),
           context.dispatch('queryESAcc'),
           context.dispatch('queryESPve')
         ]
 
         Promise.all(promises).then(function (values) {
-          context.commit('accidents_data', values[0])
-          context.commit('verbalisations_data', values[1])
+          context.commit('contour', values[0])
+          context.commit('accidents_data', values[1])
+          context.commit('verbalisations_data', values[2])
         })
       }
       context.dispatch('getAggregationByfilter')
@@ -325,7 +343,7 @@ export default new Vuex.Store({
         })
       } else {
         let query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, 'acc', context.getters.view)
-        es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields).then(function (res) {
+        es.searchAsGeoJsonPoints('acc', query, 'latitude', 'longitude', accidentsFields).then(function (res) {
           context.commit('accidents_geojson', res)
           context.commit('set_showSpinner', false)
         })
@@ -338,12 +356,12 @@ export default new Vuex.Store({
     },
     getRadars (context, dep) {
       let query = es.generateQuery(null, null, null, 'radars', context.getters.view)
-      return es.searchAsGeoJson('radars', query, 'Coordonnées GPS cabine - latitude', 'Coordonnées GPS cabine - longitude', radarsFields)
+      return es.searchAsGeoJsonPoints('radars', query, 'Coordonnées GPS cabine - latitude', 'Coordonnées GPS cabine - longitude', radarsFields)
     },
     getAccidentsFromRoadId (context, roadId) {
       let state = context.state
       let query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, 'acc', context.getters.view, roadId)
-      return es.searchAsGeoJson('acc', query, 'latitude', 'longitude', accidentsFields)
+      return es.searchAsGeoJsonPoints('acc', query, 'latitude', 'longitude', accidentsFields)
     },
     set_dates (context, o) {
       if (o.type === 'pve') {
@@ -365,7 +383,7 @@ export default new Vuex.Store({
 
       if (id) {
         if (view.contour.filter.activated) {
-          view.contour.filter.value = id
+          view.contour.filter.value = (viewName === 'commune') ? id.toString().substr(0, 2) : id
         }
         if (view.data.filter.activated) {
           view.data.filter.value = id
@@ -398,7 +416,7 @@ export default new Vuex.Store({
       }
     },
     viewLinksToItself (state, getters) {
-      let linksTo = getters.view.linksTo
+      let linksTo = getters.view.linksTo[0].view
       return linksTo === getters.viewName
     },
     countElements (state, getters) {

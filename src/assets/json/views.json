@@ -14,8 +14,7 @@
             }
         },
         "content": "metric",
-        "linksTo": "région",
-        "zoomLimit": 0
+        "linksTo": [{"view": "région"}]
     },
     "région": {
         "description": "vue d'une métrique sur une région, découpée par départements",
@@ -34,8 +33,8 @@
             }
         },
         "content": "metric",
-        "linksTo": "département",
-        "zoomLimit": 6
+        "linksTo": [{"view": "département", "text": "voir tout le département"},
+                    {"view": "département_communes", "text": "voir les communes"}]
     },
     "départements": {
         "description": "vue de tous les départements",
@@ -52,8 +51,8 @@
             }
         },
         "content": "metric",
-        "linksTo": "département",
-        "zoomLimit": 8
+        "linksTo": [{"view": "département", "text": "voir tout le département"},
+                    {"view": "département_communes", "text": "voir les communes"}]
     },
     "département": {
         "description": "vue détaillée d'un département",
@@ -71,8 +70,8 @@
             }
         },
         "content": "detailedContent",
-        "linksTo": "département",
-        "zoomLimit": 8
+        "linksTo": [{"view": "département", "text": "voir tout le département"},
+                    {"view": "département_communes", "text": "voir les communes"}]
     },
     "circonscriptions": {
         "description": "vue de toutes les circonscriptions DCSP",
@@ -89,8 +88,7 @@
             }
         },
         "content": "metric",
-        "linksTo": "circonscription",
-        "zoomLimit": 8
+        "linksTo": [{"view": "circonscription"}]
     },
     "circonscription": {
         "description": "vue d'une circonscriptions DCSP",
@@ -108,7 +106,44 @@
             }
         },
         "content": "detailedContent",
-        "linksTo": "circonscription",
-        "zoomLimit": 8
+        "linksTo": [{"view": "circonscription"}]
+    },
+    "département_communes": {
+        "description": "les communes d'un département",
+        "contour": {
+            "decoupage": "communal",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "départemental"
+            }
+        },
+        "data": {
+            "group_by": "communal",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "départemental"
+            }
+        },
+        "content": "metric",
+        "linksTo": [{"view": "commune"}]
+    },
+    "commune": {
+        "description": "vue détaillée d'une commune",
+        "contour": {
+            "decoupage": "communal",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "départemental"
+            }
+        },
+        "data": {
+            "group_by": "routier",
+            "filter": {
+                "activated": true,
+                "filterCriteria": "communal"
+            }
+        },
+        "content": "detailedContent",
+        "linksTo": [{"view": "commune"}]
     }
 }
