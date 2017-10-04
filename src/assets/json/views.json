@@ -51,7 +51,8 @@
             }
         },
         "content": "metric",
-        "linksTo": [{"view": "département_communes"}]
+        "linksTo": [{"view": "département", "text": "voir tout le département"},
+                    {"view": "département_communes", "text": "voir les communes"}]
     },
     "département": {
         "description": "vue détaillée d'un département",
@@ -69,7 +70,8 @@
             }
         },
         "content": "detailedContent",
-        "linksTo": [{"view": "département"}]
+        "linksTo": [{"view": "département", "text": "voir tout le département"},
+                    {"view": "département_communes", "text": "voir les communes"}]
     },
     "circonscriptions": {
         "description": "vue de toutes les circonscriptions DCSP",
