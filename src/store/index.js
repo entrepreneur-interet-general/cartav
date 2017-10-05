@@ -100,7 +100,7 @@ function createUrlQuery (context, o) {
 }
 
 function formatDate (date) {
-  return `${Math.floor(date / 12)}-${String(date % 12 + 1).padStart(2, '0')}-01`
+  return `${Math.floor(date / 12)}-${String(date % 12 + 1)}-01`
 }
 
 export default new Vuex.Store({
