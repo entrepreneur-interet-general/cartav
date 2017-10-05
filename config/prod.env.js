@@ -7,6 +7,6 @@ module.exports = {
     acc_usagers: '"es5_prod_accidents_usagers"',
     acc_vehicules: '"es5_prod_accidents_vehicules"',
     radars: '"es5_prod_radars"',
-    communes: '"es5prod_communes_boundaries"'
+    communes: '"es5_prod_communes_boundaries"'
   }
 }
