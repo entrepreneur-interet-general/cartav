@@ -127,7 +127,6 @@ export default new Vuex.Store({
     divisor: 'accidents',
     localLevelDisplay: 'aggregatedByRoad',
     localLevelData: 'accidentsOnly',
-    zoomActive: true,
     colorScale: colors.defaultColor,
     colorScaleInverted: true,
     basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]],
@@ -148,9 +147,6 @@ export default new Vuex.Store({
     },
     set_localLevelData (state, localLevelData) {
       state.localLevelData = localLevelData
-    },
-    set_zoomActive (state, zoomActive) {
-      state.zoomActive = zoomActive
     },
     set_colorScale (state, colorScale) {
       state.colorScale = colorScale
@@ -235,11 +231,10 @@ export default new Vuex.Store({
     set_localLevelDisplay (context, o) {
       context.commit('set_localLevelDisplay', o.localLevelDisplay)
       context.dispatch('push_url_query')
-      context.dispatch('getLocalData', {zoomActive: false})
+      context.dispatch('getLocalData')
     },
     set_localLevelData (context, o) {
       if (context.state.localLevelData !== o.localLevelData) {
-        context.commit('set_zoomActive', false)
         if (context.state.localLevelDisplay !== 'aggregatedByRoad' && o.localLevelData !== 'accidentsOnly') {
           context.commit('set_localLevelDisplay', 'aggregatedByRoad')
         }
@@ -262,18 +257,16 @@ export default new Vuex.Store({
         context.commit('set_criteria', o)
       }
       context.dispatch('push_url_query')
-      context.dispatch('set_view', {zoomActive: false})
+      context.dispatch('set_view')
     },
-    set_view (context, {zoomActive: zoomActive = true}) {
+    set_view (context) {
       let view = context.getters.view
-      if (!context.state.query) { context.dispatch('replace_url_query') }
 
       if (view.content === 'detailedContent') {
         getLevelShapesGeojson(view.contour.decoupage, view).then(function (res) {
           context.commit('contour', res)
         })
-
-        context.dispatch('getLocalData', {zoomActive: zoomActive})
+        context.dispatch('getLocalData')
       } else if (view.content === 'metric') {
         let promises = [
           getLevelShapesGeojson(view.contour.decoupage, view),
@@ -313,7 +306,6 @@ export default new Vuex.Store({
     },
     getLocalData (context, options) {
       let state = context.state
-      context.commit('set_zoomActive', options.zoomActive)
       context.commit('set_showSpinner', true)
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
@@ -367,7 +359,7 @@ export default new Vuex.Store({
         context.commit('set_acc_dates', o.dates)
       }
       context.dispatch('push_url_query')
-      context.dispatch('set_view', {zoomActive: false})
+      context.dispatch('set_view')
     }
   },
   getters: {

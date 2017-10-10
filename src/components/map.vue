@@ -66,7 +66,8 @@ export default {
         showGraph: false,
         graphData: {}
       },
-      roadAccidentsLayerGroup: L.layerGroup()
+      roadAccidentsLayerGroup: L.layerGroup(),
+      zoomActive: false
     }
   },
   computed: mapState({
@@ -124,7 +125,10 @@ export default {
         this.map.contextmenu.hide()
         this.detailedContentLayerGroup.clearLayers()
         this.roadAccidentsLayerGroup.clearLayers()
-        this.$store.dispatch('set_view', {})
+        this.zoomActive = true
+        this.$store.dispatch('set_view')
+      } else {
+        this.zoomActive = false
       }
     }
   },
@@ -166,7 +170,7 @@ export default {
       } else if (this.localLevelDisplay === 'aggregatedByRoad') {
         this.aggByRoad()
       }
-      if (this.$store.state.zoomActive && this.detailedContentLayerGroup.getBounds().isValid()) {
+      if (this.zoomActive && this.detailedContentLayerGroup.getBounds().isValid()) {
         this.map.fitBounds(this.detailedContentLayerGroup.getBounds())
       }
       this.displayContours(() => style, this.myOnEachFeature)
@@ -401,7 +405,8 @@ export default {
       this.map.closePopup()
       let route = {
         name: 'sous-carte',
-        params: { view: view, id: geoId }
+        params: { view: view, id: geoId },
+        query: this.$router.query
       }
       this.$router.push(route)
     },
@@ -502,10 +507,12 @@ export default {
     this.map.addLayer(this.roadAccidentsLayerGroup)
 
     if (this.$route.query && this.$route.query.center && this.$route.query.zoom) {
-      this.$store.dispatch('set_view', {zoomActive: false})
+      this.zoomActive = false
+      this.$store.dispatch('set_view')
       this.map.setView(this.$route.query.center.split('|'), this.$route.query.zoom)
     } else {
-      this.$store.dispatch('set_view', {})
+      this.zoomActive = true
+      this.$store.dispatch('set_view')
     }
 
     // avoid clicking and scrolling when the mouse is over the div
