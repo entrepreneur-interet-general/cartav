@@ -120,12 +120,12 @@ export default {
       this.tileLayer.setUrl(this.basemapUrl)
     },
     '$route' (to, from) {
-      if (!to.query || to.query.reload !== false) {
+      if (to.path !== from.path) {
         this.map.contextmenu.hide()
         this.detailedContentLayerGroup.clearLayers()
         this.roadAccidentsLayerGroup.clearLayers()
         this.readParamsFromURL()
-        this.$store.dispatch('set_view')
+        this.$store.dispatch('set_view', {})
       }
     }
   },
@@ -491,7 +491,6 @@ export default {
         let query = Object.assign({}, vm.$route.query)
         query.zoom = vm.map.getZoom()
         query.center = vm.map.getCenter().lat + '|' + vm.map.getCenter().lng
-        query.reload = false
         vm.$router.replace({query: query})
       }
     }
