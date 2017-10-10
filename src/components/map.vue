@@ -124,7 +124,6 @@ export default {
         this.map.contextmenu.hide()
         this.detailedContentLayerGroup.clearLayers()
         this.roadAccidentsLayerGroup.clearLayers()
-        this.readParamsFromURL()
         this.$store.dispatch('set_view', {})
       }
     }
