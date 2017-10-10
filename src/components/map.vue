@@ -447,42 +447,12 @@ export default {
         vm.infoSidebarData.hoverInfoData.pveN = feature.countElements ? feature.countElements['PV électroniques'] : ''
         vm.infoSidebarData.hoverInfoData.km_voie = layer.km_voie
       })
-    },
-    readParamsFromURL () {
-      if (this.$route.query) {
-        if (this.$route.query.filters) {
-          if (this.$route.query.digest === this.$store.getters.configDigest) {
-            this.$store.commit('set_criteria_list', this.$route.query.filters)
-          } else {
-            this.showModal = true
-          }
-        }
-        if (this.$route.query.services) {
-          this.$store.commit('set_services_selected', this.$route.query.services.split('|'))
-        }
-        if (this.$route.query.data) {
-          this.$store.commit('set_localLevelData', this.$route.query.data)
-        }
-        if (this.$route.query.display) {
-          this.$store.commit('set_localLevelDisplay', this.$route.query.display)
-        }
-        if (this.$route.query.dividende) {
-          this.$store.commit('set_dividende', this.$route.query.dividende)
-        }
-        if (this.$route.query.divisor) {
-          this.$store.commit('set_divisor', this.$route.query.divisor)
-        }
-        if (this.$route.query.accB && this.$route.query.accE) {
-          this.$store.commit('set_acc_dates', [this.$route.query.accB, this.$route.query.accE])
-        }
-        if (this.$route.query.pveB && this.$route.query.pveE) {
-          this.$store.commit('set_pve_dates', [this.$route.query.pveB, this.$route.query.pveE])
-        }
-      }
     }
   },
   created () {
-    this.readParamsFromURL()
+    if (this.$route.query.digest && this.$route.query.digest !== this.$store.getters.configDigest) {
+      this.showModal = true
+    }
   },
   mounted () {
     let vm = this
