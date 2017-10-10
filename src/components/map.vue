@@ -134,10 +134,10 @@ export default {
   },
   methods: {
     displayContours (styleFunction = null, onEachFeatureFunction = null) {
-      let vm = this
-      let idName = this.$store.getters.contourFilterFieldName
+      const vm = this
+      const idName = this.$store.getters.contourFilterFieldName
 
-      let layer = L.geoJson(this.contour, {
+      const layer = L.geoJson(this.contour, {
         style: styleFunction,
         onEachFeature: onEachFeatureFunction,
         filter (feature, layer) {
@@ -156,7 +156,7 @@ export default {
       this.detailedContentLayerGroup.clearLayers()
       this.roadAccidentsLayerGroup.clearLayers()
 
-      let style = {
+      const style = {
         color: '#09006FFF',
         weight: 0.5,
         opacity: 1,
@@ -179,10 +179,10 @@ export default {
       }
     },
     onRoadClickAccident (event) {
-      let vm = this
-      let roadId = event.target.feature.properties.id
+      const vm = this
+      const roadId = event.target.feature.properties.id
       vm.roadAccidentsLayerGroup.clearLayers()
-      let previousRoadId = vm.highlightedRoadLayer ? vm.highlightedRoadLayer.feature.properties.id : undefined
+      const previousRoadId = vm.highlightedRoadLayer ? vm.highlightedRoadLayer.feature.properties.id : undefined
       if (roadId !== previousRoadId) {
         // First click : display cluster
         event.target.setStyle({ opacity: 0.3 })
@@ -202,10 +202,10 @@ export default {
       }
     },
     onRoadClickPve (event) {
-      let vm = this
+      const vm = this
       vm.$store.dispatch('getPVEGraphData', event.target.feature.properties.id).then(function (res) {
-        let aggs = res.aggregations.group_by.buckets
-        let g = {
+        const aggs = res.aggregations.group_by.buckets
+        const g = {
           labels: [],
           datasets: [
             {
@@ -215,7 +215,7 @@ export default {
             }
           ]
         }
-        for (let agg of aggs) {
+        for (const agg of aggs) {
           g.labels.push(agg.key)
           g.datasets[0].data.push(agg.doc_count)
         }
@@ -224,9 +224,9 @@ export default {
       vm.infoSidebarData.showGraph = true
     },
     aggByRoad (type) {
-      let vm = this
+      const vm = this
 
-      let options = {
+      const options = {
         accidentsOnly: {showAcc: true, showPve: false},
         pveOnly: {showAcc: false, showPve: true},
         accidentsNoPve: {showAcc: true, showPve: false},
@@ -280,7 +280,7 @@ export default {
       }
     },
     heatMap () {
-      let l = this.accidentsLocal.features.map(feature => [
+      const l = this.accidentsLocal.features.map(feature => [
         feature.geometry.coordinates[1],
         feature.geometry.coordinates[0],
         1
@@ -302,7 +302,7 @@ export default {
     colorMap () {
       this.infoSidebarData.showGraph = false
       this.contourLayerGroup.clearLayers()
-      let colorOptions = {
+      const colorOptions = {
         color: 'rgba(0,0,0,0.2)',
         dividende: this.$store.state.dividende,
         divisor: this.$store.state.divisor
@@ -319,7 +319,7 @@ export default {
     },
     createClusterLocal (type, data) {
       // cluster des accidents individuels
-      let datalayer = L.geoJson(data, {
+      const datalayer = L.geoJson(data, {
         onEachFeature: helpers.accident_popup,
         pointToLayer: helpers.accident_marker,
         style: helpers.styleAccidents
@@ -332,23 +332,23 @@ export default {
       }).addLayer(datalayer)
     },
     count (type, id) {
-      let source = {
+      const source = {
         'accidents': this.accidents.aggregations.group_by.buckets,
         'PV électroniques': this.$store.state.verbalisations.aggregations.group_by.buckets,
         'habitants': this.contour,
         'longueur_routes': this.contour
       }
 
-      let agg = source[type]
+      const agg = source[type]
       if (type === 'habitants' || type === 'longueur_routes') {
-        let idName = this.$store.getters.contourIdFieldName
-        for (let f of agg.features) {
+        const idName = this.$store.getters.contourIdFieldName
+        for (const f of agg.features) {
           if (id === f.properties[idName]) {
             return type === 'habitants' ? f.properties.population : f.properties.longueur_routes
           }
         }
       } else {
-        for (let el of agg) {
+        for (const el of agg) {
           if (id === el.key) {
             return el.doc_count
           }
@@ -357,8 +357,8 @@ export default {
       return 0
     },
     customStyle (feature, options) {
-      let idName = this.$store.getters.contourIdFieldName
-      let id = feature.properties[idName]
+      const idName = this.$store.getters.contourIdFieldName
+      const id = feature.properties[idName]
 
       feature.countElements = {
         accidents: this.count('accidents', id),
@@ -373,7 +373,7 @@ export default {
         feature.countElements.ratio = undefined
       }
 
-      let stripesParams = {
+      const stripesParams = {
         spaceColor: '#000000',
         spaceOpacity: 0.8
       }
@@ -384,7 +384,7 @@ export default {
         stripesParams.weight = this.$store.getters.stripes[index].weight
         stripesParams.angle = this.$store.getters.stripes[index].angle
       }
-      let stripes = new L.StripePattern(stripesParams).addTo(this.map)
+      const stripes = new L.StripePattern(stripesParams).addTo(this.map)
       return {
         color: '#09006FFF',
         weight: 0.5,
@@ -403,7 +403,7 @@ export default {
     },
     pushLinkTarget (view, geoId) {
       this.map.closePopup()
-      let route = {
+      const route = {
         name: 'sous-carte',
         params: { view: view, id: geoId },
         query: this.$router.query
@@ -411,9 +411,9 @@ export default {
       this.$router.push(route)
     },
     myOnEachFeature (feature, layer) {
-      let vm = this
-      let id = this.$store.getters.contourIdFieldName
-      let displayName = this.$store.getters.contourDisplayFieldName
+      const vm = this
+      const id = this.$store.getters.contourIdFieldName
+      const displayName = this.$store.getters.contourDisplayFieldName
 
       layer.geoId = feature.properties[id]
       layer.displayName = feature.properties[displayName]
@@ -434,7 +434,7 @@ export default {
         // on right click, you can choose which view to link to.
         vm.map.contextmenu.removeAllItems()
         if (vm.view.linksTo.length > 1) {
-          for (let link of vm.view.linksTo) {
+          for (const link of vm.view.linksTo) {
             vm.map.contextmenu.addItem({ text: link.text, callback: (e) => vm.pushLinkTarget(link.view, layer.geoId) })
           }
         }
@@ -443,7 +443,7 @@ export default {
       this.linkHoverInfoToLayer(feature, layer)
     },
     linkHoverInfoToLayer (feature, layer) {
-      let vm = this
+      const vm = this
       layer.on('mouseover', function (e) {
         vm.infoSidebarData.hoverInfoData.areaMouseOver = layer.displayName
         vm.infoSidebarData.hoverInfoData.ratio = feature.countElements ? feature.countElements.ratio : ''
@@ -459,7 +459,7 @@ export default {
     }
   },
   mounted () {
-    let vm = this
+    const vm = this
 
     this.map = L.map('map2', {
       zoomControl: false,
@@ -469,7 +469,7 @@ export default {
     .setView([45.853459, 2.349312], 6)
 
     L.control.sidebar('sidebar').addTo(this.map)
-    let zoomControl = L.control.zoom().addTo(vm.map)
+    const zoomControl = L.control.zoom().addTo(vm.map)
 
     this.tileLayer = L.tileLayer(this.basemapUrl, {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
@@ -490,9 +490,9 @@ export default {
       }
     })
 
-    let setMapViewInUrl = function () {
+    const setMapViewInUrl = function () {
       if (vm.$store.getters.localLevel) {
-        let query = Object.assign({}, vm.$route.query)
+        const query = Object.assign({}, vm.$route.query)
         query.zoom = vm.map.getZoom()
         query.center = vm.map.getCenter().lat + '|' + vm.map.getCenter().lng
         vm.$router.replace({query: query})
@@ -516,7 +516,7 @@ export default {
     }
 
     // avoid clicking and scrolling when the mouse is over the div
-    let div = L.DomUtil.get('info-sidebar')
+    const div = L.DomUtil.get('info-sidebar')
     L.DomEvent.disableScrollPropagation(div)
     L.DomEvent.disableClickPropagation(div)
   }

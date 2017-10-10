@@ -4,9 +4,9 @@ import aggregationLevelsInfos from '../../assets/json/aggregationLevelsInfos'
 
 export default { search, searchAsGeoJsonPoints, searchAsGeoJsonGeom, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, querySimpleFilter, searchSimpleFilter, toRoadsDict, generateGraphAgg, keysList }
 
-let index = process.env.indices
+const index = process.env.indices
 
-let client = new elasticsearch.Client({
+const client = new elasticsearch.Client({
   host: process.env.ES_HOST,
   apiVersion: '5.x'
 })
@@ -40,7 +40,7 @@ function searchAsGeoJsonGeom (type, query, geomField, propertyFields) {
 }
 
 function keysList (type, fieldName, size) {
-  let query = {
+  const query = {
     size: 0,
     aggs: {
       group_by: {
@@ -56,13 +56,13 @@ function keysList (type, fieldName, size) {
 }
 
 function toRoadsDict (json, otherCount) {
-  let dict = {
+  const dict = {
     type: 'FeatureCollection',
     features: []
   }
-  let buckets = json.aggregations.group_by.buckets
+  const buckets = json.aggregations.group_by.buckets
   buckets.forEach(function (bucket) {
-    let geometryString = _.get(bucket, 'top_agg_hits.hits.hits[0]._source.geojson', undefined)
+    const geometryString = _.get(bucket, 'top_agg_hits.hits.hits[0]._source.geojson', undefined)
     if (geometryString !== undefined) {
       dict.features.push({
         geometry: JSON.parse(geometryString),
@@ -81,12 +81,12 @@ function toRoadsDict (json, otherCount) {
 
 function generateFilter (criteriaList, dates, services, type, ExceptThisfield = undefined) {
   // Lit les critères cochés et génère la requête ES correspondante
-  let fieldName = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
-  var must = []
+  const fieldName = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
+  const must = []
 
   if (type === 'pve' || type === 'acc') {
-    let range = {}
-    let field = criteriaList['PV électroniques et accidents']['Période temporelle'][fieldName]
+    const range = {}
+    const field = criteriaList['PV électroniques et accidents']['Période temporelle'][fieldName]
     range[field] = {
       gte: dates[type][0],
       lt: dates[type][1],
@@ -95,24 +95,24 @@ function generateFilter (criteriaList, dates, services, type, ExceptThisfield = 
     must.push({range: range})
   }
 
-  for (let scopeName in criteriaList) {
-    let scope = criteriaList[scopeName]
-    for (let criteriaName in scope) {
-      let criteria = scope[criteriaName]
+  for (const scopeName in criteriaList) {
+    const scope = criteriaList[scopeName]
+    for (const criteriaName in scope) {
+      const criteria = scope[criteriaName]
       if (fieldName in criteria && !criteria.specificFilter) {
-        let criteriaPath = scopeName + '.' + criteriaName
+        const criteriaPath = scopeName + '.' + criteriaName
         if (criteriaPath !== ExceptThisfield) {
-          let criteriaFilters = []
-          for (let valueName in criteria.values) {
+          const criteriaFilters = []
+          for (const valueName in criteria.values) {
             if (criteria.values[valueName]) {
-              let f = {}
+              const f = {}
               f[criteria[fieldName]] = valueName
               criteriaFilters.push({ term: f })
             }
           }
           if (criteriaFilters.length === 0) {
             // ~hack~ rien n'est coché : pas de résultats attendus
-            let f = {}
+            const f = {}
             f[criteria[fieldName]] = -1
             criteriaFilters.push({ term: f })
           }
@@ -126,9 +126,9 @@ function generateFilter (criteriaList, dates, services, type, ExceptThisfield = 
     }
   }
   if (services) {
-    let criteriaFilters = []
-    for (let service of services.list) {
-      let f = {}
+    const criteriaFilters = []
+    for (const service of services.list) {
+      const f = {}
       f[services.fieldName] = service
       criteriaFilters.push({ term: f })
     }
@@ -143,7 +143,7 @@ function generateFilter (criteriaList, dates, services, type, ExceptThisfield = 
 
 function generateAggs (type, fieldName, size, topAgghitsFields = null) {
   // Génère le champ aggrégation de la requête ES
-  let aggs = {
+  const aggs = {
     group_by: {
       terms: {
         field: fieldName,
@@ -187,13 +187,13 @@ function getQueryBase (size) {
 
 function addAdditionalFilters (must, type, view) {
   if (view.data.filter.activated) {
-    let filterName = aggregationLevelsInfos.data[type][view.data.filter.filterCriteria]
+    const filterName = aggregationLevelsInfos.data[type][view.data.filter.filterCriteria]
     addFilter(must, filterName, view.data.filter.value)
   }
 }
 
 function addFilter (must, field, value) {
-  let f = {}
+  const f = {}
   f[field] = value
   must.push({
     bool: {
@@ -204,12 +204,12 @@ function addFilter (must, field, value) {
 
 function generateAggregatedQuery (criteriaList, dates, services, type, view, topAgghitsField = null) {
   // Génération de la query ES
-  let query = getQueryBase(0)
-  let must = generateFilter(criteriaList, dates, services, type)
+  const query = getQueryBase(0)
+  const must = generateFilter(criteriaList, dates, services, type)
   addAdditionalFilters(must, type, view)
-  let aggKey = aggregationLevelsInfos.data[type][view.data.group_by]
+  const aggKey = aggregationLevelsInfos.data[type][view.data.group_by]
   // 73000 = nombre de rues dans le departement qui en a le plus (29)
-  let aggs = generateAggs(type, aggKey, 73000, topAgghitsField)
+  const aggs = generateAggs(type, aggKey, 73000, topAgghitsField)
   query.query.constant_score.filter.bool.must = must
   query.aggs = aggs
 
@@ -217,11 +217,11 @@ function generateAggregatedQuery (criteriaList, dates, services, type, view, top
 }
 
 function generateGraphAgg (criteriaList, dates, services, type, view, roadID, aggKey) {
-  let query = getQueryBase(0)
-  let must = generateFilter(criteriaList, dates, services, type)
+  const query = getQueryBase(0)
+  const must = generateFilter(criteriaList, dates, services, type)
   addAdditionalFilters(must, type, view)
   addFilter(must, aggregationLevelsInfos.data[type][view.data.group_by], roadID)
-  let aggs = generateAggs(type, aggKey, 100)
+  const aggs = generateAggs(type, aggKey, 100)
   query.query.constant_score.filter.bool.must = must
   query.aggs = aggs
 
@@ -230,11 +230,9 @@ function generateGraphAgg (criteriaList, dates, services, type, view, roadID, ag
 
 function generateQuery (criteriaList, dates, services, type, view, roadID = null) {
   // Génération de la query ES
-  let query = getQueryBase(10000)
-  let must = []
-  if (criteriaList) {
-    must = generateFilter(criteriaList, dates, services, type)
-  }
+  const query = getQueryBase(10000)
+  const must = criteriaList ? generateFilter(criteriaList, dates, services, type) : []
+
   if (roadID) {
     addFilter(must, aggregationLevelsInfos.data[type][view.data.group_by], roadID)
   }
@@ -244,19 +242,19 @@ function generateQuery (criteriaList, dates, services, type, view, roadID = null
 }
 
 function generateAggregatedQueryByFilter (criteriaList, dates, services, type, view) {
-  let promises = []
-  let criteriaPaths = []
-  let fieldNameType = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
-  for (let scopeName in criteriaList) {
-    let scope = criteriaList[scopeName]
-    for (let criteriaName in scope) {
-      let criteria = scope[criteriaName]
+  const promises = []
+  const criteriaPaths = []
+  const fieldNameType = type === 'pve' ? 'field_name_pve' : 'field_name_acc'
+  for (const scopeName in criteriaList) {
+    const scope = criteriaList[scopeName]
+    for (const criteriaName in scope) {
+      const criteria = scope[criteriaName]
       if (fieldNameType in criteria) {
-        let criteriaPath = scopeName + '.' + criteriaName
-        let query = getQueryBase(0)
-        let must = generateFilter(criteriaList, dates, services, type, criteriaPath)
-        let fieldName = criteria[fieldNameType]
-        let aggs = generateAggs(type, fieldName, 150)
+        const criteriaPath = scopeName + '.' + criteriaName
+        const query = getQueryBase(0)
+        const must = generateFilter(criteriaList, dates, services, type, criteriaPath)
+        const fieldName = criteria[fieldNameType]
+        const aggs = generateAggs(type, fieldName, 150)
 
         addAdditionalFilters(must, type, view)
         query.query.constant_score.filter.bool.must = must
@@ -267,9 +265,9 @@ function generateAggregatedQueryByFilter (criteriaList, dates, services, type, v
     }
   }
   return Promise.all(promises).then(function (values) {
-    let res = {}
+    const res = {}
     values.forEach(function (value, i) {
-      for (let b of value.aggregations.group_by.buckets) {
+      for (const b of value.aggregations.group_by.buckets) {
         res[criteriaPaths[i] + '.' + b['key']] = b['doc_count']
       }
     })
@@ -278,10 +276,10 @@ function generateAggregatedQueryByFilter (criteriaList, dates, services, type, v
 }
 
 function generateGeoJsonGeom (hits, geomField, propertyFields) {
-  let features = []
-  for (let hit of hits) {
-    let properties = {}
-    for (let prop in propertyFields) {
+  const features = []
+  for (const hit of hits) {
+    const properties = {}
+    for (const prop in propertyFields) {
       properties[prop] = hit._source[propertyFields[prop]]
     }
     features.push({
@@ -297,13 +295,13 @@ function generateGeoJsonGeom (hits, geomField, propertyFields) {
 }
 
 function generateGeoJsonPoints (hits, latField, longField, propertyFields) {
-  let features = []
-  for (let hit of hits) {
-    let long = parseFloat(hit._source[longField])
-    let lat = parseFloat(hit._source[latField])
+  const features = []
+  for (const hit of hits) {
+    const long = parseFloat(hit._source[longField])
+    const lat = parseFloat(hit._source[latField])
     if (long && lat) {
-      let properties = {}
-      for (let prop in propertyFields) {
+      const properties = {}
+      for (const prop in propertyFields) {
         properties[prop] = hit._source[propertyFields[prop]]
       }
       features.push({
@@ -320,10 +318,10 @@ function generateGeoJsonPoints (hits, latField, longField, propertyFields) {
 }
 
 function querySimpleFilter (field, ref, size = 1000) {
-  let term = {}
+  const term = {}
   term[field] = ref
 
-  let query = {
+  const query = {
     size: size,
     query: {
       constant_score: {
@@ -341,6 +339,6 @@ function querySimpleFilter (field, ref, size = 1000) {
 }
 
 function searchSimpleFilter (type, field, ref) {
-  let query = querySimpleFilter(field, ref)
+  const query = querySimpleFilter(field, ref)
   return search(type, query)
 }

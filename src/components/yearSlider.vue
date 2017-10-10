@@ -39,7 +39,7 @@ export default {
     }
   },
   mounted () {
-    let format = { to: this.format }
+    const format = { to: this.format }
 
     this.begin.acc = this.$store.state.acc_dates[0]
     this.begin.pve = this.$store.state.pve_dates[0]
@@ -85,7 +85,7 @@ export default {
       tooltips: [format, format]
     })
 
-    for (let type of ['acc', 'pve']) {
+    for (const type of ['acc', 'pve']) {
       this.sliders[type].noUiSlider.on('update', (v, h) => this.update(v, h, type))
       this.sliders[type].noUiSlider.on('set', () => this.setYear(type))
     }

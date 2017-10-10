@@ -158,33 +158,33 @@ export default {
     warning (id) {
       if (this.$store.getters.localLevel) {
         if (id === 'pveFilters' && this.$store.state.localLevelData === 'accidentsOnly') {
-          return '<em>Vous visualisez actuellement sur la carte les accidents. Si vous souhaitez voir les PV électroniques, cliquez sur l\'onglet <i class="fa fa-lg fa-sliders">.</i></em>'
+          return '<em>Vous visualisez actuellement sur la carte les accidents. Si vous souhaitez voir les PV électroniques, cliquez sur l\'ongconst <i class="fa fa-lg fa-sliders">.</i></em>'
         } else if (id === 'accidentsFilters' && this.$store.state.localLevelData === 'pveOnly') {
-          return '<em>Vous visualisez actuellement sur la carte les PV électroniques. Si vous souhaitez voir les accidents, cliquez sur l\'onglet <i class="fa fa-big fa-sliders">.</i></em>'
+          return '<em>Vous visualisez actuellement sur la carte les PV électroniques. Si vous souhaitez voir les accidents, cliquez sur l\'ongconst <i class="fa fa-big fa-sliders">.</i></em>'
         }
       }
     },
     selectAlone (event, categoryName, criteriaName, valName) {
       // Idée, copyright Martin Gross, head of ux consulting at Ministère de l'interieur
-      let criteriaPath = `${categoryName}.${criteriaName}`
-      let crits = []
-      for (let c in this.criteria_list[categoryName][criteriaName].values) {
+      const criteriaPath = `${categoryName}.${criteriaName}`
+      const crits = []
+      for (const c in this.criteria_list[categoryName][criteriaName].values) {
         crits.push({label: c, value: c === valName})
       }
-      let args = {type: 'bulk', criteriaPath: criteriaPath, criterias: crits, router: this.$router}
+      const args = {type: 'bulk', criteriaPath: criteriaPath, criterias: crits, router: this.$router}
       this.$store.dispatch('set_criteria', args)
     },
     selectAll (categoryName, criteriaName, val) {
-      let criteriaPath = `${categoryName}.${criteriaName}`
-      let crits = []
-      for (let c in this.criteria_list[categoryName][criteriaName].values) {
+      const criteriaPath = `${categoryName}.${criteriaName}`
+      const crits = []
+      for (const c in this.criteria_list[categoryName][criteriaName].values) {
         crits.push({label: c, value: val})
       }
-      let args = {type: 'bulk', criteriaPath: criteriaPath, criterias: crits, router: this.$router}
+      const args = {type: 'bulk', criteriaPath: criteriaPath, criterias: crits, router: this.$router}
       this.$store.dispatch('set_criteria', args)
     },
     set_criteria (e, categoryName, criteriaName, valName, value) {
-      let criteriaPath = `${categoryName}.${criteriaName}.values.${valName}`
+      const criteriaPath = `${categoryName}.${criteriaName}.values.${valName}`
       this.$store.dispatch('set_criteria', {criteriaPath: criteriaPath, value: value, router: this.$router})
     },
     agg_pve_value (categoryName, criteriaName, valName, niceDisplay = true) {

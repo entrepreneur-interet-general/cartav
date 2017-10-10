@@ -24,15 +24,15 @@ export default {
       },
       set: function (newValue) {
         if (newValue === this.criteria.choices['any']) {
-          for (let option of this.options) {
+          for (const option of this.options) {
             option.value = true
           }
         } else if (newValue === this.criteria.choices['none']) {
-          for (let option of this.options) {
+          for (const option of this.options) {
             option.value = option.label !== 'true'
           }
         } else if (newValue === this.criteria.choices['some']) {
-          for (let option of this.options) {
+          for (const option of this.options) {
             option.value = option.label === 'true'
           }
         }

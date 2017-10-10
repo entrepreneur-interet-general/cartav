@@ -3,15 +3,15 @@ import _ from 'lodash'
 export default { encodeFilters, decodeFilters }
 
 // 2⁶ = 64 charactères :
-let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZéà0123456789'
+const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZéà0123456789'
 
 function encodeFilters (filters) {
   let res = ''
   let count = 0
-  for (let category in filters) {
-    for (let criteria in filters[category]) {
-      let values = filters[category][criteria].values
-      for (let value in values) {
+  for (const category in filters) {
+    for (const criteria in filters[category]) {
+      const values = filters[category][criteria].values
+      for (const value in values) {
         if (count === 6) {
           res += '|'
           count = 0
@@ -33,16 +33,16 @@ function encodeFilters (filters) {
 
 function decodeFilters (filters, encodedFilters) {
   let binaryFilters = ''
-  for (let c of encodedFilters) {
+  for (const c of encodedFilters) {
     // on prend chaque lettre de encodedFilters
     // son indice est recherché dans chars, puis converti en binaire
     // on rajoutte des 0 en padding
     binaryFilters += ('000000' + chars.indexOf(c).toString(2)).slice(-6)
   }
-  for (let category in filters) {
-    for (let criteria in filters[category]) {
-      let values = filters[category][criteria].values
-      for (let value in values) {
+  for (const category in filters) {
+    for (const criteria in filters[category]) {
+      const values = filters[category][criteria].values
+      for (const value in values) {
         values[value] = binaryFilters[0] === '1'
         binaryFilters = binaryFilters.slice(1)
       }
