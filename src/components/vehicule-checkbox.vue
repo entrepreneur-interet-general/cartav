@@ -13,7 +13,7 @@ export default {
   props: ['criteriaPath', 'criteria'],
   computed: {
     choice: {
-      get: function () {
+      get () {
         let selection
         if (this.criteria.values.true) {
           selection = this.criteria.values.false ? 'any' : 'some'
@@ -22,7 +22,7 @@ export default {
         }
         return this.criteria.choices[selection]
       },
-      set: function (newValue) {
+      set (newValue) {
         if (newValue === this.criteria.choices['any']) {
           for (const option of this.options) {
             option.value = true

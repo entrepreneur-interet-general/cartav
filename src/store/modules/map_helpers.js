@@ -74,7 +74,7 @@ export default {
   radar_popup (feature, layer) {
     layer.bindPopup()
     layer.on({
-      click: function () {
+      click () {
         let content = ''
         for (const p in feature.properties) {
           if (feature.properties[p]) {
