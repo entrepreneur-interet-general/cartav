@@ -19,24 +19,18 @@ function search (type, query) {
 }
 
 function searchAsGeoJsonPoints (type, query, latField, longField, propertyFields) {
-  return search(type, query).then(function (resp) {
-    return generateGeoJsonPoints(
-      resp.hits.hits,
-      latField,
-      longField,
-      propertyFields
-    )
-  })
+  return search(type, query).then(resp => generateGeoJsonPoints(resp.hits.hits,
+                                                                latField,
+                                                                longField,
+                                                                propertyFields)
+  )
 }
 
 function searchAsGeoJsonGeom (type, query, geomField, propertyFields) {
-  return search(type, query).then(function (resp) {
-    return generateGeoJsonGeom(
-      resp.hits.hits,
-      geomField,
-      propertyFields
-    )
-  })
+  return search(type, query).then(resp => generateGeoJsonGeom(resp.hits.hits,
+                                                              geomField,
+                                                              propertyFields)
+  )
 }
 
 function keysList (type, fieldName, size) {
