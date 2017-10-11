@@ -410,29 +410,30 @@ export default new Vuex.Store({
     },
     countElements (state, getters) {
       const res = {}
-      let agg = _.get(state.accidents, 'aggregations.group_by.buckets', undefined)
-      if (agg !== undefined) {
-        res['accidents'] = _(agg).map(x => x.doc_count).sum()
+      const aggAcc = _.get(state.accidents, 'aggregations.group_by.buckets', undefined)
+      if (aggAcc !== undefined) {
+        res['accidents'] = _(aggAcc).map(x => x.doc_count).sum()
       } else {
         res['accidents'] = undefined
       }
 
-      agg = _.get(state.verbalisations, 'aggregations.group_by.buckets', undefined)
-      if (agg !== undefined) {
-        res['PV électroniques'] = _(agg).map(x => x.doc_count).sum()
+      const aggPve = _.get(state.verbalisations, 'aggregations.group_by.buckets', undefined)
+      if (aggPve !== undefined) {
+        res['PV électroniques'] = _(aggPve).map(x => x.doc_count).sum()
       } else {
         res['PV électroniques'] = undefined
       }
-      agg = _.get(state.contour, 'features', undefined)
-      if (agg !== undefined) {
+
+      const contour = _.get(state.contour, 'features', undefined)
+      if (contour !== undefined) {
         if (getters.view.data.filter.activated) {
           const filter = getters.view.contour.filter.value
           const field = getters.contourFilterDisplayFieldName
-          res['habitants'] = _(agg).map(x => (x.properties[field] === filter) ? x.properties.population : 0).sum()
-          res['longueur_routes'] = _(agg).map(x => (x.properties[field] === filter) ? x.properties.longueur_routes : 0).sum()
+          res['habitants'] = _(contour).map(x => (x.properties[field] === filter) ? x.properties.population : 0).sum()
+          res['longueur_routes'] = _(contour).map(x => (x.properties[field] === filter) ? x.properties.longueur_routes : 0).sum()
         } else {
-          res['habitants'] = _(agg).map(x => x.properties.population).sum()
-          res['longueur_routes'] = _(agg).map(x => x.properties.longueur_routes).sum()
+          res['habitants'] = _(contour).map(x => x.properties.population).sum()
+          res['longueur_routes'] = _(contour).map(x => x.properties.longueur_routes).sum()
         }
       } else {
         res['habitants'] = undefined
