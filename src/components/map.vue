@@ -28,6 +28,8 @@ import { mapState } from 'vuex'
 import keyboardJS from 'keyboardjs'
 import 'leaflet-contextmenu'
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css'
+import 'leaflet-geocoder-ban/src/leaflet-geocoder-ban.js'
+import 'leaflet-geocoder-ban/src/leaflet-geocoder-ban.css'
 
 import helpers from '../store/modules/map_helpers'
 import infoSidebar from './info-sidebar'
@@ -68,7 +70,9 @@ export default {
         graphData: {}
       },
       roadAccidentsLayerGroup: L.layerGroup(),
-      zoomActive: false
+      zoomActive: false,
+      geocoderMarker: L.circleMarker(),
+      keepGeocoderMarker: false
     }
   },
   computed: mapState({
@@ -124,9 +128,11 @@ export default {
     '$route' (to, from) {
       if (to.path !== from.path) {
         this.map.contextmenu.hide()
+        this.removeGeocoderMarker()
+        this.zoomActive = !this.keepGeocoderMarker
+        this.keepGeocoderMarker = false
         this.detailedContentLayerGroup.clearLayers()
         this.roadAccidentsLayerGroup.clearLayers()
-        this.zoomActive = true
         this.$store.dispatch('set_view')
       } else {
         this.zoomActive = false
@@ -403,7 +409,6 @@ export default {
       }
     },
     pushLinkTarget (view, geoId) {
-      this.map.closePopup()
       const route = {
         name: 'sous-carte',
         params: { view: view, id: geoId },
@@ -452,6 +457,28 @@ export default {
         vm.infoSidebarData.hoverInfoData.pveN = feature.countElements ? feature.countElements['PV électroniques'] : ''
         vm.infoSidebarData.hoverInfoData.km_voie = layer.km_voie
       })
+    },
+    removeGeocoderMarker () {
+      if (this.geocoderMarker && !this.keepGeocoderMarker) { this.geocoderMarker.remove() }
+    },
+    markGeocode (f) {
+      this.keepGeocoderMarker = false
+      this.removeGeocoderMarker()
+      const latlng = [f.geometry.coordinates[1], f.geometry.coordinates[0]]
+      this.map.setView(latlng, 16)
+      var popup = L.popup()
+        .setLatLng(latlng)
+        .setContent(f.properties.label)
+        .openOn(this.map)
+      this.geocoderMarker = L.circleMarker(latlng, {
+        contextmenu: true,
+        contextmenuItems: [{
+          text: 'supprimer',
+          callback: () => this.geocoderMarker.remove()
+        }]
+      }).bindPopup(popup).addTo(this.map)
+      this.keepGeocoderMarker = true
+      this.pushLinkTarget('département', f.properties.citycode.substring(0, 2).toUpperCase())
     }
   },
   created () {
@@ -471,6 +498,9 @@ export default {
 
     L.control.sidebar('sidebar').addTo(this.map)
     const zoomControl = L.control.zoom().addTo(vm.map)
+
+    let geocoder = L.geocoderBAN().addTo(this.map)
+    geocoder.markGeocode = this.markGeocode
 
     this.tileLayer = L.tileLayer(this.basemapUrl, {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',

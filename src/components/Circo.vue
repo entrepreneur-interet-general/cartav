@@ -56,13 +56,7 @@ export default {
 }
 </script>
 
-<style>
-html, body, #app {
-  height: 100%;
-  width: 100%;
-  margin: 0px;
-}
-
+<style scoped>
 #circo {
   padding-top: 20px;
   padding-bottom: 20px;
