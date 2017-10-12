@@ -43,6 +43,7 @@ export default {
         this.$store.commit('set_pve_dates', [this.$route.query.pveB, this.$route.query.pveE])
       }
     }
+    this.$store.dispatch('replace_url_query')
   }
 }
 </script>

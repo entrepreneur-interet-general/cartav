@@ -12,6 +12,7 @@ import colors from '../assets/json/colors.json'
 import views from '../assets/json/views.json'
 import aggregationLevelsInfos from '../assets/json/aggregationLevelsInfos'
 import furl from './modules/filters_in_url'
+import router from '../router'
 
 import CryptoJS from 'crypto-js'
 
@@ -75,13 +76,12 @@ function getLevelShapesGeojson (decoupage, view) {
   }
 }
 
-function createUrlQuery (context, o) {
+function createUrlQuery (context) {
   let state = context.state
   let sha = context.getters.configDigest
   let query = Object.assign({}, state.route.query)
   query.filters = furl.encodeFilters(state.criteria_list)
   query.digest = sha
-  query.reload = o.reload
 
   query.services = state.services_selected.list.join('|')
 
@@ -127,7 +127,6 @@ export default new Vuex.Store({
     divisor: 'accidents',
     localLevelDisplay: 'aggregatedByRoad',
     localLevelData: 'accidentsOnly',
-    zoomActive: true,
     colorScale: colors.defaultColor,
     colorScaleInverted: true,
     basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]],
@@ -148,9 +147,6 @@ export default new Vuex.Store({
     },
     set_localLevelData (state, localLevelData) {
       state.localLevelData = localLevelData
-    },
-    set_zoomActive (state, zoomActive) {
-      state.zoomActive = zoomActive
     },
     set_colorScale (state, colorScale) {
       state.colorScale = colorScale
@@ -226,7 +222,7 @@ export default new Vuex.Store({
   actions: {
     set_services_selected (context, o) {
       context.commit('set_services_selected', o.servicesSelected)
-      context.dispatch('push_url_query', {router: o.router})
+      context.dispatch('push_url_query')
     },
     set_services_list (context) {
       let promList = es.keysList('pve', criteriaList.services_field, 10000)
@@ -234,28 +230,25 @@ export default new Vuex.Store({
     },
     set_localLevelDisplay (context, o) {
       context.commit('set_localLevelDisplay', o.localLevelDisplay)
-      context.dispatch('push_url_query', {router: o.router, reload: false})
-      context.dispatch('getLocalData', {zoomActive: false})
+      context.dispatch('push_url_query')
+      context.dispatch('getLocalData')
     },
     set_localLevelData (context, o) {
       if (context.state.localLevelData !== o.localLevelData) {
-        context.commit('set_zoomActive', false)
-        let reload = false
         if (context.state.localLevelDisplay !== 'aggregatedByRoad' && o.localLevelData !== 'accidentsOnly') {
           context.commit('set_localLevelDisplay', 'aggregatedByRoad')
-          reload = true
         }
         context.commit('set_localLevelData', o.localLevelData)
-        context.dispatch('push_url_query', {router: o.router, reload: reload})
+        context.dispatch('push_url_query')
       }
     },
-    push_url_query (context, o) {
-      let query = createUrlQuery(context, o)
-      o.router.push({path: context.state.route.path, query: query})
+    push_url_query (context) {
+      let query = createUrlQuery(context)
+      router.push({path: context.state.route.path, query: query})
     },
-    replace_url_query (context, o) {
-      let query = createUrlQuery(context, o)
-      o.router.replace({path: context.state.route.path, query: query})
+    replace_url_query (context) {
+      let query = createUrlQuery(context)
+      router.replace({path: context.state.route.path, query: query})
     },
     set_criteria (context, o) {
       if (o.type === 'bulk') {
@@ -263,20 +256,17 @@ export default new Vuex.Store({
       } else {
         context.commit('set_criteria', o)
       }
-      // set_view est lancé à la main (reload: false) pour éviter le zoom automatique
-      context.dispatch('push_url_query', {router: o.router, reload: false})
-      context.dispatch('set_view', {router: o.router, zoomActive: false})
+      context.dispatch('push_url_query')
+      context.dispatch('set_view')
     },
-    set_view (context, {router, zoomActive: zoomActive = true}) {
+    set_view (context) {
       let view = context.getters.view
-      if (!context.state.query) { context.dispatch('replace_url_query', {router: router, reload: false}) }
 
       if (view.content === 'detailedContent') {
         getLevelShapesGeojson(view.contour.decoupage, view).then(function (res) {
           context.commit('contour', res)
         })
-
-        context.dispatch('getLocalData', {zoomActive: zoomActive})
+        context.dispatch('getLocalData')
       } else if (view.content === 'metric') {
         let promises = [
           getLevelShapesGeojson(view.contour.decoupage, view),
@@ -316,7 +306,6 @@ export default new Vuex.Store({
     },
     getLocalData (context, options) {
       let state = context.state
-      context.commit('set_zoomActive', options.zoomActive)
       context.commit('set_showSpinner', true)
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
@@ -369,8 +358,8 @@ export default new Vuex.Store({
       } else if (o.type === 'acc') {
         context.commit('set_acc_dates', o.dates)
       }
-      context.dispatch('push_url_query', {router: o.router, reload: false})
-      context.dispatch('set_view', {router: o.router, zoomActive: false})
+      context.dispatch('push_url_query')
+      context.dispatch('set_view')
     }
   },
   getters: {
