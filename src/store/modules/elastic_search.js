@@ -78,16 +78,17 @@ function generateFilter (criteriaList, dates, services, type, ExceptThisfield = 
   // Lit les critères cochés et génère la requête ES correspondante
   const fieldName = type === PVE ? 'field_name_pve' : 'field_name_acc'
   const must = []
-
   if (type === PVE || type === ACC) {
-    const range = {}
     const field = criteriaList['PV électroniques et accidents']['Période temporelle'][fieldName]
-    range[field] = {
-      gte: dates[type][0],
-      lt: dates[type][1],
-      format: 'yyyy-MM-dd'
-    }
-    must.push({range: range})
+    must.push({
+      range: {
+        [field]: {
+          gte: dates[type][0],
+          lt: dates[type][1],
+          format: 'yyyy-MM-dd'
+        }
+      }
+    })
   }
 
   for (const scopeName in criteriaList) {
@@ -100,16 +101,20 @@ function generateFilter (criteriaList, dates, services, type, ExceptThisfield = 
           const criteriaFilters = []
           for (const valueName in criteria.values) {
             if (criteria.values[valueName]) {
-              const f = {}
-              f[criteria[fieldName]] = valueName
-              criteriaFilters.push({ term: f })
+              criteriaFilters.push({
+                term: {
+                  [criteria[fieldName]]: valueName
+                }
+              })
             }
           }
           if (criteriaFilters.length === 0) {
             // ~hack~ rien n'est coché : pas de résultats attendus
-            const f = {}
-            f[criteria[fieldName]] = -1
-            criteriaFilters.push({ term: f })
+            criteriaFilters.push({
+              term: {
+                [criteria[fieldName]]: -1
+              }
+            })
           }
           must.push({
             bool: {
@@ -123,9 +128,11 @@ function generateFilter (criteriaList, dates, services, type, ExceptThisfield = 
   if (services) {
     const criteriaFilters = []
     for (const service of services.list) {
-      const f = {}
-      f[services.fieldName] = service
-      criteriaFilters.push({ term: f })
+      criteriaFilters.push({
+        term: {
+          [services.fieldName]: service
+        }
+      })
     }
     must.push({
       bool: {
@@ -188,11 +195,13 @@ function addAdditionalFilters (must, type, view) {
 }
 
 function addFilter (must, field, value) {
-  const f = {}
-  f[field] = value
   must.push({
     bool: {
-      should: [{term: f}]
+      should: [{
+        term: {
+          [field]: value
+        }
+      }]
     }
   })
 }
@@ -313,24 +322,22 @@ function generateGeoJsonPoints (hits, latField, longField, propertyFields) {
 }
 
 function querySimpleFilter (field, ref, size = 1000) {
-  const term = {}
-  term[field] = ref
-
-  const query = {
+  return {
     size: size,
     query: {
       constant_score: {
         filter: {
           bool: {
             must: [{
-              term: term
+              term: {
+                [field]: ref
+              }
             }]
           }
         }
       }
     }
   }
-  return query
 }
 
 function searchSimpleFilter (type, field, ref) {
