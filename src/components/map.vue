@@ -36,6 +36,7 @@ import chartComponent from './chartComponent'
 import Spinner from './Spinner'
 import Modal from './Modal'
 import poll from './poll'
+import ACC from '../store/modules/constants'
 
 export default {
   components: {
@@ -164,7 +165,7 @@ export default {
       }
 
       if (this.localLevelDisplay === 'cluster') {
-        this.detailedContentLayerGroup.addLayer(this.createClusterLocal('acc', this.accidentsLocal))
+        this.detailedContentLayerGroup.addLayer(this.createClusterLocal(ACC, this.accidentsLocal))
       } else if (this.localLevelDisplay === 'heatmap') {
         this.heatMap()
       } else if (this.localLevelDisplay === 'aggregatedByRoad') {
@@ -192,7 +193,7 @@ export default {
         }
         vm.highlightedRoadLayer = event.target
         vm.$store.dispatch('getAccidentsFromRoadId', roadId).then(function (res) {
-          vm.roadAccidentsLayerGroup.addLayer(vm.createClusterLocal('acc', res))
+          vm.roadAccidentsLayerGroup.addLayer(vm.createClusterLocal(ACC, res))
         })
       } else {
         // Second click on same road : reset display

@@ -8,6 +8,7 @@
 <script>
 import slider from 'nouislider'
 import 'nouislider/distribute/nouislider.css'
+import {PVE, ACC} from '../store/modules/constants'
 
 export default {
   data () {
@@ -55,8 +56,8 @@ export default {
       start: [this.begin.acc, this.end.acc],
       connect: true,
       range: {
-        min: this.bounds('acc')[0],
-        max: this.bounds('acc')[1]
+        min: this.bounds(ACC)[0],
+        max: this.bounds(ACC)[1]
       },
       step: 3,
       pips: {
@@ -72,8 +73,8 @@ export default {
       start: [this.begin.pve, this.end.pve],
       connect: true,
       range: {
-        min: this.bounds('pve')[0],
-        max: this.bounds('pve')[1]
+        min: this.bounds(PVE)[0],
+        max: this.bounds(PVE)[1]
       },
       step: 1,
       pips: {
@@ -85,7 +86,7 @@ export default {
       tooltips: [format, format]
     })
 
-    for (const type of ['acc', 'pve']) {
+    for (const type of [ACC, PVE]) {
       this.sliders[type].noUiSlider.on('update', (v, h) => this.update(v, h, type))
       this.sliders[type].noUiSlider.on('set', () => this.setYear(type))
     }

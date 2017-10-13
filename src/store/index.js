@@ -13,6 +13,7 @@ import views from '../assets/json/views.json'
 import aggregationLevelsInfos from '../assets/json/aggregationLevelsInfos'
 import furl from './modules/filters_in_url'
 import router from '../router'
+import {PVE, ACC} from './modules/constants.js'
 
 import CryptoJS from 'crypto-js'
 
@@ -225,7 +226,7 @@ export default new Vuex.Store({
       context.dispatch('push_url_query')
     },
     set_services_list (context) {
-      const promList = es.keysList('pve', criteriaList.services_field, 10000)
+      const promList = es.keysList(PVE, criteriaList.services_field, 10000)
       promList.then(function (list) { context.commit('set_services_list', list) })
     },
     set_localLevelDisplay (context, o) {
@@ -286,8 +287,8 @@ export default new Vuex.Store({
       const state = context.state
       const get = context.getters
       Promise.all([
-        es.generateAggregatedQueryByFilter(state.criteria_list, get.formatedDates, null, 'acc', get.view),
-        es.generateAggregatedQueryByFilter(state.criteria_list, get.formatedDates, state.services_selected, 'pve', get.view)
+        es.generateAggregatedQueryByFilter(state.criteria_list, get.formatedDates, null, ACC, get.view),
+        es.generateAggregatedQueryByFilter(state.criteria_list, get.formatedDates, state.services_selected, PVE, get.view)
       ]).then(res => {
         context.commit('accidents_value_by_filter', res[0])
         context.commit('pve_value_by_filter', res[1])
@@ -295,25 +296,25 @@ export default new Vuex.Store({
     },
     queryESAcc (context) {
       const state = context.state
-      const query = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, null, 'acc', context.getters.view)
+      const query = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view)
 
-      return es.search('acc', query)
+      return es.search(ACC, query)
     },
     queryESPve (context) {
       const state = context.state
-      const query = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, state.services_selected, 'pve', context.getters.view)
-      return es.search('pve', query)
+      const query = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, state.services_selected, PVE, context.getters.view)
+      return es.search(PVE, query)
     },
     getLocalData (context, options) {
       const state = context.state
       context.commit('set_showSpinner', true)
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
-        const queryAcc = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, null, 'acc', context.getters.view, ['geojson', 'num_route_or_id'])
-        const queryPve = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, state.services_selected, 'pve', context.getters.view, ['geojson', 'num_route_or_id'])
+        const queryAcc = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view, ['geojson', 'num_route_or_id'])
+        const queryPve = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, state.services_selected, PVE, context.getters.view, ['geojson', 'num_route_or_id'])
         const promises = [
-          es.search('acc', queryAcc),
-          es.search('pve', queryPve),
+          es.search(ACC, queryAcc),
+          es.search(PVE, queryPve),
           context.dispatch('getRadars')
         ]
         Promise.all(promises).then(values => {
@@ -331,8 +332,8 @@ export default new Vuex.Store({
           context.commit('set_showSpinner', false)
         })
       } else {
-        const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, 'acc', context.getters.view)
-        es.searchAsGeoJsonPoints('acc', query, 'latitude', 'longitude', accidentsFields).then(function (res) {
+        const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view)
+        es.searchAsGeoJsonPoints(ACC, query, 'latitude', 'longitude', accidentsFields).then(function (res) {
           context.commit('accidents_geojson', res)
           context.commit('set_showSpinner', false)
         })
@@ -340,8 +341,8 @@ export default new Vuex.Store({
     },
     getPVEGraphData (context, roadId) {
       const state = context.state
-      const query = es.generateGraphAgg(state.criteria_list, context.getters.formatedDates, state.services_selected, 'pve', context.getters.view, roadId, 'LIBELLE_FAMILLE')
-      return es.search('pve', query)
+      const query = es.generateGraphAgg(state.criteria_list, context.getters.formatedDates, state.services_selected, PVE, context.getters.view, roadId, 'LIBELLE_FAMILLE')
+      return es.search(PVE, query)
     },
     getRadars (context, dep) {
       const query = es.generateQuery(null, null, null, 'radars', context.getters.view)
@@ -349,13 +350,13 @@ export default new Vuex.Store({
     },
     getAccidentsFromRoadId (context, roadId) {
       const state = context.state
-      const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, 'acc', context.getters.view, roadId)
-      return es.searchAsGeoJsonPoints('acc', query, 'latitude', 'longitude', accidentsFields)
+      const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view, roadId)
+      return es.searchAsGeoJsonPoints(ACC, query, 'latitude', 'longitude', accidentsFields)
     },
     set_dates (context, o) {
-      if (o.type === 'pve') {
+      if (o.type === PVE) {
         context.commit('set_pve_dates', o.dates)
-      } else if (o.type === 'acc') {
+      } else if (o.type === ACC) {
         context.commit('set_acc_dates', o.dates)
       }
       context.dispatch('push_url_query')
