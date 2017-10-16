@@ -50,15 +50,15 @@ export default {
       this.newService = ''
       let servicesSelected = this.servicesSelected.slice(0)
       servicesSelected.push(s)
-      this.$store.dispatch('set_services_selected', { servicesSelected: servicesSelected, router: this.$router })
+      this.$store.dispatch('set_services_selected', servicesSelected)
     },
     emptyServices () {
-      this.$store.dispatch('set_services_selected', { servicesSelected: [], router: this.$router })
+      this.$store.dispatch('set_services_selected', [])
     },
     deleteService (i) {
       let servicesSelected = this.servicesSelected.slice(0)
       servicesSelected.splice(i, 1)
-      this.$store.dispatch('set_services_selected', { servicesSelected: servicesSelected, router: this.$router })
+      this.$store.dispatch('set_services_selected', servicesSelected)
     }
   },
   watch: {
