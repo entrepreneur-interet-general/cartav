@@ -37,7 +37,7 @@ export default {
       return this.$store.state.services_selected.list
     },
     filteredServices () {
-      let vm = this
+      const vm = this
       if (vm.newService) {
         return this.services_list.filter(service => service.toLowerCase().includes(vm.newService.toLowerCase()))
       } else {
@@ -48,7 +48,7 @@ export default {
   methods: {
     pushService (s) {
       this.newService = ''
-      let servicesSelected = this.servicesSelected.slice(0)
+      const servicesSelected = this.servicesSelected.slice(0)
       servicesSelected.push(s)
       this.$store.dispatch('set_services_selected', servicesSelected)
     },
@@ -56,7 +56,7 @@ export default {
       this.$store.dispatch('set_services_selected', [])
     },
     deleteService (i) {
-      let servicesSelected = this.servicesSelected.slice(0)
+      const servicesSelected = this.servicesSelected.slice(0)
       servicesSelected.splice(i, 1)
       this.$store.dispatch('set_services_selected', servicesSelected)
     }
@@ -67,7 +67,7 @@ export default {
     }
   },
   mounted () {
-    let vm = this
+    const vm = this
     this.$store.dispatch('set_services_list')
     document.onkeydown = function (e) {
       switch (e.keyCode) {

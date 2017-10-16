@@ -1,14 +1,6 @@
-export default { niceDisplay, capitalize }
+const isNumber = n => !isNaN(parseFloat(n)) && isFinite(n)
 
-function isNumber (n) {
-  return !isNaN(parseFloat(n)) && isFinite(n)
-}
-
-function format (n) {
-  return n.toLocaleString('fr-FR', {
-    maximumSignificantDigits: 3
-  })
-}
+const format = n => n.toLocaleString('fr-FR', { maximumSignificantDigits: 3 })
 
 function niceDisplay (n) {
   // Met en forme les nombre joliment et correctement typographiquement
@@ -25,7 +17,7 @@ function niceDisplay (n) {
   }
 }
 
-function capitalize (s) {
-  // Met une majuscule à la première lettre
-  return s.replace(/\b\w/, l => l.toUpperCase())
-}
+// Met une majuscule à la première lettre
+const capitalize = s => s.replace(/\b\w/, l => l.toUpperCase())
+
+export default { niceDisplay, capitalize }

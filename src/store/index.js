@@ -13,12 +13,13 @@ import views from '../assets/json/views.json'
 import aggregationLevelsInfos from '../assets/json/aggregationLevelsInfos'
 import furl from './modules/filters_in_url'
 import router from '../router'
+import {PVE, ACC} from './modules/constants.js'
 
 import CryptoJS from 'crypto-js'
 
 Vue.use(Vuex)
 
-let accidentsFields = {
+const accidentsFields = {
   'numéro accident': 'Num_Acc',
   adresse: 'adr',
   ville: 'current_name',
@@ -38,7 +39,7 @@ let accidentsFields = {
   _catv_pietons_nb: 'pietons_nb'
 }
 
-let radarsFields = {
+const radarsFields = {
   'Voie': 'Libellé voie',
   'Sens circulation': 'Sens circulation',
   'VLA': 'VLA',
@@ -53,7 +54,7 @@ let radarsFields = {
   'Environnement de la voie': 'Environnement de la voie'
 }
 
-let communesFields = {
+const communesFields = {
   nom: 'NOM_COM',
   insee: 'INSEE_COM',
   code: 'Code INSEE',
@@ -70,16 +71,16 @@ function getLevelShapesGeojson (decoupage, view) {
   } else if (decoupage === 'circonscriptif') {
     return Promise.resolve(circonscriptions)
   } else if (decoupage === 'communal') {
-    let filterName = aggregationLevelsInfos.contour[view.contour.filter.filterCriteria].id
-    let query = es.querySimpleFilter(filterName, view.contour.filter.value)
+    const filterName = aggregationLevelsInfos.contour[view.contour.filter.filterCriteria].id
+    const query = es.querySimpleFilter(filterName, view.contour.filter.value)
     return es.searchAsGeoJsonGeom('communes', query, 'st_asgeojson', communesFields)
   }
 }
 
 function createUrlQuery (context) {
-  let state = context.state
-  let sha = context.getters.configDigest
-  let query = Object.assign({}, state.route.query)
+  const state = context.state
+  const sha = context.getters.configDigest
+  const query = Object.assign({}, state.route.query)
   query.filters = furl.encodeFilters(state.criteria_list)
   query.digest = sha
 
@@ -159,8 +160,8 @@ export default new Vuex.Store({
     },
     set_criteria_bulk (state, {criteriaPath, criterias}) {
       criteriaPath += '.values.'
-      for (let crit of criterias) {
-        let cp = criteriaPath + crit.label
+      for (const crit of criterias) {
+        const cp = criteriaPath + crit.label
         _.set(state.criteria_list, cp, crit.value)
       }
     },
@@ -226,7 +227,7 @@ export default new Vuex.Store({
       context.dispatch('set_view')
     },
     set_services_list (context) {
-      let promList = es.keysList('pve', criteriaList.services_field, 10000)
+      const promList = es.keysList(PVE, criteriaList.services_field, 10000)
       promList.then(function (list) { context.commit('set_services_list', list) })
     },
     set_localLevelDisplay (context, o) {
@@ -244,11 +245,11 @@ export default new Vuex.Store({
       }
     },
     push_url_query (context) {
-      let query = createUrlQuery(context)
+      const query = createUrlQuery(context)
       router.push({path: context.state.route.path, query: query})
     },
     replace_url_query (context) {
-      let query = createUrlQuery(context)
+      const query = createUrlQuery(context)
       router.replace({path: context.state.route.path, query: query})
     },
     set_criteria (context, o) {
@@ -261,7 +262,7 @@ export default new Vuex.Store({
       context.dispatch('set_view')
     },
     set_view (context) {
-      let view = context.getters.view
+      const view = context.getters.view
 
       if (view.content === 'detailedContent') {
         getLevelShapesGeojson(view.contour.decoupage, view).then(function (res) {
@@ -269,7 +270,7 @@ export default new Vuex.Store({
         })
         context.dispatch('getLocalData')
       } else if (view.content === 'metric') {
-        let promises = [
+        const promises = [
           getLevelShapesGeojson(view.contour.decoupage, view),
           context.dispatch('queryESAcc'),
           context.dispatch('queryESPve')
@@ -284,42 +285,42 @@ export default new Vuex.Store({
       context.dispatch('getAggregationByfilter')
     },
     getAggregationByfilter (context) {
-      let state = context.state
-      let get = context.getters
+      const state = context.state
+      const get = context.getters
       Promise.all([
-        es.generateAggregatedQueryByFilter(state.criteria_list, get.formatedDates, null, 'acc', get.view),
-        es.generateAggregatedQueryByFilter(state.criteria_list, get.formatedDates, state.services_selected, 'pve', get.view)
+        es.generateAggregatedQueryByFilter(state.criteria_list, get.formatedDates, null, ACC, get.view),
+        es.generateAggregatedQueryByFilter(state.criteria_list, get.formatedDates, state.services_selected, PVE, get.view)
       ]).then(res => {
         context.commit('accidents_value_by_filter', res[0])
         context.commit('pve_value_by_filter', res[1])
       })
     },
     queryESAcc (context) {
-      let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, null, 'acc', context.getters.view)
+      const state = context.state
+      const query = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view)
 
-      return es.search('acc', query)
+      return es.search(ACC, query)
     },
     queryESPve (context) {
-      let state = context.state
-      let query = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, state.services_selected, 'pve', context.getters.view)
-      return es.search('pve', query)
+      const state = context.state
+      const query = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, state.services_selected, PVE, context.getters.view)
+      return es.search(PVE, query)
     },
     getLocalData (context, options) {
-      let state = context.state
+      const state = context.state
       context.commit('set_showSpinner', true)
 
       if (state.localLevelDisplay === 'aggregatedByRoad') {
-        let queryAcc = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, null, 'acc', context.getters.view, ['geojson', 'num_route_or_id'])
-        let queryPve = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, state.services_selected, 'pve', context.getters.view, ['geojson', 'num_route_or_id'])
-        let promises = [
-          es.search('acc', queryAcc),
-          es.search('pve', queryPve),
+        const queryAcc = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view, ['geojson', 'num_route_or_id'])
+        const queryPve = es.generateAggregatedQuery(state.criteria_list, context.getters.formatedDates, state.services_selected, PVE, context.getters.view, ['geojson', 'num_route_or_id'])
+        const promises = [
+          es.search(ACC, queryAcc),
+          es.search(PVE, queryPve),
           context.dispatch('getRadars')
         ]
         Promise.all(promises).then(values => {
-          let accidentsRoadCount = {}
-          let pveRoadCount = {}
+          const accidentsRoadCount = {}
+          const pveRoadCount = {}
           values[0].aggregations.group_by.buckets.forEach(function (bucket) {
             accidentsRoadCount[bucket.key] = bucket.doc_count
           })
@@ -332,31 +333,31 @@ export default new Vuex.Store({
           context.commit('set_showSpinner', false)
         })
       } else {
-        let query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, 'acc', context.getters.view)
-        es.searchAsGeoJsonPoints('acc', query, 'latitude', 'longitude', accidentsFields).then(function (res) {
+        const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view)
+        es.searchAsGeoJsonPoints(ACC, query, 'latitude', 'longitude', accidentsFields).then(function (res) {
           context.commit('accidents_geojson', res)
           context.commit('set_showSpinner', false)
         })
       }
     },
     getPVEGraphData (context, roadId) {
-      let state = context.state
-      let query = es.generateGraphAgg(state.criteria_list, context.getters.formatedDates, state.services_selected, 'pve', context.getters.view, roadId, 'LIBELLE_FAMILLE')
-      return es.search('pve', query)
+      const state = context.state
+      const query = es.generateGraphAgg(state.criteria_list, context.getters.formatedDates, state.services_selected, PVE, context.getters.view, roadId, 'LIBELLE_FAMILLE')
+      return es.search(PVE, query)
     },
     getRadars (context, dep) {
-      let query = es.generateQuery(null, null, null, 'radars', context.getters.view)
+      const query = es.generateQuery(null, null, null, 'radars', context.getters.view)
       return es.searchAsGeoJsonPoints('radars', query, 'Coordonnées GPS cabine - latitude', 'Coordonnées GPS cabine - longitude', radarsFields)
     },
     getAccidentsFromRoadId (context, roadId) {
-      let state = context.state
-      let query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, 'acc', context.getters.view, roadId)
-      return es.searchAsGeoJsonPoints('acc', query, 'latitude', 'longitude', accidentsFields)
+      const state = context.state
+      const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view, roadId)
+      return es.searchAsGeoJsonPoints(ACC, query, 'latitude', 'longitude', accidentsFields)
     },
     set_dates (context, o) {
-      if (o.type === 'pve') {
+      if (o.type === PVE) {
         context.commit('set_pve_dates', o.dates)
-      } else if (o.type === 'acc') {
+      } else if (o.type === ACC) {
         context.commit('set_acc_dates', o.dates)
       }
       context.dispatch('push_url_query')
@@ -366,9 +367,9 @@ export default new Vuex.Store({
   getters: {
     // Renvoie la view décrite dans views.json correspondant à l'url de la page
     view (state) {
-      let viewName = state.route.params.view || 'régions'
-      let id = state.route.params.id || null
-      let view = views[viewName]
+      const viewName = state.route.params.view || 'régions'
+      const id = state.route.params.id || null
+      const view = views[viewName]
       view.name = viewName
 
       if (id) {
@@ -386,19 +387,19 @@ export default new Vuex.Store({
       return state.route.params.view || 'régions'
     },
     contourIdFieldName (state, getters) {
-      let decoupage = getters.view.contour.decoupage
+      const decoupage = getters.view.contour.decoupage
       return aggregationLevelsInfos.contour[decoupage].id
     },
     contourDisplayFieldName (state, getters) {
-      let decoupage = getters.view.contour.decoupage
+      const decoupage = getters.view.contour.decoupage
       return aggregationLevelsInfos.contour[decoupage].name
     },
     contourFilterDisplayFieldName (state, getters) {
-      let decoupage = getters.view.contour.filter.filterCriteria
+      const decoupage = getters.view.contour.filter.filterCriteria
       return decoupage ? aggregationLevelsInfos.contour[decoupage].name : null
     },
     contourFilterFieldName (state, getters) {
-      let filterCriteria = getters.view.contour.filter.filterCriteria
+      const filterCriteria = getters.view.contour.filter.filterCriteria
       if (filterCriteria) {
         return aggregationLevelsInfos.contour[filterCriteria].id
       } else {
@@ -406,34 +407,35 @@ export default new Vuex.Store({
       }
     },
     viewLinksToItself (state, getters) {
-      let linksTo = getters.view.linksTo[0].view
+      const linksTo = getters.view.linksTo[0].view
       return linksTo === getters.viewName
     },
     countElements (state, getters) {
-      let res = {}
-      let agg = _.get(state.accidents, 'aggregations.group_by.buckets', undefined)
-      if (agg !== undefined) {
-        res['accidents'] = _(agg).map(x => x.doc_count).sum()
+      const res = {}
+      const aggAcc = _.get(state.accidents, 'aggregations.group_by.buckets', undefined)
+      if (aggAcc !== undefined) {
+        res['accidents'] = _(aggAcc).map(x => x.doc_count).sum()
       } else {
         res['accidents'] = undefined
       }
 
-      agg = _.get(state.verbalisations, 'aggregations.group_by.buckets', undefined)
-      if (agg !== undefined) {
-        res['PV électroniques'] = _(agg).map(x => x.doc_count).sum()
+      const aggPve = _.get(state.verbalisations, 'aggregations.group_by.buckets', undefined)
+      if (aggPve !== undefined) {
+        res['PV électroniques'] = _(aggPve).map(x => x.doc_count).sum()
       } else {
         res['PV électroniques'] = undefined
       }
-      agg = _.get(state.contour, 'features', undefined)
-      if (agg !== undefined) {
+
+      const contour = _.get(state.contour, 'features', undefined)
+      if (contour !== undefined) {
         if (getters.view.data.filter.activated) {
-          let filter = getters.view.contour.filter.value
-          let field = getters.contourFilterDisplayFieldName
-          res['habitants'] = _(agg).map(x => (x.properties[field] === filter) ? x.properties.population : 0).sum()
-          res['longueur_routes'] = _(agg).map(x => (x.properties[field] === filter) ? x.properties.longueur_routes : 0).sum()
+          const filter = getters.view.contour.filter.value
+          const field = getters.contourFilterDisplayFieldName
+          res['habitants'] = _(contour).map(x => (x.properties[field] === filter) ? x.properties.population : 0).sum()
+          res['longueur_routes'] = _(contour).map(x => (x.properties[field] === filter) ? x.properties.longueur_routes : 0).sum()
         } else {
-          res['habitants'] = _(agg).map(x => x.properties.population).sum()
-          res['longueur_routes'] = _(agg).map(x => x.properties.longueur_routes).sum()
+          res['habitants'] = _(contour).map(x => x.properties.population).sum()
+          res['longueur_routes'] = _(contour).map(x => x.properties.longueur_routes).sum()
         }
       } else {
         res['habitants'] = undefined
@@ -441,11 +443,11 @@ export default new Vuex.Store({
       return res
     },
     ratioAverage (state, getters) {
-      let c = getters.countElements
+      const c = getters.countElements
       return c[state.dividende] / c[state.divisor]
     },
     legendScale (state, getters) {
-      let avg = getters.ratioAverage
+      const avg = getters.ratioAverage
       if (isNaN(avg)) {
         return []
       } else {
@@ -453,7 +455,7 @@ export default new Vuex.Store({
       }
     },
     colors (state) {
-      let cs = colors.colors[state.colorScale].slice()
+      const cs = colors.colors[state.colorScale].slice()
       if (state.colorScaleInverted) { cs.reverse() }
       return cs
     },
@@ -466,7 +468,7 @@ export default new Vuex.Store({
       }
     },
     ratioLabel (state) {
-      let label = {
+      const label = {
         'PV électroniques': 'de PV électroniques',
         'accidents': 'd’accidents',
         'habitants': 'd’habitants',

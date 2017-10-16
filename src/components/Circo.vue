@@ -27,8 +27,8 @@ export default {
   },
   computed: {
     circo_liste () {
-      let list = []
-      for (let circo of circonscriptions.features) {
+      const list = []
+      for (const circo of circonscriptions.features) {
         list.push(circo.properties.nom_circo)
       }
       return list
@@ -36,13 +36,13 @@ export default {
   },
   watch: {
     circoSelected () {
-      let vm = this
-      let theCirco = vm.circo_liste.find(circo =>
+      const vm = this
+      const theCirco = vm.circo_liste.find(circo =>
         circo.toLowerCase() === vm.circoSelected.toLowerCase()
       )
 
       if (theCirco) {
-        let route = {
+        const route = {
           name: 'sous-carte',
           params: { view: 'circonscription', id: theCirco }
         }

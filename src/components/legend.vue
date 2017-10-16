@@ -39,10 +39,10 @@ export default {
       }
     },
     style (i) {
-      let stripes = this.$store.getters.stripes[i]
-      let angle = stripes.angle
-      let weight = stripes.weight
-      let color = this.colors[i]
+      const stripes = this.$store.getters.stripes[i]
+      const angle = stripes.angle
+      const weight = stripes.weight
+      const color = this.colors[i]
       return `background: repeating-linear-gradient(${angle}deg, ${color}, ${color} ${weight}px, rgba(0, 0, 0, 0.8) ${8 - weight}px, rgba(0, 0, 0, 0.8) 8px);`
     }
   }
