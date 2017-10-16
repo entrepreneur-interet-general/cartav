@@ -220,9 +220,10 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    set_services_selected (context, o) {
-      context.commit('set_services_selected', o.servicesSelected)
+    set_services_selected (context, servicesSelected) {
+      context.commit('set_services_selected', servicesSelected)
       context.dispatch('push_url_query')
+      context.dispatch('set_view')
     },
     set_services_list (context) {
       let promList = es.keysList('pve', criteriaList.services_field, 10000)
