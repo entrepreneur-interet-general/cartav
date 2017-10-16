@@ -407,7 +407,7 @@ export default {
       const route = {
         name: 'sous-carte',
         params: { view: view, id: geoId },
-        query: this.$router.query
+        query: this.$route.query
       }
       this.$router.push(route)
     },
