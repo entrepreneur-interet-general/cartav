@@ -38,31 +38,31 @@
     <br>
   </div>
   <div v-if='localLevel'>
-    <h4>Données représentées</h4>
-    <input type="radio" id="accidentsOnly" value="accidentsOnly" v-model="localLevelData">
+    <h4>Données représentées </h4>
+    <input type="radio" id="accidentsOnly" :value="constants.ACC" v-model="localLevelData">
     <label for="accidentsOnly">Accidents</label>
     <br>
-    <input type="radio" id="pveOnly" value="pveOnly" v-model="localLevelData">
+    <input type="radio" id="pveOnly" :value="constants.PVE" v-model="localLevelData">
     <label for="pveOnly">PV électroniques</label>
     <br>
-    <input type="radio" id="accidentsNoPve" value="accidentsNoPve" v-model="localLevelData">
+    <input type="radio" id="accidentsNoPve" :value="constants.ACC_NO_PVE" v-model="localLevelData">
     <label for="accidentsNoPve">Axes avec accidents, sans PV électroniques</label>
     <br>
-    <input type="radio" id="pveNoAccidents" value="pveNoAccidents" v-model="localLevelData">
+    <input type="radio" id="pveNoAccidents" :value="constants.PVE_NO_ACC" v-model="localLevelData">
     <label for="pveNoAccidents">Axes avec PV électroniques, sans accidents</label>
     <br>
     <br>
 
     <h4>Représentation</h4>
-    <input type="radio" id="clusterType" value="cluster" v-model="localLevelDisplay" :disabled=aggregatedByRoadOnly>
+    <input type="radio" id="clusterType" :value="constants.CLUSTER" v-model="localLevelDisplay" :disabled=aggregatedByRoadOnly>
     <label for="clusterType">Nuage de points (cluster)</label>
     <abbr v-if=aggregatedByRoadOnly class="description-info-circle" title="La géolocalisation précise n'est disponible que pour les accidents"><i class='fa fa-info-circle'></i></abbr>
     <br>
-    <input type="radio" id="heatMapType" value="heatmap" v-model="localLevelDisplay" :disabled=aggregatedByRoadOnly>
+    <input type="radio" id="heatMapType" :value="constants.HEATMAP" v-model="localLevelDisplay" :disabled=aggregatedByRoadOnly>
     <label for="heatMapType">Carte de chaleur (heatmap)</label>
     <abbr v-if=aggregatedByRoadOnly class="description-info-circle" title="La géolocalisation précise n'est disponible que pour les accidents"><i class='fa fa-info-circle'></i></abbr>
     <br>
-    <input type="radio" id="aggregatedByRoadType" value="aggregatedByRoad" v-model="localLevelDisplay">
+    <input type="radio" id="aggregatedByRoadType" :value="constants.AGG_BY_ROAD" v-model="localLevelDisplay">
     <label for="aggregatedByRoadType">Routes</label>
     <br>
     <br>
@@ -81,10 +81,12 @@
 <script>
 import colors from '../assets/json/colors.json'
 import criteriaList from '../assets/json/config.json'
+import constants from '../store/modules/constants'
 
 export default {
   data () {
     return {
+      constants,
       colorScale: this.$store.state.colorScale,
       colors: colors.colors,
       colorScaleInverted: this.$store.state.colorScaleInverted,
@@ -105,7 +107,7 @@ export default {
         return this.$store.state.localLevelData
       },
       set (newValue) {
-        this.$store.dispatch('set_localLevelData', {localLevelData: newValue, router: this.$router})
+        this.$store.dispatch('set_localLevelData', newValue)
       }
     },
     localLevelDisplay: {
@@ -113,7 +115,7 @@ export default {
         return this.$store.state.localLevelDisplay
       },
       set (newValue) {
-        this.$store.dispatch('set_localLevelDisplay', {localLevelDisplay: newValue, router: this.$router})
+        this.$store.dispatch('set_localLevelDisplay', newValue)
       }
     },
     dividende: {
@@ -139,7 +141,7 @@ export default {
       return this.$store.getters.view.content === 'detailedContent'
     },
     aggregatedByRoadOnly () {
-      return this.localLevelData !== 'accidentsOnly'
+      return this.localLevelData !== constants.ACC
     }
   },
   watch: {

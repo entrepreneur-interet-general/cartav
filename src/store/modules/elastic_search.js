@@ -1,7 +1,7 @@
 import elasticsearch from 'elasticsearch'
 import _ from 'lodash'
 import aggregationLevelsInfos from '../../assets/json/aggregationLevelsInfos'
-import {PVE, ACC} from './constants'
+import constants from './constants'
 
 export default { search, searchAsGeoJsonPoints, searchAsGeoJsonGeom, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, querySimpleFilter, searchSimpleFilter, toRoadsDict, generateGraphAgg, keysList }
 
@@ -76,9 +76,9 @@ function toRoadsDict (json, otherCount) {
 
 function generateFilter (criteriaList, dates, services, type, ExceptThisfield = undefined) {
   // Lit les critères cochés et génère la requête ES correspondante
-  const fieldName = type === PVE ? 'field_name_pve' : 'field_name_acc'
+  const fieldName = type === constants.PVE ? 'field_name_pve' : 'field_name_acc'
   const must = []
-  if (type === PVE || type === ACC) {
+  if (type === constants.PVE || type === constants.ACC) {
     const field = criteriaList['PV électroniques et accidents']['Période temporelle'][fieldName]
     must.push({
       range: {
@@ -250,7 +250,7 @@ function generateQuery (criteriaList, dates, services, type, view, sourceFilteri
 function generateAggregatedQueryByFilter (criteriaList, dates, services, type, view) {
   const promises = []
   const criteriaPaths = []
-  const fieldNameType = type === PVE ? 'field_name_pve' : 'field_name_acc'
+  const fieldNameType = type === constants.PVE ? 'field_name_pve' : 'field_name_acc'
   for (const scopeName in criteriaList) {
     const scope = criteriaList[scopeName]
     for (const criteriaName in scope) {

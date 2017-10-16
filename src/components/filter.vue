@@ -125,6 +125,7 @@ import version from '../assets/json/version.json'
 import yearSlider from './yearSlider'
 import circo from './Circo'
 import L from 'leaflet'
+import constants from '../store/modules/constants'
 
 export default {
   components: {
@@ -167,9 +168,9 @@ export default {
   methods: {
     warning (id) {
       if (this.$store.getters.localLevel) {
-        if (id === 'pveFilters' && this.$store.state.localLevelData === 'accidentsOnly') {
+        if (id === 'pveFilters' && this.$store.state.localLevelData === constants.ACC) {
           return '<em>Vous visualisez actuellement sur la carte les accidents. Si vous souhaitez voir les PV électroniques, cliquez sur l\'ongconst <i class="fa fa-lg fa-sliders">.</i></em>'
-        } else if (id === 'accidentsFilters' && this.$store.state.localLevelData === 'pveOnly') {
+        } else if (id === 'accidentsFilters' && this.$store.state.localLevelData === constants.PVE) {
           return '<em>Vous visualisez actuellement sur la carte les PV électroniques. Si vous souhaitez voir les accidents, cliquez sur l\'ongconst <i class="fa fa-big fa-sliders">.</i></em>'
         }
       }
