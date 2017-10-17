@@ -69,7 +69,7 @@ export default {
   mounted () {
     const vm = this
     this.$store.dispatch('set_services_list')
-    document.onkeydown = function (e) {
+    document.getElementById('services').onkeydown = function (e) {
       switch (e.keyCode) {
         case 13:
         // touche entrée
@@ -89,13 +89,7 @@ export default {
 }
 </script>
 
-<style>
-html, body, #app {
-  height: 100%;
-  width: 100%;
-  margin: 0px;
-}
-
+<style scoped>
 li {
   list-style-type: '- ';
 }
