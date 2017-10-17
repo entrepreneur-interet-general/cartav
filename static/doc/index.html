@@ -2,28 +2,28 @@
 
 <html>
 <head>
-<meta charset=utf-8 />
-<title>Cartographie accidents et verbalisation</title>
-<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-<script src='vendor/showdown.min.js'></script>
-<link rel="stylesheet" href="vendor/bulma.min.css" />
-<style>
+  <meta charset=utf-8 />
+  <title>Cartographie accidents et verbalisation</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='vendor/showdown.min.js'></script>
+  <link rel="stylesheet" href="vendor/bulma.min.css" />
+  <style>
     video img {
-        max-width: 100%;
+      max-width: 100%;
     }
-</style>
+  </style>
 </head>
 <body>
-    <header class="hero is-primary">
-        <div class="hero-body">
-            <h1 class="title is-1 has-text-centered">Cartographie accidents et verbalisation</h1>
-        </div>
-    </header>
+  <header class="hero is-primary">
+    <div class="hero-body">
+      <h1 class="title is-1 has-text-centered">Cartographie accidents et verbalisation</h1>
+    </div>
+  </header>
 
-    <section class="section">
+  <section class="section">
     <div class="container box">
-        <div class="columns">
-            <div class="content column md">
+      <div class="columns">
+        <div class="content column md">
 Cet outil d’aide à la décision permet de cartographier les accidents et les verbalisations afin d’aider les forces
 de l’ordre à mieux cibler leurs actions.
 
@@ -59,17 +59,17 @@ Au delà de cette date, veuillez contacter
 
 Ce projet est réalisé dans le cadre des [Entrepreneurs d’Intérêt Général](http://www.gouvernement.fr/entrepreneur-interet-general)
         </div>
-    <div class='column is-half'>
-        <img src="accueil.png" alt="Écran d’accueil">
-    </div>
+        <div class='column is-half'>
+          <img src="accueil.png" alt="Écran d’accueil">
         </div>
-</div>
-</section>
+      </div>
+    </div>
+  </section>
 
-<section class="section">
-<div class="container">
-<div class="columns box">
-    <div class="content column md">
+  <section class="section">
+    <div class="container">
+      <div class="columns box">
+        <div class="content column md">
 # Modifier les métriques
 
 Lorsque la vue représente une zone géographique, chaque aire est colorée selon une métrique au choix.
@@ -79,18 +79,18 @@ Il est possible de sélectionner le ratio arbitrairement grace au menu de config
 Par exemple pour afficher le nombre d’accident par habitants.
 
 Si une autre métrique vous semble intéressante, n’hésitez pas à nous contacter.
+        </div>
+        <div class="column">
+          <video src="casts/metriques.webm" autoplay loop>Vidéo de modification des métriques.</video>
+        </div>
+      </div>
     </div>
-    <div class="column">
-        <video src="casts/metriques.webm" autoplay loop>
-    </div>
-</div>
-</div>
-</section>
+  </section>
 
-<section class="section">
-<div class="container">
-<div class="columns box">
-    <div class="content column md">
+  <section class="section">
+    <div class="container">
+      <div class="columns box">
+        <div class="content column md">
 # S’intéresser à une zone précise
 
 Par défaut, le territoire est découpé par régions.
@@ -108,19 +108,18 @@ En cliquant sur un axe, il est possible de voir chaque accident individuel.
 Enfin, un clic sur un accident permet d’en voir les détails.
 
 Note technique : les axes sont découpés par commune. Ainsi une autoroute sera composé d’autant de tronçons que de commune qu’elle traverse.
+        </div>
+        <div class="column is-half">
+          <video src="casts/navigation.webm" autoplay loop>Vidéo de navigation dans les différents niveaux.</video>
+        </div>
+      </div>
     </div>
-    <div class="column is-half">
-        <video src="casts/navigation.webm" autoplay loop>
-    </div>
-</div>
-</div>
-</div>
-</section>
+  </section>
 
-<section class="section">
-<div class="container">
-<div class="columns box">
-    <div class="content column md">
+  <section class="section">
+    <div class="container">
+      <div class="columns box">
+        <div class="content column md">
 # Voir par commune
 
 En cliquant sur un département, on peut directement observer tous les accidents et verbalisations
@@ -128,19 +127,18 @@ du département.
 
 Si vous souhaitez vous concentrer sur une commune en particulier, effectuez un clic-droit pour
 demander à voir toutes les communes du département.
+        </div>
+        <div class="column is-half">
+          <video src="casts/commune.webm" autoplay loop>Vidéo de la vue par communes.</video>
+        </div>
+      </div>
     </div>
-    <div class="column is-half">
-        <video src="casts/commune.webm" autoplay loop>
-    </div>
-</div>
-</div>
-</div>
-</section>
+  </section>
 
-<section class="section">
-<div class="container">
-<div class="columns box">
-    <div class="content column md">
+  <section class="section">
+    <div class="container">
+      <div class="columns box">
+        <div class="content column md">
 # Circonscriptions de Police
 
 Il est possible d’explorer les données par circonscription de police.
@@ -156,19 +154,18 @@ l’envoyer à quelqu’un d’autre ou encore la mettre en favori.
 
 Enfin, vous pouvez également choisir la verbalisations de certains services
 uniquement.
+        </div>
+        <div class="column is-half">
+          <video src="casts/circo.webm" autoplay loop>Vidéo d'accès aux circonscriptions de Police.</video>
+        </div>
+      </div>
     </div>
-    <div class="column is-half">
-        <video src="casts/circo.webm" autoplay loop>
-    </div>
-</div>
-</div>
-</div>
-</section>
+  </section>
 
-<section class="section">
-  <div class="container">
-<div class="columns box">
-    <div class="content column md">
+  <section class="section">
+    <div class="container">
+      <div class="columns box">
+        <div class="content column md">
 # Filtrer les données
 
 Trois onglets permettent de sélectionner :
@@ -182,18 +179,18 @@ Ainsi, il est par exemple possible de s’intéresser aux accidents graves impli
 Le petit lien `seul` permet de choisir une seule valeur, sans avoir à décocher les autres valeurs.
 
 Au dessus de chaque rubrique, il est possible de cocher ou décocher toutes les cases.
+        </div>
+        <div class="column is-half">
+          <video src="casts/filtres.webm" autoplay loop>Vidéo de l'utilisation des filtres de données.</video>
+        </div>
+      </div>
     </div>
-    <div class="column is-half">
-        <video src="casts/filtres.webm" autoplay loop>
-    </div>
-</div>
-</div>
-</section>
+  </section>
 
-<section class="section">
-  <div class="container">
-<div class="columns box">
-    <div class="content column md">
+  <section class="section">
+    <div class="container">
+      <div class="columns box">
+        <div class="content column md">
 # S’intéresser à la verbalisation
 
 Au lieu d’indiquer les accidents, il est possible d’afficher la verbalisation.
@@ -206,44 +203,39 @@ où il n’y a pas eu de verbalisation mais des accidents et réciproquement.
 
 Seuls les PV électroniques sont pris en compte. En particulier nous ne disposons pas
 les contrôles automatisés, ni les données délictuelles.
+        </div>
+        <div class="column is-half">
+          <video src="casts/verbalisation.webm" autoplay loop>Vidéo de la visualisation des données de verbalisation.</video>
+        </div>
+      </div>
     </div>
-    <div class="column is-half">
-        <video src="casts/verbalisation.webm" autoplay loop>
-    </div>
-</div>
-</div>
-</section>
+  </section>
 
-<section class="section">
-  <div class="container">
-<div class="columns box">
-    <div class="content column md">
+  <section class="section">
+    <div class="container">
+      <div class="columns box">
+        <div class="content column md">
 # Partager & Imprimer 
 
 Il est possible de partager/sauvegarder une vue particulière (c'est à dire sa localisation, ses données représentées et ses filtres) en copiant l'adresse de la carte à tout moment.
 
 En vue d'une impression, il est également possible de cacher tous les elements de navigation de la carte grâce au raccourci clavier `alt + p`. Associé à un passage en plein écran (touche `F11`), cela permet de maximiser la surface de carte qu'il est possible de capturer par une copie d'écran.
+        </div>
+        <div class="column is-half">
+        </div>
+      </div>
     </div>
-    <div class="column is-half">
-    </div>
-</div>
-</div>
-</section>
-
-
-
-
+  </section>
 </body>
 
 <script>
-    (function() {
-        var converter = new showdown.Converter();
-        var markdown = document.getElementsByClassName("md");
-        for(var i = 0; i < markdown.length; i++) {
-            var el = markdown[i];
-            el.innerHTML = converter.makeHtml(el.innerHTML)
-        }
-    })();
+  (function() {
+    var converter = new showdown.Converter();
+    var markdown = document.getElementsByClassName("md");
+    for (var i = 0; i < markdown.length; i++) {
+      var el = markdown[i];
+      el.innerHTML = converter.makeHtml(el.innerHTML)
+    }
+  })();
 </script>
-
 </html>
