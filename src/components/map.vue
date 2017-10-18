@@ -385,7 +385,7 @@ export default {
         spaceOpacity: 0.8
       }
       if (feature.countElements.ratio !== undefined && !isNaN(feature.countElements.ratio)) {
-        let index = this.legendScale.findIndex(s => feature.countElements.ratio < s)
+        let index = this.legendScale.findIndex(s => feature.countElements.ratio > s)
         index = (index === -1) ? this.legendScale.length : index
         stripesParams.color = this.colors[index]
         stripesParams.weight = this.$store.getters.stripes[index].weight

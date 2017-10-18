@@ -130,7 +130,7 @@ export default new Vuex.Store({
     localLevelDisplay: 'aggregatedByRoad',
     localLevelData: 'accidentsOnly',
     colorScale: colors.defaultColor,
-    colorScaleInverted: true,
+    colorScaleInverted: false,
     basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]],
     showSpinner: false,
     hideAll: false,
@@ -452,7 +452,7 @@ export default new Vuex.Store({
       if (isNaN(avg)) {
         return []
       } else {
-        return [0.9 * avg, avg, 1.1 * avg]
+        return [1.1 * avg, avg, 0.9 * avg]
       }
     },
     colors (state) {
