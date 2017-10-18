@@ -40,16 +40,16 @@
   <div v-if='localLevel'>
     <h4>Données représentées </h4>
     <input type="radio" id="accidentsOnly" :value="constants.ACC" v-model="localLevelData">
-    <label for="accidentsOnly">Accidents</label>
+    <label for="accidentsOnly">{{strings[constants.ACC]}}</label>
     <br>
     <input type="radio" id="pveOnly" :value="constants.PVE" v-model="localLevelData">
-    <label for="pveOnly">PV électroniques</label>
+    <label for="pveOnly">{{strings[constants.PVE]}}</label>
     <br>
     <input type="radio" id="accidentsNoPve" :value="constants.ACC_NO_PVE" v-model="localLevelData">
-    <label for="accidentsNoPve">Axes avec accidents, sans PV électroniques</label>
+    <label for="accidentsNoPve">{{strings[constants.ACC_NO_PVE]}}</label>
     <br>
     <input type="radio" id="pveNoAccidents" :value="constants.PVE_NO_ACC" v-model="localLevelData">
-    <label for="pveNoAccidents">Axes avec PV électroniques, sans accidents</label>
+    <label for="pveNoAccidents">{{strings[constants.PVE_NO_ACC]}}</label>
     <br>
     <br>
 
@@ -81,12 +81,13 @@
 <script>
 import colors from '../assets/json/colors.json'
 import criteriaList from '../assets/json/config.json'
-import constants from '../store/modules/constants'
+import {strings, constants} from '../store/modules/constants'
 
 export default {
   data () {
     return {
       constants,
+      strings,
       colorScale: this.$store.state.colorScale,
       colors: colors.colors,
       colorScaleInverted: this.$store.state.colorScaleInverted,

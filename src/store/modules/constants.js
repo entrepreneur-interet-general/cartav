@@ -1,4 +1,4 @@
-export default {
+const constants = {
   PVE: 'pve',
   ACC: 'acc',
   ACC_NO_PVE: 'accidentsNoPve',
@@ -7,3 +7,13 @@ export default {
   AGG_BY_ROAD: 'aggregatedByRoad',
   CLUSTER: 'cluster'
 }
+
+const strings = {
+  [constants.PVE]: 'PV électroniques',
+  [constants.ACC]: 'Accidents',
+  [constants.ACC_NO_PVE]: 'Axes avec accidents, sans PV électroniques',
+  [constants.PVE_NO_ACC]: 'Axes avec PV électroniques, sans accidents'
+}
+
+export {strings, constants}
+export default constants

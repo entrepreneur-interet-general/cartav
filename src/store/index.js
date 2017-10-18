@@ -337,7 +337,7 @@ export default new Vuex.Store({
         })
       } else {
         const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, constants.ACC, context.getters.view, accidentsSourceFiltering)
-        es.searchAsGeoJsonPoints(ACC, query, 'latitude', 'longitude', accidentsFields).then(function (res) {
+        es.searchAsGeoJsonPoints(constants.ACC, query, 'latitude', 'longitude', accidentsFields).then(function (res) {
           context.commit('accidents_geojson', res)
           context.commit('set_showSpinner', false)
         })
@@ -355,7 +355,7 @@ export default new Vuex.Store({
     getAccidentsFromRoadId (context, roadId) {
       const state = context.state
       const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, constants.ACC, context.getters.view, accidentsSourceFiltering, roadId)
-      return es.searchAsGeoJsonPoints(ACC, query, 'latitude', 'longitude', accidentsFields)
+      return es.searchAsGeoJsonPoints(constants.ACC, query, 'latitude', 'longitude', accidentsFields)
     },
     set_dates (context, o) {
       if (o.type === constants.PVE) {
