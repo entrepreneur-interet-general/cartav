@@ -497,10 +497,11 @@ export default {
     .setView([45.853459, 2.349312], 6)
 
     L.control.sidebar('sidebar').addTo(this.map)
-    const zoomControl = L.control.zoom().addTo(vm.map)
 
-    let geocoder = L.geocoderBAN().addTo(this.map)
+    let geocoder = L.geocoderBAN({ collapsed: false }).addTo(this.map)
     geocoder.markGeocode = this.markGeocode
+
+    const zoomControl = L.control.zoom().addTo(vm.map)
 
     this.tileLayer = L.tileLayer(this.basemapUrl, {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
