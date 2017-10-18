@@ -253,7 +253,7 @@ function generateAggregatedQueryByFilter (criteriaList, dates, services, type, v
     const scope = criteriaList[scopeName]
     for (const criteriaName in scope) {
       const criteria = scope[criteriaName]
-      if (fieldNameType in criteria) {
+      if (fieldNameType in criteria && !criteria.specificFilter) {
         const criteriaPath = scopeName + '.' + criteriaName
         const query = getQueryBase(0)
         const must = generateFilter(criteriaList, dates, services, type, criteriaPath)
