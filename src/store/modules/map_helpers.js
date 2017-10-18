@@ -28,7 +28,7 @@ export default {
       {count: 30, weight: 4, opacity: 0.8, color: 'rgb(100, 0, 0)'},
       {count: 60, weight: 4.5, opacity: 0.85, color: 'rgb(50, 0, 0)'},
       {count: 100, weight: 5, opacity: 0.9, color: 'rgb(20, 0, 0)'},
-      {count: Number.MAX_VALUE, weight: 6, opacity: 1}
+      {count: Number.MAX_VALUE, weight: 6, opacity: 1, color: 'rgb(20, 0, 0)'}
     ].find(x => x.count > count)
     feature.weight = values.weight
 
@@ -49,7 +49,7 @@ export default {
       {count: 800, weight: 4, opacity: 0.85, color: 'rgb(0, 50, 120)'},
       {count: 1500, weight: 4.5, opacity: 0.85, color: 'rgb(0, 40, 110)'},
       {count: 3000, weight: 5, opacity: 0.9, color: 'rgb(0, 20, 80)'},
-      {count: Number.MAX_VALUE, weight: 8, opacity: 1}
+      {count: Number.MAX_VALUE, weight: 8, opacity: 1, color: 'rgb(0, 20, 80)'}
     ].find(x => x.count > count)
 
     return {
