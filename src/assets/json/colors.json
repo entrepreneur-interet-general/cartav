@@ -1,13 +1,13 @@
 {
   "colors": {
-    "greenToRed": ["rgba(46, 255, 0, 0.3)", "rgba(187, 255, 0, 0.3)", "rgba(255, 183, 0, 0.3)", "rgba(255, 73, 1, 0.3)"],
-    "whiteToBlue": ["rgba(159,153,255,0.3)", "rgba(64,50,255,0.5)", "rgba(13,0,204,0.5)", "rgba(6,0,102,0.6)"]
+    "greenToRed": ["rgba(255, 73, 1, 0.3)", "rgba(255, 183, 0, 0.3)", "rgba(187, 255, 0, 0.3)", "rgba(46, 255, 0, 0.3)"],
+    "whiteToBlue": ["rgba(6,0,102,0.6)", "rgba(13,0,204,0.5)", "rgba(64,50,255,0.5)", "rgba(159,153,255,0.3)"]
   },
   "stripes": [
-    {"weight": 8, "angle": 0},
-    {"weight": 7, "angle": 0},
+    {"weight": 6, "angle": 90},
     {"weight": 6.5, "angle": 45},
-    {"weight": 6, "angle": 90}
+    {"weight": 7, "angle": 0},
+    {"weight": 8, "angle": 0}
   ],
   "defaultColor": "whiteToBlue"
 }
