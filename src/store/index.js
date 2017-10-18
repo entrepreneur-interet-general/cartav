@@ -101,7 +101,8 @@ function createUrlQuery (context) {
 }
 
 function formatDate (date) {
-  return `${Math.floor(date / 12)}-${String(date % 12 + 1)}-01`
+  const month = (('00') + String(date % 12 + 1)).slice(-2)
+  return `${Math.floor(date / 12)}-${month}-01`
 }
 
 export default new Vuex.Store({
