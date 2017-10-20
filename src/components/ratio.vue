@@ -88,11 +88,18 @@ export default {
       colorScale: this.$store.state.colorScale,
       colors: colors.colors,
       colorScaleInverted: this.$store.state.colorScaleInverted,
-      basemaps: criteriaList.basemaps,
-      basemapUrl: this.$store.state.basemapUrl
+      basemaps: criteriaList.basemaps
     }
   },
   computed: {
+    basemapUrl: {
+      get () {
+        return this.$store.state.basemapUrl
+      },
+      set (basemapUrl) {
+        this.$store.commit('set_basemapUrl', basemapUrl)
+      }
+    },
     localLevelData: {
       get () {
         return this.$store.state.localLevelData
@@ -141,9 +148,6 @@ export default {
     },
     colorScaleInverted () {
       this.$store.commit('set_colorScaleInverted', this.colorScaleInverted)
-    },
-    basemapUrl () {
-      this.$store.commit('set_basemapUrl', this.basemapUrl)
     }
   }
 }
