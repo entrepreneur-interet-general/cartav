@@ -1,5 +1,5 @@
 <template>
-  <div v-bind:class="{ collapsed: collapsed }">
+  <div v-if="!mobile" v-bind:class="{ collapsed: collapsed }">
     <div id='info-sidebar-header'>
       <span v-if='!collapsed'>
         <i class="glyphicon glyphicon-triangle-right" v-on:click='collapsed = !collapsed'></i>
@@ -18,6 +18,7 @@
 <script>
 import hoverInfo from './hoverInfo'
 import circo from './Circo'
+import L from 'leaflet'
 
 export default {
   data () {
@@ -31,7 +32,10 @@ export default {
   },
   computed: {
     levelIsCirco () {
-      return this.$store.state.route.params.view === 'circonscription' || this.$store.state.route.params.view === 'circonscriptions'
+      return this.$store.getters.levelIsCirco
+    },
+    mobile () {
+      return L.Browser.mobile
     }
   },
   methods: {
