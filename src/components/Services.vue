@@ -6,8 +6,8 @@
     </h4>
     <input v-model="newService" type="text" @focus="focus = true" @blur="focus = false" autofocus>
   <div id="servicesSuggestions" v-if="newService">
-    <div v-for="(s,i) in filteredServices" @mouseover="index = i" @click="pushService(s)" :class="{highlighted: i == index}">
-      {{ s }}
+    <div v-for="(s,i) in filteredServices" @mouseover="index = i" @click="pushService(s.value)" :class="{highlighted: i == index}">
+      <span v-html="s.display"></span>
     </div>
   </div>
   <ul>
@@ -39,7 +39,18 @@ export default {
     filteredServices () {
       const vm = this
       if (vm.newService) {
-        return this.services_list.filter(service => service.toLowerCase().includes(vm.newService.toLowerCase()))
+        let l = vm.newService.toLowerCase().split(' ')
+        return this.services_list
+          .filter(service => l.every(e => service.toLowerCase().includes(e)))
+          .map(function (s) {
+            let res = s
+            for (let word of l) {
+              let length = word.length
+              let position = res.toLowerCase().indexOf(word)
+              res = res.slice(0, position) + '<strong>' + res.slice(position, position + length) + '</strong>' + res.slice(position + length)
+            }
+            return {display: res, value: s}
+          })
       } else {
         return []
       }
@@ -73,7 +84,7 @@ export default {
       switch (e.keyCode) {
         case 13:
         // touche entrée
-          if (vm.focus && vm.filteredServices.length) { vm.pushService(vm.filteredServices[vm.index]) }
+          if (vm.focus && vm.filteredServices.length) { vm.pushService(vm.filteredServices[vm.index].value) }
           break
         case 38:
         // touche flêche haut
@@ -88,6 +99,13 @@ export default {
   }
 }
 </script>
+
+<style>
+#servicesSuggestions > div > span > strong {
+  color: rgb(0, 116, 217);
+  font-weight: bold;
+}
+</style>
 
 <style scoped>
 li {
