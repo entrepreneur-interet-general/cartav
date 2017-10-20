@@ -106,6 +106,7 @@
         <p>
           <ul>
           <li><a href=".#/carte/circonscriptions">Circonscriptions de Police</a></li>
+          <circo v-if="levelIsCirco && mobile"></circo>
           <li><a href=".#/carte/départements">Départements</a></li>
           <li><a href=".#/carte/régions">Régions</a></li>
           </ul>
@@ -122,13 +123,16 @@ import vehiculeCheckbox from './vehicule-checkbox'
 import services from './Services'
 import version from '../assets/json/version.json'
 import yearSlider from './yearSlider'
+import circo from './Circo'
+import L from 'leaflet'
 
 export default {
   components: {
     ratio: ratio,
     vehiculeCheckbox,
     services,
-    yearSlider
+    yearSlider,
+    circo
   },
   data () {
     return {
@@ -141,6 +145,12 @@ export default {
     }
   },
   computed: {
+    levelIsCirco () {
+      return this.$store.getters.levelIsCirco
+    },
+    mobile () {
+      return L.Browser.mobile
+    },
     criteria_list () {
       return this.$store.state.criteria_list
     },
