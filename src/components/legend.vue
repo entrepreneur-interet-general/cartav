@@ -71,7 +71,7 @@ export default {
   right: 0;
   width: 100%;
   overflow: hidden;
-  z-index: 2000;
+  z-index: 1500;
   background-color: rgba(255, 255, 255, 0.90);
   cursor: auto;
 }

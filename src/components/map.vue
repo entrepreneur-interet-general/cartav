@@ -498,7 +498,7 @@ export default {
 
     L.control.sidebar('sidebar').addTo(this.map)
 
-    let geocoder = L.geocoderBAN({ collapsed: false }).addTo(this.map)
+    let geocoder = L.geocoderBAN({ collapsed: false, autofocus: !L.Browser.mobile }).addTo(this.map)
     geocoder.markGeocode = this.markGeocode
 
     const zoomControl = L.control.zoom().addTo(vm.map)

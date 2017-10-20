@@ -61,7 +61,7 @@
                 <span v-else>
                   <span v-for="(val, valName) in criteria.values">
                     <div class="row s-rows">
-                      <div class="col-lg-8 funkyradio">
+                      <div class="col-xs-8 funkyradio">
                         <div class="funkyradio-default">
                             <input type="checkbox" name="checkbox" v-bind:id="criteriaName+valName" :checked="val"/>
                             <label v-bind:for="criteriaName+valName" v-on:click.self="set_criteria($event,categoryName, criteriaName, valName, !val)">
@@ -70,12 +70,12 @@
                             </label>
                         </div>
                       </div>
-                      <div class="col-lg-2 agg_acc">
+                      <div class="col-xs-2 agg_acc">
                         <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
                         <abbr v-bind:title="valName + ' : ' + agg_acc_value(categoryName, criteriaName, valName, false) + ' accidents'">{{ agg_acc_value(categoryName, criteriaName, valName) }}</abbr>
                         </span>
                       </div>
-                      <div class="col-lg-2 agg_pve">
+                      <div class="col-xs-2 agg_pve">
                         <span v-if="agg_pve_value(categoryName, criteriaName, valName)">
                         <abbr v-bind:title="valName + ' : ' + agg_pve_value(categoryName, criteriaName, valName, false) + ' PV électronique'">{{ agg_pve_value(categoryName, criteriaName, valName) }}</abbr>
                         </span>
@@ -106,6 +106,7 @@
         <p>
           <ul>
           <li><a href=".#/carte/circonscriptions">Circonscriptions de Police</a></li>
+          <circo v-if="levelIsCirco && mobile"></circo>
           <li><a href=".#/carte/départements">Départements</a></li>
           <li><a href=".#/carte/régions">Régions</a></li>
           </ul>
@@ -122,13 +123,16 @@ import vehiculeCheckbox from './vehicule-checkbox'
 import services from './Services'
 import version from '../assets/json/version.json'
 import yearSlider from './yearSlider'
+import circo from './Circo'
+import L from 'leaflet'
 
 export default {
   components: {
     ratio: ratio,
     vehiculeCheckbox,
     services,
-    yearSlider
+    yearSlider,
+    circo
   },
   data () {
     return {
@@ -141,6 +145,12 @@ export default {
     }
   },
   computed: {
+    levelIsCirco () {
+      return this.$store.getters.levelIsCirco
+    },
+    mobile () {
+      return L.Browser.mobile
+    },
     criteria_list () {
       return this.$store.state.criteria_list
     },
@@ -206,6 +216,13 @@ export default {
 </script>
 
 <style>
+
+@media (min-width: 768px) {
+  .sidebar {
+    width: 530px;
+  }
+}
+
 .sidebar-tabs{
   border-right: 1px solid #bebebe;
 }

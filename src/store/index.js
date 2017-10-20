@@ -491,6 +491,9 @@ export default new Vuex.Store({
     },
     years (state) {
       return criteriaList.filters['PV électroniques et accidents']['Période temporelle']
+    },
+    levelIsCirco (state) {
+      return state.route.params.view === 'circonscription' || state.route.params.view === 'circonscriptions'
     }
   }
 })
