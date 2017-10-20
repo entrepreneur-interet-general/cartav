@@ -53,7 +53,7 @@ export default {
   top: 0;
   right: 0;
   width: 100%;
-  z-index: 2000;
+  z-index: 1700;
   background-color: rgba(255, 255, 255, 0.90);
   cursor: auto;
 }
