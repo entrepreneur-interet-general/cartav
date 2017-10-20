@@ -61,7 +61,7 @@
                 <span v-else>
                   <span v-for="(val, valName) in criteria.values">
                     <div class="row s-rows">
-                      <div class="col-lg-8 funkyradio">
+                      <div class="col-xs-8 funkyradio">
                         <div class="funkyradio-default">
                             <input type="checkbox" name="checkbox" v-bind:id="criteriaName+valName" :checked="val"/>
                             <label v-bind:for="criteriaName+valName" v-on:click.self="set_criteria($event,categoryName, criteriaName, valName, !val)">
@@ -70,12 +70,12 @@
                             </label>
                         </div>
                       </div>
-                      <div class="col-lg-2 agg_acc">
+                      <div class="col-xs-2 agg_acc">
                         <span v-if="agg_acc_value(categoryName, criteriaName, valName)">
                         <abbr v-bind:title="valName + ' : ' + agg_acc_value(categoryName, criteriaName, valName, false) + ' accidents'">{{ agg_acc_value(categoryName, criteriaName, valName) }}</abbr>
                         </span>
                       </div>
-                      <div class="col-lg-2 agg_pve">
+                      <div class="col-xs-2 agg_pve">
                         <span v-if="agg_pve_value(categoryName, criteriaName, valName)">
                         <abbr v-bind:title="valName + ' : ' + agg_pve_value(categoryName, criteriaName, valName, false) + ' PV électronique'">{{ agg_pve_value(categoryName, criteriaName, valName) }}</abbr>
                         </span>
@@ -206,6 +206,13 @@ export default {
 </script>
 
 <style>
+
+@media (min-width: 768px) {
+  .sidebar {
+    width: 530px;
+  }
+}
+
 .sidebar-tabs{
   border-right: 1px solid #bebebe;
 }
