@@ -1,6 +1,12 @@
 const isNumber = n => !isNaN(parseFloat(n)) && isFinite(n)
-
-const format = n => n.toLocaleString('fr-FR', { maximumSignificantDigits: 3 })
+const localStringSupport = !!(typeof Intl === 'object' && Intl && typeof Intl.NumberFormat === 'function')
+const format = function (n) {
+  if (localStringSupport) {
+    return n.toLocaleString('fr-FR', { maximumSignificantDigits: 3 })
+  } else {
+    return Math.round(n * 1000) / 1000
+  }
+}
 
 function niceDisplay (n) {
   // Met en forme les nombre joliment et correctement typographiquement
