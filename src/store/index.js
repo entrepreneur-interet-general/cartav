@@ -39,6 +39,8 @@ const accidentsFields = {
   _catv_pietons_nb: 'pietons_nb'
 }
 
+const accidentsSourceFiltering = Object.values(accidentsFields).concat(['latitude', 'longitude'])
+
 const radarsFields = {
   'Voie': 'Libellé voie',
   'Sens circulation': 'Sens circulation',
@@ -334,7 +336,7 @@ export default new Vuex.Store({
           context.commit('set_showSpinner', false)
         })
       } else {
-        const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view)
+        const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view, accidentsSourceFiltering)
         es.searchAsGeoJsonPoints(ACC, query, 'latitude', 'longitude', accidentsFields).then(function (res) {
           context.commit('accidents_geojson', res)
           context.commit('set_showSpinner', false)
@@ -352,7 +354,7 @@ export default new Vuex.Store({
     },
     getAccidentsFromRoadId (context, roadId) {
       const state = context.state
-      const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view, roadId)
+      const query = es.generateQuery(state.criteria_list, context.getters.formatedDates, null, ACC, context.getters.view, accidentsSourceFiltering, roadId)
       return es.searchAsGeoJsonPoints(ACC, query, 'latitude', 'longitude', accidentsFields)
     },
     set_dates (context, o) {
