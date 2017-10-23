@@ -40,6 +40,8 @@ import Modal from './Modal'
 import poll from './poll'
 import ACC from '../store/modules/constants'
 
+let mobileTimeout
+
 export default {
   components: {
     legende: legend,
@@ -432,7 +434,20 @@ export default {
         })
         layer.on('click', function (e) {
           // by default, links to the first available view
-          vm.pushLinkTarget(vm.view.linksTo[0].view, layer.geoId)
+          if (!vm.freezeInteractions) {
+            vm.freezeInteractions = true
+            setTimeout(function () { vm.freezeInteractions = false }, 300)
+            if (L.Browser.mobile) {
+              mobileTimeout = setTimeout(function () { vm.pushLinkTarget(vm.view.linksTo[0].view, layer.geoId) }, 300)
+            } else {
+              vm.pushLinkTarget(vm.view.linksTo[0].view, layer.geoId)
+            }
+          } else {
+            if (L.Browser.mobile) {
+              // on mobile, a double tap will not trigger a navigation
+              clearTimeout(mobileTimeout)
+            }
+          }
         })
       }
 
