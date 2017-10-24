@@ -46,13 +46,13 @@
                         </span>
                       </span>
                     </h4>
-                    <div v-if="criteria.type == 'slider'">
-                      <year-slider></year-slider>
-                    </div>
                   </div>
                 </div>
 
-                <span v-if="criteria.type == 'vehiculeFilter'">
+                <span v-if="criteria.type == 'slider'">
+                  <year-slider></year-slider>
+                </span>
+                <span v-else-if="criteria.type == 'vehiculeFilter'">
                   <vehiculeCheckbox
                     :criteriaPath="categoryName+'.'+criteriaName"
                     :criteria="criteria">
