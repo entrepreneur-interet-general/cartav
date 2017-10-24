@@ -45,11 +45,6 @@ export default {
         {label: 'true', value: this.criteria.values.true}
       ]
     }
-  },
-  watch: {
-    choice () {
-
-    }
   }
 }
 </script>
