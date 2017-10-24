@@ -64,6 +64,7 @@ export default {
 
     slider.create(this.sliders.acc, {
       start: [this.begin.acc, this.end.acc],
+      behaviour: 'drag',
       connect: true,
       range: {
         min: this.bounds(ACC)[0],
@@ -81,6 +82,7 @@ export default {
 
     slider.create(this.sliders.pve, {
       start: [this.begin.pve, this.end.pve],
+      behaviour: 'drag',
       connect: true,
       range: {
         min: this.bounds(PVE)[0],
