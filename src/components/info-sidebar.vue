@@ -11,6 +11,7 @@
       <button type="button" class="btn btn-default" v-on:click='restore'><i class="fa fa-level-up"></i> Niveau supérieur</button>
       <circo v-if="levelIsCirco"></circo>
       <hoverInfo :data="infoSidebarData.hoverInfoData"></hoverInfo>
+      <filterSummary></filterSummary>
     </div>
   </div>
 </template>
@@ -19,6 +20,7 @@
 import hoverInfo from './hoverInfo'
 import circo from './Circo'
 import L from 'leaflet'
+import filterSummary from './filterSummary'
 
 export default {
   data () {
@@ -27,8 +29,9 @@ export default {
     }
   },
   components: {
-    hoverInfo: hoverInfo,
-    circo
+    hoverInfo,
+    circo,
+    filterSummary
   },
   computed: {
     levelIsCirco () {
@@ -59,7 +62,7 @@ export default {
 }
 @media (min-width: 768px) {
   #info-sidebar {
-    border-radius: 4px; 
+    border-radius: 4px;
     border: 2px solid rgba(0, 0, 0, 0.2);
     top: 10px;
     right: 10px;
