@@ -1,7 +1,14 @@
 <template>
   <div class='sliders'>
-    <div ref='sliderAcc' class='slider acc'></div>
-    <div ref='sliderPVE' class='slider pve'></div>
+    <br>
+    <h5>Accidents</h5>
+    <span v-bind:class="{offsetTooltip: closeAccHandles}">
+      <div ref='sliderAcc' class='slider acc'></div>
+    </span>
+    <h5>PV électroniques</h5>
+    <span v-bind:class="{offsetTooltip: closePveHandles}">
+      <div ref='sliderPVE' class='slider pve'></div>
+    </span>
   </div>
 </template>
 
@@ -16,6 +23,14 @@ export default {
       begin: {acc: this.$store.state.acc_dates[0], pve: this.$store.state.pve_dates[0]},
       end: {acc: this.$store.state.acc_dates[1], pve: this.$store.state.pve_dates[1]},
       sliders: {}
+    }
+  },
+  computed: {
+    closeAccHandles () {
+      return this.end.acc - this.begin.acc < 22
+    },
+    closePveHandles () {
+      return this.end.pve - this.begin.pve < 6
     }
   },
   methods: {
@@ -135,5 +150,13 @@ export default {
   border-radius: 0px 10px 10px 0px !important;
   width: 16px !important;
   left: -1px !important;
+}
+
+.offsetTooltip .noUi-handle-upper .noUi-tooltip {
+  bottom: 220% !important;
+}
+
+.noUi-tooltip {
+  font-size: 14px;
 }
 </style>
