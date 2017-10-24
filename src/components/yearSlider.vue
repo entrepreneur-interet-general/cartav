@@ -34,7 +34,7 @@ export default {
     }
   },
   methods: {
-    format: val => `${val % 12 + 1}/${Math.floor(val / 12)}`,
+    format: val => `01/${(('00') + String(val % 12 + 1)).slice(-2)}/${Math.floor(val / 12)}`,
     bounds (type) {
       return this.$store.getters.years.bounds[type]
              .map(([year, month]) => year * 12 + month - 1)
