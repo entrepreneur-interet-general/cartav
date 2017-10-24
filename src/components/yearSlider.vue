@@ -13,8 +13,8 @@ import {PVE, ACC} from '../store/modules/constants'
 export default {
   data () {
     return {
-      begin: {},
-      end: {},
+      begin: {acc: this.$store.state.acc_dates[0], pve: this.$store.state.pve_dates[0]},
+      end: {acc: this.$store.state.acc_dates[1], pve: this.$store.state.pve_dates[1]},
       sliders: {}
     }
   },
@@ -41,11 +41,6 @@ export default {
   },
   mounted () {
     const format = { to: this.format }
-
-    this.begin.acc = this.$store.state.acc_dates[0]
-    this.begin.pve = this.$store.state.pve_dates[0]
-    this.end.acc = this.$store.state.acc_dates[1]
-    this.end.pve = this.$store.state.pve_dates[1]
 
     this.sliders = {
       acc: this.$refs.sliderAcc,
