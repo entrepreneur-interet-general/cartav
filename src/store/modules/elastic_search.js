@@ -171,8 +171,8 @@ function generateAggs (type, fieldName, size, topAgghitsFields = null) {
   return aggs
 }
 
-function getQueryBase (size) {
-  return {
+function getQueryBase (size, sourceFiltering = null) {
+  const q = {
     size: size,
     query: {
       constant_score: {
@@ -185,6 +185,8 @@ function getQueryBase (size) {
     },
     aggs: {}
   }
+  if (sourceFiltering) { q._source = sourceFiltering }
+  return q
 }
 
 function addAdditionalFilters (must, type, view) {
@@ -232,9 +234,9 @@ function generateGraphAgg (criteriaList, dates, services, type, view, roadID, ag
   return query
 }
 
-function generateQuery (criteriaList, dates, services, type, view, roadID = null) {
+function generateQuery (criteriaList, dates, services, type, view, sourceFiltering = null, roadID = null) {
   // Génération de la query ES
-  const query = getQueryBase(10000)
+  const query = getQueryBase(10000, sourceFiltering)
   const must = criteriaList ? generateFilter(criteriaList, dates, services, type) : []
 
   if (roadID) {
