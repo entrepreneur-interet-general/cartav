@@ -1,7 +1,14 @@
 <template>
   <div class='sliders'>
-    <div ref='sliderAcc' class='slider acc'></div>
-    <div ref='sliderPVE' class='slider pve'></div>
+    <br>
+    <h5>Accidents</h5>
+    <span v-bind:class="{offsetTooltip: closeAccHandles}">
+      <div ref='sliderAcc' class='slider acc'></div>
+    </span>
+    <h5>PV électroniques</h5>
+    <span v-bind:class="{offsetTooltip: closePveHandles}">
+      <div ref='sliderPVE' class='slider pve'></div>
+    </span>
   </div>
 </template>
 
@@ -13,13 +20,21 @@ import {PVE, ACC} from '../store/modules/constants'
 export default {
   data () {
     return {
-      begin: {},
-      end: {},
+      begin: {acc: this.$store.state.acc_dates[0], pve: this.$store.state.pve_dates[0]},
+      end: {acc: this.$store.state.acc_dates[1], pve: this.$store.state.pve_dates[1]},
       sliders: {}
     }
   },
+  computed: {
+    closeAccHandles () {
+      return this.end.acc - this.begin.acc < 22
+    },
+    closePveHandles () {
+      return this.end.pve - this.begin.pve < 6
+    }
+  },
   methods: {
-    format: val => `${val % 12 + 1}/${Math.floor(val / 12)}`,
+    format: val => `01/${(('00') + String(val % 12 + 1)).slice(-2)}/${Math.floor(val / 12)}`,
     bounds (type) {
       return this.$store.getters.years.bounds[type]
              .map(([year, month]) => year * 12 + month - 1)
@@ -42,11 +57,6 @@ export default {
   mounted () {
     const format = { to: this.format }
 
-    this.begin.acc = this.$store.state.acc_dates[0]
-    this.begin.pve = this.$store.state.pve_dates[0]
-    this.end.acc = this.$store.state.acc_dates[1]
-    this.end.pve = this.$store.state.pve_dates[1]
-
     this.sliders = {
       acc: this.$refs.sliderAcc,
       pve: this.$refs.sliderPVE
@@ -54,6 +64,7 @@ export default {
 
     slider.create(this.sliders.acc, {
       start: [this.begin.acc, this.end.acc],
+      behaviour: 'drag',
       connect: true,
       range: {
         min: this.bounds(ACC)[0],
@@ -71,6 +82,7 @@ export default {
 
     slider.create(this.sliders.pve, {
       start: [this.begin.pve, this.end.pve],
+      behaviour: 'drag',
       connect: true,
       range: {
         min: this.bounds(PVE)[0],
@@ -140,5 +152,13 @@ export default {
   border-radius: 0px 10px 10px 0px !important;
   width: 16px !important;
   left: -1px !important;
+}
+
+.offsetTooltip .noUi-handle-upper .noUi-tooltip {
+  bottom: 220% !important;
+}
+
+.noUi-tooltip {
+  font-size: 14px;
 }
 </style>

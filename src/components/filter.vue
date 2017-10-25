@@ -36,7 +36,7 @@
                   <div class="col-lg-12">
                     <h4>{{ 'display_name' in criteria ? criteria.display_name : criteriaName }}
                       <abbr v-if="criteria.description" class="description-info-circle" v-bind:title="criteria.description"><i class='fa fa-info-circle'></i></abbr>
-                      <span v-if="criteria.type !== 'vehiculeFilter'" class="selectAll">Sélectionner&nbsp;:
+                      <span v-if="!criteria.type" class="selectAll">Sélectionner&nbsp;:
                         <span v-on:click="selectAll(categoryName, criteriaName, true)">
                           tout
                         </span>
@@ -46,13 +46,13 @@
                         </span>
                       </span>
                     </h4>
-                    <div v-if="criteria.type == 'slider'">
-                      <year-slider></year-slider>
-                    </div>
                   </div>
                 </div>
 
-                <span v-if="criteria.type == 'vehiculeFilter'">
+                <span v-if="criteria.type == 'slider'">
+                  <year-slider></year-slider>
+                </span>
+                <span v-else-if="criteria.type == 'vehiculeFilter'">
                   <vehiculeCheckbox
                     :criteriaPath="categoryName+'.'+criteriaName"
                     :criteria="criteria">
