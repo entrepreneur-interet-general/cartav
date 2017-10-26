@@ -38,7 +38,7 @@ import chartComponent from './chartComponent'
 import Spinner from './Spinner'
 import Modal from './Modal'
 import poll from './poll'
-import ACC from '../store/modules/constants'
+import constants from '../store/modules/constants'
 
 let mobileTimeout
 let tileErrorCount = 0
@@ -114,7 +114,7 @@ export default {
     },
     localLevelData () {
       this.infoSidebarData.showGraph = false
-      if (this.localLevelDisplay === 'aggregatedByRoad') {
+      if (this.localLevelDisplay === constants.AGG_BY_ROAD) {
         this.displayLocalLayer()
       }
     },
@@ -173,18 +173,18 @@ export default {
         fillOpacity: 0
       }
 
-      if (this.localLevelDisplay === 'cluster') {
-        this.detailedContentLayerGroup.addLayer(this.createClusterLocal(ACC, this.accidentsLocal))
-      } else if (this.localLevelDisplay === 'heatmap') {
+      if (this.localLevelDisplay === constants.CLUSTER) {
+        this.detailedContentLayerGroup.addLayer(this.createClusterLocal(constants.ACC, this.accidentsLocal))
+      } else if (this.localLevelDisplay === constants.HEATMAP) {
         this.heatMap()
-      } else if (this.localLevelDisplay === 'aggregatedByRoad') {
+      } else if (this.localLevelDisplay === constants.AGG_BY_ROAD) {
         this.aggByRoad()
       }
       if (this.zoomActive && this.detailedContentLayerGroup.getBounds().isValid()) {
         this.map.fitBounds(this.detailedContentLayerGroup.getBounds())
       }
       this.displayContours(() => style, this.myOnEachFeature)
-      if (this.localLevelData !== 'accidentsOnly') {
+      if (this.localLevelData !== constants.ACC) {
         this.showRadars()
       }
     },
@@ -202,7 +202,7 @@ export default {
         }
         vm.highlightedRoadLayer = event.target
         vm.$store.dispatch('getAccidentsFromRoadId', roadId).then(function (res) {
-          vm.roadAccidentsLayerGroup.addLayer(vm.createClusterLocal(ACC, res))
+          vm.roadAccidentsLayerGroup.addLayer(vm.createClusterLocal(constants.ACC, res))
         })
       } else {
         // Second click on same road : reset display
@@ -237,8 +237,8 @@ export default {
       const vm = this
 
       const options = {
-        accidentsOnly: {showAcc: true, showPve: false},
-        pveOnly: {showAcc: false, showPve: true},
+        [constants.ACC]: {showAcc: true, showPve: false},
+        [constants.PVE]: {showAcc: false, showPve: true},
         accidentsNoPve: {showAcc: true, showPve: false},
         pveNoAccidents: {showAcc: false, showPve: true}
       }[vm.localLevelData]
@@ -246,7 +246,7 @@ export default {
       if (options.showAcc) {
         L.geoJson(this.accidentsLocalAgg, {
           style: helpers.styleAccidentsRoads,
-          filter: (feature) => vm.localLevelData === 'accidentsOnly' || feature.properties.otherCount === 0,
+          filter: (feature) => vm.localLevelData === constants.ACC || feature.properties.otherCount === 0,
           onEachFeature (feature, layer) {
             layer.on({
               mouseover (event) {
@@ -269,7 +269,7 @@ export default {
       if (options.showPve) {
         L.geoJson(this.$store.state.pve_agg_by_road, {
           style: helpers.stylePveRoads,
-          filter: (feature) => vm.localLevelData === 'pveOnly' || feature.properties.otherCount === 0,
+          filter: (feature) => vm.localLevelData === constants.PVE || feature.properties.otherCount === 0,
           onEachFeature (feature, layer) {
             layer.on({
               mouseover (event) {

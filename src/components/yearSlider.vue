@@ -15,7 +15,7 @@
 <script>
 import slider from 'nouislider'
 import 'nouislider/distribute/nouislider.css'
-import {PVE, ACC} from '../store/modules/constants'
+import constants from '../store/modules/constants'
 
 export default {
   data () {
@@ -67,8 +67,8 @@ export default {
       behaviour: 'drag',
       connect: true,
       range: {
-        min: this.bounds(ACC)[0],
-        max: this.bounds(ACC)[1]
+        min: this.bounds(constants.ACC)[0],
+        max: this.bounds(constants.ACC)[1]
       },
       step: 3,
       pips: {
@@ -85,8 +85,8 @@ export default {
       behaviour: 'drag',
       connect: true,
       range: {
-        min: this.bounds(PVE)[0],
-        max: this.bounds(PVE)[1]
+        min: this.bounds(constants.PVE)[0],
+        max: this.bounds(constants.PVE)[1]
       },
       step: 1,
       pips: {
@@ -98,7 +98,7 @@ export default {
       tooltips: [format, format]
     })
 
-    for (const type of [ACC, PVE]) {
+    for (const type of [constants.ACC, constants.PVE]) {
       this.sliders[type].noUiSlider.on('update', (v, h) => this.update(v, h, type))
       this.sliders[type].noUiSlider.on('set', () => this.setYear(type))
     }
