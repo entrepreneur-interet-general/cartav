@@ -41,6 +41,7 @@ import poll from './poll'
 import ACC from '../store/modules/constants'
 
 let mobileTimeout
+let tileErrorCount = 0
 
 export default {
   components: {
@@ -523,10 +524,18 @@ export default {
       maxZoom: 18
     }).addTo(this.map)
 
-    this.tileLayer.on('tileerror', function () {
-      // fallback is tile server cannot be reached
-      vm.$store.commit('set_basemapUrl', 'http://osm.psi.minint.fr/{z}/{x}/{y}.png')
-    })
+    this.tileLayer
+      .on('tileerror', function () {
+        // fallback is tile server cannot be reached
+        tileErrorCount++
+        if (tileErrorCount > 10) {
+          vm.$store.commit('set_basemapUrl', 'http://osm.psi.minint.fr/{z}/{x}/{y}.png')
+        }
+      })
+      .on('tileloadstart ', function () {
+        // avoid switching to backup tile server on a single error
+        tileErrorCount = 0
+      })
 
     keyboardJS.bind('e+s+c', function (e) {
       window.open(`${process.env.ES_HOST}/_cat/indices/${process.env.indices.acc},${process.env.indices.pve}`, '_blank')
