@@ -102,9 +102,21 @@ function createUrlQuery (context) {
   return query
 }
 
+function monthYear (date) {
+  return {
+    month: (('00') + String(date % 12 + 1)).slice(-2),
+    year: Math.floor(date / 12)
+  }
+}
+
 function formatDate (date) {
-  const month = (('00') + String(date % 12 + 1)).slice(-2)
-  return `${Math.floor(date / 12)}-${month}-01`
+  const d = monthYear(date)
+  return `${d.year}-${d.month}-01`
+}
+
+function humanDate (date) {
+  const d = monthYear(date)
+  return `01/${d.month}/${d.year}`
 }
 
 export default new Vuex.Store({
@@ -489,6 +501,12 @@ export default new Vuex.Store({
       return {
         pve: [formatDate(state.pve_dates[0]), formatDate(state.pve_dates[1])],
         acc: [formatDate(state.acc_dates[0]), formatDate(state.acc_dates[1])]
+      }
+    },
+    humanDates (state) {
+      return {
+        pve: [humanDate(state.pve_dates[0]), humanDate(state.pve_dates[1])],
+        acc: [humanDate(state.acc_dates[0]), humanDate(state.acc_dates[1])]
       }
     },
     years (state) {
