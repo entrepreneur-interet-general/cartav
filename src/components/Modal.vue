@@ -25,4 +25,10 @@
   p {
     font-size: 16px;
   }
+
+  #modal.black {
+    background-color: black;
+    border: 2px solid orange;
+    color: red;
+  }
 </style>
