@@ -22,7 +22,7 @@ export default {
         this.$store.commit('set_criteria_list', this.$route.query.filters)
       }
       if (this.$route.query.services) {
-        this.$store.commit('set_services_selected', this.$route.query.services.split('|'))
+        this.$store.commit('set_services_selected', this.$route.query.services.split(';;'))
       }
       if (this.$route.query.data) {
         this.$store.commit('set_localLevelData', this.$route.query.data)

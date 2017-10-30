@@ -572,7 +572,7 @@ export default {
       if (vm.$store.getters.localLevel) {
         const query = Object.assign({}, vm.$route.query)
         query.zoom = vm.map.getZoom()
-        query.center = vm.map.getCenter().lat + '|' + vm.map.getCenter().lng
+        query.center = vm.map.getCenter().lat + ',' + vm.map.getCenter().lng
         vm.$router.replace({query: query})
       }
     }
@@ -587,7 +587,7 @@ export default {
     if (this.$route.query && this.$route.query.center && this.$route.query.zoom) {
       this.zoomActive = false
       this.$store.dispatch('set_view')
-      this.map.setView(this.$route.query.center.split('|'), this.$route.query.zoom)
+      this.map.setView(this.$route.query.center.split(','), this.$route.query.zoom)
     } else {
       this.zoomActive = true
       this.$store.dispatch('set_view')
