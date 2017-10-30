@@ -10,6 +10,13 @@
           <h3 slot="title" class="text-info"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></br>Lien obsolète</h3>
           <p slot="text">Ce lien a été créé par une précédente version de l'application. Nous ne pouvons pas restaurer les filtres à l'identique.</p>
         </Modal>
+        <Modal v-if="showCarteAndFurious" @close="showCarteAndFurious = false;" class="black">
+          <h3 slot="title" class="text-info"></h3>
+          <p slot="text"><img src="static/carte-n-furious.png" alt="logo carte and furious" /><br/>
+            Félicitations ! Vous avez retrouvé le vrai nom de ce projet !<br/>
+            Les développeurs : Francis et Tristram
+          </p>
+        </Modal>
     </div>
 </template>
 
@@ -56,6 +63,7 @@ export default {
     return {
       map: null,
       showModal: false,
+      showCarteAndFurious: false,
       tileLayer: null,
       contourLayerGroup: L.layerGroup(),
       contourLayer: null,
@@ -75,7 +83,8 @@ export default {
       roadAccidentsLayerGroup: L.layerGroup(),
       zoomActive: false,
       geocoderMarker: L.circleMarker(),
-      keepGeocoderMarker: false
+      keepGeocoderMarker: false,
+      konami: ''
     }
   },
   computed: mapState({
@@ -548,6 +557,14 @@ export default {
         zoomControl.remove()
       } else {
         zoomControl.addTo(vm.map)
+      }
+    })
+
+    keyboardJS.bind('', function (e) {
+      vm.konami = (vm.konami + e.keyCode).slice(-20)
+      if (vm.konami === '38384040373937396665') {
+        vm.showCarteAndFurious = true
+        vm.$store.commit('set_basemapUrl', 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png')
       }
     })
 
