@@ -5,7 +5,7 @@
     "OSM classique gris": "http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png",
     "OSM hot": "http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
     "Vue satellite": "http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    "OSM gris clair": "https://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaXN0b3BvcG9raSIsImEiOiJjaW12eWw2ZHMwMGFxdzVtMWZ5NHcwOHJ4In0.VvZvyvK0UaxbFiAtak7aVw",
+    "OSM gris clair": "https://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=sk.eyJ1IjoicmhhbmthIiwiYSI6ImNqOWZueXNnNzJzdmsyd3F5NHVzZ2h5MTcifQ.uSqyxHwafkSdGTtls6iDIQ",
     "Noir & noir": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
 
   },
