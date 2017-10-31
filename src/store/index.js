@@ -86,7 +86,7 @@ function createUrlQuery (context) {
   query.filters = furl.encodeFilters(state.criteria_list)
   query.digest = sha
 
-  query.services = state.services_selected.list.join('|')
+  query.services = state.services_selected.list.join(';;')
 
   if (context.getters.view.content === 'detailedContent') {
     query.data = state.localLevelData
