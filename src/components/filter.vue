@@ -224,6 +224,12 @@ export default {
   .sidebar {
     width: 530px;
   }
+  .sidebar-left ~ .sidebar-map .leaflet-left {
+    left: 540px;
+  }
+  .sidebar-left.collapsed ~ .sidebar-map .leaflet-left {
+    left: 50px;
+  }
 }
 
 .sidebar-tabs{
