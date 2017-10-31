@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwzjeC9qaKbie4HMdDc4kXeTPs14jfvik&libraries=geometry"></script>
+    
+  <style type="text/css">
+    html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+#map, #pano {
+    width:100%;
+    height:50%;
+}
+  </style>
+
+  <title>localisation de l'accident</title>
+
+  
+</head>
+
+<body>
+<div id="map"></div>
+<div id="pano"></div>
+  
+<script type='text/javascript'>//<![CDATA[
+
+var getParams = function(name){
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results==null){
+        return null;
+    }
+    else{
+        return decodeURI(results[1]) || 0;
+    }
+};
+
+var panorama, myPlace;
+
+function initialize() {
+
+    var posLat = parseFloat(getParams('posLat'));
+    var posLng = parseFloat(getParams('posLng'));
+    myView = {
+        lat: posLat + 0.0002,
+        lng: posLng + 0.0002
+    };
+    myPlace = {
+        lat: posLat,
+        lng: posLng
+    };
+
+    var map = new google.maps.Map(document.getElementById('map'), {
+        center: myView,
+        zoom: 18
+    });
+
+    panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), {
+        position: myView
+    });
+
+    var marker = new google.maps.Marker({
+        position: myPlace,
+        map: map
+    });
+
+    map.setStreetView(panorama);
+
+    var sv = new google.maps.StreetViewService();
+
+    sv.getPanorama({
+        location: myView,
+        radius: 50
+    }, processSVData);
+}
+
+function processSVData(data, status) {
+
+    if (status === google.maps.StreetViewStatus.OK) {
+
+        var marker_pano = new google.maps.Marker({
+            position: myPlace,
+            map: panorama
+        });
+
+        var heading = google.maps.geometry.spherical.computeHeading(data.location.latLng, marker_pano.getPosition());
+
+        panorama.setPov({
+            heading: heading,
+            pitch: 0
+        });
+    }
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+//]]> 
+
+</script>
+
+  <script>
+  // tell the embed parent frame the height of the content
+  if (window.parent && window.parent.parent){
+    window.parent.parent.postMessage(["resultsFrame", {
+      height: document.body.getBoundingClientRect().height,
+      slug: "ru3m707f"
+    }], "*")
+  }
+</script>
+
+</body>
+
+</html>
+
