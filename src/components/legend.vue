@@ -69,7 +69,7 @@ export default {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 100%;
+  max-height: 25%;
   overflow: hidden;
   z-index: 1500;
   background-color: rgba(255, 255, 255, 0.90);

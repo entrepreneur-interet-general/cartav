@@ -9,8 +9,10 @@
     </div>
     <div id='info-sidebar-content'>
       <button type="button" class="btn btn-default" v-on:click='restore'><i class="fa fa-level-up"></i> Niveau supérieur</button>
+      <hr>
       <circo v-if="levelIsCirco"></circo>
       <hoverInfo :data="infoSidebarData.hoverInfoData"></hoverInfo>
+      <hr>
       <filterSummary></filterSummary>
     </div>
   </div>
@@ -55,7 +57,8 @@ export default {
   position: absolute;
   top: 0;
   right: 0;
-  width: 100%;
+  max-height: 70%;
+  overflow: auto;
   z-index: 1700;
   background-color: rgba(255, 255, 255, 0.90);
   cursor: auto;
