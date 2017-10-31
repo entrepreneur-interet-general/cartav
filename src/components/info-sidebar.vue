@@ -3,7 +3,7 @@
     <div id='info-sidebar-header'>
       <span v-if='!collapsed'>
         <i class="glyphicon glyphicon-triangle-right" v-on:click='collapsed = !collapsed'></i>
-        <span id='header-title'>Navigation & Légende</span>
+        <span id='header-title'>CARTAV</span>
       </span>
       <span id='header-icon' v-on:click='collapsed = !collapsed'><i class="fa fa-compass fa-lg"></i></span>
     </div>
