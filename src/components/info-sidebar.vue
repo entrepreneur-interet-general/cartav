@@ -77,6 +77,7 @@ export default {
 #info-sidebar.collapsed {
   width: 40px;
   height: 40px;
+  overflow: hidden;
 }
 
 .collapsed #info-sidebar-header {
