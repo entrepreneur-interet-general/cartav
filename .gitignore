@@ -1,4 +1,5 @@
 .DS_Store
+esdata/
 node_modules/
 dist/
 npm-debug.log

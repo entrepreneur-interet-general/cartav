@@ -1,0 +1,58 @@
+version: '2'
+
+services:
+
+  esnode1:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.1.2
+    container_name: cartav-esnode1
+    environment:
+      - cluster.name=cartav-cluster
+      - bootstrap.memory_lock=true
+      - path.repo=/home
+      - "ES_JAVA_OPTS=-Xms1536m -Xmx1536m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 3g
+    volumes:
+      - /data/bases/cartav/node1:/usr/share/elasticsearch/data
+      - /data/bases/cartav/backup/:/home
+  esnode2:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.1.2
+    container_name: cartav-esnode2
+    environment:
+      - cluster.name=cartav-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1536m -Xmx1536m"
+      - path.repo=/home
+      - "discovery.zen.ping.unicast.hosts=esnode1"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 3g
+    volumes:
+      - /data/bases/cartav/node2:/usr/share/elasticsearch/data
+
+  esnode3:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.1.2
+    container_name: cartav-esnode3
+    environment:
+      - cluster.name=cartav-cluster
+      - bootstrap.memory_lock=true
+      - path.repo=/home
+      - "ES_JAVA_OPTS=-Xms1536m -Xmx1536m"
+      - "discovery.zen.ping.unicast.hosts=esnode1"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 3g
+    volumes:
+      - /data/bases/cartav/node3:/usr/share/elasticsearch/data
+
+networks:
+  default:
+    external:
+      name: matchid

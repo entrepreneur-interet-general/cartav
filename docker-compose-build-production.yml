@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  cartav-build-prod:
+    build: 
+      context: .
+      dockerfile: Dockerfile.build-production
+      args:
+        proxy: ${http_proxy}
+    image: cartav-build-prod:latest
+    container_name: cartav-build-prod
+    volumes:
+      - ./build:/cartav/build
+      - ./config:/cartav/config
+      - ./index.html:/cartav/index.html
+      - ./src:/cartav/src
+      - ./static:/cartav/static
+      - ./dist:/cartav/dist/
+      - ./.eslintrc.js:/cartav/.eslintrc.js
+      - ./.eslintignore:/cartav/.eslintignore
+      - ./.babelrc:/cartav/.babelrc

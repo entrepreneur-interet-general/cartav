@@ -1,0 +1,54 @@
+version: '2'
+
+services:
+  nginx:
+    image: nginx
+    container_name: cartav-nginx
+    volumes:
+      - ./nginx-dev.conf:/etc/nginx/conf.d/default.conf
+      - ./dist:/usr/share/nginx/html
+    ports:
+      - "8080:80"
+    restart: always
+
+
+  cartav-run-dev:
+    build: 
+      context: .
+      dockerfile: Dockerfile.run-dev
+      args:
+        proxy: ${http_proxy}
+    image: cartav-run-dev:latest
+    container_name: cartav-run-dev
+    volumes:
+      - ./build:/cartav/build
+      - ./config:/cartav/config
+      - ./index.html:/cartav/index.html
+      - ./src:/cartav/src
+      - ./static:/cartav/static
+      - ./dist:/cartav/dist/
+      - ./.eslintrc.js:/cartav/.eslintrc.js
+      - ./.eslintignore:/cartav/.eslintignore
+      - ./.babelrc:/cartav/.babelrc
+ 
+  esnode1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.4
+    container_name: cartav-esnode1
+    environment:
+      - cluster.name=cartav-cluster
+      - bootstrap.memory_lock=true
+      - path.repo=/home
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1536m -Xmx1536m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 3g
+    volumes:
+      - ./esdata/dev:/usr/share/elasticsearch/data
+
+
+
+
+
