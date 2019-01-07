@@ -2,7 +2,7 @@
   <div v-show="!hideAll">
     <div class="sidebar-tabs">
       <ul role="tablist">
-        <li><a href="#ratio" role="tab"><abbr title="Sélectionner le contenu à afficher sur la cartue"><i class="fa fa-sliders"></i></abbr></a></li>
+        <li><a href="#ratio" role="tab"><abbr title="Sélectionner le contenu à afficher sur la carte"><i class="fa fa-sliders"></i></abbr></a></li>
         <li><a href="#timeFilters" role="tab"><abbr title="Spécifier la date ou moment des accidents et PV"><i class="fa fa-clock-o"></i></abbr></a></li>
         <li><a href="#accidentsFilters" role="tab"><abbr title="Filtrer les accidents"><i class="fa fa-car fa-rotate-90"></i><i class="fa fa-male"></i></abbr></a></li>
         <li><a href="#pveFilters" role="tab"><abbr title="Filtrer les PV électroniques"><strong>PVE</strong></abbr></a></li>
@@ -230,6 +230,21 @@ export default {
   .sidebar-left.collapsed ~ .sidebar-map .leaflet-left {
     left: 50px;
   }
+}
+
+.sidebar-tabs, .sidebar-tabs > ul {
+    width: 45px;
+}
+.sidebar.collapsed {
+    width: 45px;
+}
+.sidebar-left .sidebar-content {
+    left: 45px;
+}
+
+.sidebar-tabs > ul > li {
+    left: -2px;
+    position: relative;
 }
 
 .sidebar-tabs{
