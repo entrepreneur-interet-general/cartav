@@ -7,7 +7,7 @@
     <link rel="icon" href="static/favicon.svg" />
     <link rel="stylesheet" href="static/css/bootstrap.min.css">
     <style>
-      #info {
+      #welcomeMessage {
         text-align: center;
         position: fixed;
         left: 0;
@@ -19,14 +19,9 @@
       }
     </style>
   </head>
-  <script>
-    setTimeout(function(){
-      document.getElementById("infoNotWorking").style.display = "block";
-    }, 8000);
-  </script>
   <body>
     <div id="app">
-    <div id = "info">
+    <div id="welcomeMessage">
         <img src="static/cartav.svg" alt="Cartographie accidents - verbalisations">
         <br>
         <br>
@@ -40,4 +35,14 @@
     </div>
     <!-- built files will be auto injected -->
   </body>
+  <script>
+    setTimeout(function(){
+      document.getElementById("infoNotWorking").style.display = "block";
+      if (document.getElementById("appl")) {
+        let infoNode = document.getElementById('welcomeMessage');
+        infoNode.parentNode.removeChild(infoNode);
+      }
+    }, 8000);
+
+  </script>
 </html>

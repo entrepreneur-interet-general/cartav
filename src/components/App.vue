@@ -1,9 +1,8 @@
 <template>
-  <div id="app">
+  <div id="appl">
     <filters id="sidebar" class="sidebar collapsed"></filters>
     <carte class="sidebar-map"></carte>
   </div>
-</div>
 </template>
 
 <script>
@@ -49,9 +48,13 @@ export default {
 </script>
 
 <style>
-html, body, #app {
+html, body, #app, #appl {
   height: 100%;
   width: 100%;
   margin: 0px;
+}
+
+.hideWelcomeMessage {
+  display: none;
 }
 </style>
