@@ -2,13 +2,12 @@ import L from 'leaflet'
 import es from './elastic_search'
 
 const vehiculesIcons = {
-  _catv_voiture_nb: 'car',
-  _catv_utilitaire_nb: 'car',
-  _catv_deuxrouesmotorises_nb: 'motorcycle',
-  _catv_velo_nb: 'bicycle',
-  _catv_poidslourd_nb: 'truck',
-  _catv_vehiculeautre_nb: 'car',
-  _catv_pietons_nb: 'male'
+  _catv_voiture_nb: 'racing.png',
+  _catv_velo_nb: 'bicycle.png',
+  _catv_deuxrouesmotorises_nb: 'motorbike.png',
+  _catv_pietons_nb: 'walker.png',
+  _catv_poidslourd_nb: 'truck-1.png',
+  _catv_vehiculeautre_nb: 'automobile-1.png'
 }
 
 export default {
@@ -125,7 +124,7 @@ export default {
     for (const p in feature.properties) {
       if (p.startsWith('_catv_')) {
         for (let i = 0; i < feature.properties[p]; ++i) {
-          content += '<i class="fa fa-' + vehiculesIcons[p] + ' aria-hidden="true"></i> '
+          content += '<img src=static/' + vehiculesIcons[p] + '></img> '
         }
       }
     }
