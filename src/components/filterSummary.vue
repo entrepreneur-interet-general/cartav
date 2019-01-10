@@ -139,7 +139,7 @@ export default {
     },
     not_involved_vehicle () {
       return {
-        name: 'Véhicules pas impliqués',
+        name: 'Véhicules non impliqués',
         general_rule: '',
         exceptions: _(this.criteria_list[strings[constants.ACC]])
                      .pickBy(v => v.type === 'vehiculeFilter')
