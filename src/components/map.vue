@@ -347,7 +347,8 @@ export default {
         maxClusterRadius: 30,
         singleMarkerMode: false,
         iconCreateFunction: helpers.accidentIconCreateFunction,
-        spiderfyDistanceMultiplier: 1.5
+        spiderfyDistanceMultiplier: 2,
+        spiderLegPolylineOptions: {opacity: 0}
       }).addLayer(datalayer)
     },
     count (type, id) {
@@ -692,19 +693,33 @@ export default {
 }
 
 .my-div-icon {
-  background-color: rgba(255, 0, 0, 0.8);
+  background-color: rgba(224, 232, 255, 0);
   color: white;
   white-space: nowrap;
-  padding: 0.5px;
-  border-radius: 3px;
+  padding: 2px;
+  border-radius: 5px;
+  transition: background-color 0.2s;
+  transition: box-shadow 0.2s;
+}
+
+.my-div-icon:hover {
+  background-color: rgba(255, 255, 255, 0.63);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .radar-div-icon {
-  background-color: rgb(0, 0, 131);
+  background-color: rgba(255, 255, 255, 0);
   color: white;
   white-space: nowrap;
   padding: 2px;
   border-radius: 3px;
+  transition: background-color 0.2s;
+  transition: box-shadow 0.2s;
+}
+
+.radar-div-icon:hover {
+  background-color: rgba(255, 255, 255, 0.63);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .accHighlight {

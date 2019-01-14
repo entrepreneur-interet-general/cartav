@@ -2,12 +2,12 @@ import L from 'leaflet'
 import es from './elastic_search'
 
 const vehiculesIcons = {
-  _catv_voiture_nb: 'racing.png',
+  _catv_voiture_nb: 'racing-2.png',
   _catv_velo_nb: 'bicycle.png',
-  _catv_deuxrouesmotorises_nb: 'motorbike.png',
+  _catv_deuxrouesmotorises_nb: 'motorbike-2.png',
   _catv_pietons_nb: 'walker.png',
   _catv_poidslourd_nb: 'truck-1.png',
-  _catv_vehiculeautre_nb: 'automobile-1.png'
+  _catv_vehiculeautre_nb: 'automobile.png'
 }
 
 export default {
@@ -86,7 +86,7 @@ export default {
     })
   },
   radar_marker (feature, latlng) {
-    const content = '<i class="fa fa-camera aria-hidden="true"></i>'
+    const content = '<img src=static/camera-2.png></img>'
     const myIcon = L.divIcon({className: 'radar-div-icon', html: content, iconSize: null})
     return L.marker(latlng, {icon: myIcon})
   },
