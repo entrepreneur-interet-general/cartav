@@ -1,33 +1,35 @@
 <template>
 <div>
-  <h4> Récapitulatif des filtres </h4>
-  <h5> Donnée représentée </h5>
-  {{ currentView }}
-  <h5> Filtres sur les dates </h5>
+  <h3 id="ghgh">
+    Cette carte représente...
+  </h3>
+  <h4>
+    {{ currentView }}
+  </h4>
   <ul>
     <li v-if="showAcc">
-      Accidents du {{ dates[constants.ACC][0] }} au {{ dates[constants.ACC][1] }}
+      du <strong>{{ dates[constants.ACC][0] }}</strong> au <strong>{{ dates[constants.ACC][1] }}</strong> <span v-if="isMetric || constants.ACC !== localLevelData">pour les accidents</span>
     </li>
     <li v-if="showPVE">
-      PV électroniques du {{ dates[constants.PVE][0] }} au {{ dates[constants.PVE][1] }}
+      du <strong>{{ dates[constants.PVE][0] }}</strong> au <strong>{{ dates[constants.PVE][1] }}</strong> <span v-if="isMetric || constants.PVE !== localLevelData">pour les PVE</span>
     </li>
     <li v-for="criteria in bothFilters">
-      {{criteria.name}} : {{criteria.general_rule}} {{criteria.exceptions.join(', ')}}
+      {{criteria.name}} : <strong>{{criteria.general_rule}} {{criteria.exceptions.join(', ')}}</strong>
     </li>
   </ul>
   <div v-if="showAcc && accFilters.length > 0">
-    <h5> Filtres sur les Accidents </h5>
+    <h3 v-if="constants.ACC !== localLevelData"> Filtres sur les Accidents </h3>
     <ul>
       <li v-for="criteria in accFilters">
-        {{criteria.name}} : {{criteria.general_rule}} {{criteria.exceptions.join(', ')}}
+        {{criteria.name}} : <strong>{{criteria.general_rule}} {{criteria.exceptions.join(', ')}}</strong>
       </li>
     </ul>
   </div>
   <div v-if="showPVE && pveFilters.length > 0">
-    <h5> Filtres sur les PV électroniques </h5>
+    <h3 v-if="constants.PVE !== localLevelData"> Filtres sur les PV électroniques </h3>
     <ul>
       <li v-for="criteria in pveFilters">
-        {{criteria.name}} : {{criteria.general_rule}} {{criteria.exceptions.join(', ')}}
+        {{criteria.name}} : <strong>{{criteria.general_rule}} {{criteria.exceptions.join(', ')}}</strong>
       </li>
     </ul>
   </div>
@@ -98,9 +100,9 @@ export default {
     },
     currentView () {
       if (!this.isMetric) {
-        return strings[this.localLevelData]
+        return 'Les ' + strings[this.localLevelData]
       } else {
-        return `métriques aggrégées par ${this.$store.getters.view.linksTo[0].view}`
+        return `Une métrique aggrégée par ${this.$store.getters.view.linksTo[0].view}`
       }
     },
     bothFilters () {
@@ -156,5 +158,17 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
+h3 {
+  font-size: 12px;
+  color: rgb(105, 105, 105);
+}
+
+ul {
+  padding-left: 15px;
+}
+
+li {
+  list-style-type: circle;
+}
 </style>
