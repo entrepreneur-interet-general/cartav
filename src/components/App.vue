@@ -1,6 +1,6 @@
 <template>
   <div id="appl">
-    <filters id="sidebar" class="sidebar collapsed"></filters>
+    <filters v-if="!pageForPrint" id="sidebar" class="sidebar collapsed"></filters>
     <carte class="sidebar-map"></carte>
   </div>
 </template>
@@ -14,6 +14,11 @@ export default {
   components: {
     carte,
     filters
+  },
+  computed: {
+    pageForPrint () {
+      return this.$store.state.pageForPrint
+    }
   },
   created () {
     if (this.$route.query) {
@@ -40,6 +45,9 @@ export default {
       }
       if (this.$route.query.pveB && this.$route.query.pveE) {
         this.$store.commit('set_pve_dates', [this.$route.query.pveB, this.$route.query.pveE])
+      }
+      if (this.$route.query.pageForPrint) {
+        this.$store.commit('set_page_for_print', true)
       }
     }
     this.$store.dispatch('replace_url_query')

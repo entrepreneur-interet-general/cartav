@@ -149,7 +149,8 @@ export default new Vuex.Store({
     showSpinner: false,
     hideAll: false,
     pve_dates: criteriaList.filters['PV électroniques et accidents']['Période temporelle'].pve.map(([year, month]) => year * 12 + month - 1),
-    acc_dates: criteriaList.filters['PV électroniques et accidents']['Période temporelle'].acc.map(([year, month]) => year * 12 + month - 1)
+    acc_dates: criteriaList.filters['PV électroniques et accidents']['Période temporelle'].acc.map(([year, month]) => year * 12 + month - 1),
+    pageForPrint: false
   },
   mutations: {
     set_services_selected (state, list) {
@@ -233,6 +234,9 @@ export default new Vuex.Store({
     },
     set_acc_dates (state, dates) {
       state.acc_dates = dates
+    },
+    set_page_for_print (state, pageForPrint) {
+      state.pageForPrint = pageForPrint
     }
   },
   actions: {

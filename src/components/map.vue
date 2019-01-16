@@ -1,23 +1,46 @@
 <template>
-    <div id="map2">
-        <infoSidebar v-if="!hideAll" id="info-sidebar" :infoSidebarData="infoSidebarData" class=""></infoSidebar>
-        <legende></legende>
-        <div v-if="infoSidebarData.showGraph">
-          <chartComponent :chartData="infoSidebarData.graphData"></chartComponent>
+<div id="parent1" v-bind:class="{ forPrint: pageForPrint}">
+  <div id="parent2" v-bind:class="{ forPrint: pageForPrint}">
+    <div id="parent3">
+      <img id="cartavLogo" v-if="pageForPrint" src="static/cartav.svg" alt="Cartographie accidents - verbalisations">
+      <div id="resizeableMapParent" v-bind:class="{ forPrint: pageForPrint}">
+        <div id="map2" v-bind:class="{ forPrint: pageForPrint}">
+            <infoSidebar v-if="!pageForPrint" id="info-sidebar" :infoSidebarData="infoSidebarData" class=""></infoSidebar>
+            <legende></legende>
+            <div v-if="infoSidebarData.showGraph">
+              <chartComponent :chartData="infoSidebarData.graphData"></chartComponent>
+            </div>
+            <Spinner></Spinner>
+            <Modal v-if="showModal" @close="showModal = false;">
+              <h3 slot="title" class="text-info"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></br>Lien obsolète</h3>
+              <p slot="text">Ce lien a été créé par une précédente version de l'application. Nous ne pouvons pas restaurer les filtres à l'identique.</p>
+            </Modal>
+            <Modal v-if="showCarteAndFurious" @close="showCarteAndFurious = false;" class="black">
+              <h3 slot="title" class="text-info"></h3>
+              <p slot="text"><img src="static/carte-n-furious.png" alt="logo carte and furious" /><br/>
+                Félicitations ! Vous avez retrouvé le vrai nom de ce projet !<br/>
+                Les développeurs : Francis et Tristram
+              </p>
+            </Modal>
         </div>
-        <Spinner></Spinner>
-        <Modal v-if="showModal" @close="showModal = false;">
-          <h3 slot="title" class="text-info"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></br>Lien obsolète</h3>
-          <p slot="text">Ce lien a été créé par une précédente version de l'application. Nous ne pouvons pas restaurer les filtres à l'identique.</p>
-        </Modal>
-        <Modal v-if="showCarteAndFurious" @close="showCarteAndFurious = false;" class="black">
-          <h3 slot="title" class="text-info"></h3>
-          <p slot="text"><img src="static/carte-n-furious.png" alt="logo carte and furious" /><br/>
-            Félicitations ! Vous avez retrouvé le vrai nom de ce projet !<br/>
-            Les développeurs : Francis et Tristram
-          </p>
-        </Modal>
+      </div>
+
+      <div v-if="pageForPrint" id="printMapText">
+
+        <textarea id="printTitle" autofocus>
+        </textarea>
+
+          <filterSummary id="filterSummary"></filterSummary>
+          <textarea id="commentsArea">
+Commentaires :
+- document généré le {{today}}.
+</textarea>
+      </div>
     </div>
+    <button id="generateDoc" class="btn btn-primary" @click="generateAndDownloadDoc">Générer le document</button>
+  </div>
+
+</div>
 </template>
 
 <script>
@@ -37,6 +60,9 @@ import 'leaflet-contextmenu'
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css'
 import 'leaflet-geocoder-ban/src/leaflet-geocoder-ban.js'
 import 'leaflet-geocoder-ban/src/leaflet-geocoder-ban.css'
+import 'leaflet-easybutton/src/easy-button.js'
+import 'leaflet-easybutton/src/easy-button.css'
+import domtoimage from 'dom-to-image'
 
 import helpers from '../store/modules/map_helpers'
 import infoSidebar from './info-sidebar'
@@ -46,6 +72,7 @@ import Spinner from './Spinner'
 import Modal from './Modal'
 import poll from './poll'
 import constants from '../store/modules/constants'
+import filterSummary from './filterSummary'
 
 let mobileTimeout
 let tileErrorCount = 0
@@ -57,7 +84,8 @@ export default {
     infoSidebar,
     Spinner,
     Modal,
-    poll
+    poll,
+    filterSummary
   },
   data () {
     return {
@@ -98,6 +126,7 @@ export default {
     localLevelData: 'localLevelData',
     basemapUrl: 'basemapUrl',
     hideAll: 'hideAll',
+    pageForPrint: 'pageForPrint',
     view () {
       return this.$store.getters.view
     },
@@ -106,6 +135,9 @@ export default {
     },
     colors () {
       return this.$store.getters.colors
+    },
+    today () {
+      return new Date().toLocaleDateString('fr')
     }
   }),
   watch: {
@@ -152,6 +184,18 @@ export default {
     }
   },
   methods: {
+    generateAndDownloadDoc () {
+      this.$nextTick(() => {
+        domtoimage.toPng(document.getElementById('cartavLogo').parentNode, { quality: 0.95 })
+          .then(function (dataUrl) {
+            let link = document.createElement('a')
+            link.download = 'cartav.png'
+            link.href = dataUrl
+            document.body.appendChild(link)
+            link.click()
+          })
+      })
+    },
     displayContours (styleFunction = null, onEachFeatureFunction = null) {
       const vm = this
       const idName = this.$store.getters.contourFilterFieldName
@@ -522,12 +566,18 @@ export default {
     })
     .setView([45.853459, 2.349312], 6)
 
-    L.control.sidebar('sidebar').addTo(this.map)
+    if (!vm.pageForPrint) {
+      L.control.sidebar('sidebar').addTo(this.map)
 
-    let geocoder = L.geocoderBAN({ collapsed: false, autofocus: !L.Browser.mobile }).addTo(this.map)
-    geocoder.markGeocode = this.markGeocode
+      let geocoder = L.geocoderBAN({ collapsed: false, autofocus: !L.Browser.mobile }).addTo(this.map)
+      geocoder.markGeocode = this.markGeocode
 
-    const zoomControl = L.control.zoom().addTo(vm.map)
+      L.control.zoom().addTo(vm.map)
+
+      L.easyButton('fa-print', function (btn, map) {
+        window.open(window.location.href + '&pageForPrint=true', '_blank')
+      }, 'Imprimer la carte').addTo(vm.map)
+    }
 
     this.tileLayer = L.tileLayer(this.basemapUrl, {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
@@ -549,16 +599,6 @@ export default {
 
     keyboardJS.bind('e+s+c', function (e) {
       window.open(`${process.env.ES_HOST}/_cat/indices/${process.env.indices.acc},${process.env.indices.pve}`, '_blank')
-    })
-
-    keyboardJS.bind('alt+p', function (e) {
-      // permet la Copie d'Écran
-      vm.$store.commit('toggle_hide_all')
-      if (vm.hideAll) {
-        zoomControl.remove()
-      } else {
-        zoomControl.addTo(vm.map)
-      }
     })
 
     keyboardJS.bind('', function (e) {
@@ -603,9 +643,87 @@ export default {
 </script>
 
 <style>
-#map2 {
-     height: 100%;
-     width: auto;
+  #map2, #parent1, #parent2, #parent3, #resizeableMapParent {
+    height: 100%;
+    width: auto;
+  }
+
+  #parent3 {
+    background-color: white;
+  }
+
+  #parent1.forPrint {
+    background-color: rgb(233, 233, 233);
+    background-image: url("/static/oak-2.jpg");
+    height: 150%;
+  }
+
+  #parent2.forPrint {
+    width: 21cm !important;
+    height: 29.7cm !important;
+    margin: 0 auto;
+    position: relative;
+    top: 50px;
+    background-color: white;
+    box-shadow: 0 10px 18px 0 rgba(0, 0, 0, 0.322), 0 16px 30px 0 rgba(0, 0, 0, 0.329);
+  }
+
+  #cartavLogo {
+    display: block;
+    margin: 0 auto;
+    width: 2cm;
+    padding-top: 0.5cm;
+    padding-bottom: 0.3cm;
+  }
+
+  #resizeableMapParent.forPrint {
+    left: 0.5cm !important;
+    position: relative;
+    width: 20cm;
+    height: 15cm;
+    resize: vertical;
+    overflow: auto;
+    box-shadow: 0 0 8px 0 rgba(161, 161, 161, 0.568);
+  }
+
+#printMapText {
+  width: 21cm;
+  background-color: rgb(255, 255, 255);
+
+}
+
+#printTitle {
+  border: none;
+  font-weight: bold;
+  font-size:0.5cm;
+  font-color: black;
+  text-align: center;
+  display: block;
+  margin: 0 auto;
+  width: 20cm;
+  height: 1cm;
+}
+
+#filterSummary {
+  padding-left: 0.5cm;
+  padding-bottom: 0.5cm;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.226);
+}
+
+#commentsArea {
+  background-color: rgb(238, 238, 238);
+  border: none;
+  width: 20cm;
+  height: 3cm;
+  padding-top: 0.1cm;
+  margin-left: 0.5cm;
+}
+
+#generateDoc {
+  display: block;
+  margin: 0 auto;
+  margin-top: 20px;
 }
 
 /*ACCIDENTS*/
