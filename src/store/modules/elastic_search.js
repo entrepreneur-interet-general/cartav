@@ -84,7 +84,7 @@ function generateFilter (criteriaList, dates, services, type, ExceptThisfield = 
       range: {
         [field]: {
           gte: dates[type][0],
-          lt: dates[type][1],
+          lte: dates[type][1],
           format: 'yyyy-MM-dd'
         }
       }

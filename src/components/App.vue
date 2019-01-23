@@ -9,6 +9,11 @@
 import carte from './map'
 import filters from './filter'
 
+function readDateFromUrl (date) {
+  let dateComponents = date.split('x')
+  return new Date(dateComponents[0], dateComponents[1] - 1, dateComponents[2])
+}
+
 export default {
   name: 'app',
   components: {
@@ -41,10 +46,10 @@ export default {
         this.$store.commit('set_divisor', this.$route.query.divisor)
       }
       if (this.$route.query.accB && this.$route.query.accE) {
-        this.$store.commit('set_acc_dates', [this.$route.query.accB, this.$route.query.accE])
+        this.$store.commit('set_acc_dates', [readDateFromUrl(this.$route.query.accB), readDateFromUrl(this.$route.query.accE)])
       }
       if (this.$route.query.pveB && this.$route.query.pveE) {
-        this.$store.commit('set_pve_dates', [this.$route.query.pveB, this.$route.query.pveE])
+        this.$store.commit('set_pve_dates', [readDateFromUrl(this.$route.query.pveB), readDateFromUrl(this.$route.query.pveE)])
       }
       if (this.$route.query.pageForPrint) {
         this.$store.commit('set_page_for_print', true)

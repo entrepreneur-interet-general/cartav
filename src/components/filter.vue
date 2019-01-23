@@ -49,8 +49,8 @@
                   </div>
                 </div>
 
-                <span v-if="criteria.type == 'slider'">
-                  <year-slider></year-slider>
+                <span v-if="criteria.type == 'datePicker'">
+                  <dates-picker></dates-picker>
                 </span>
                 <span v-else-if="criteria.type == 'vehiculeFilter'">
                   <vehiculeCheckbox
@@ -124,7 +124,7 @@ import nd from '../assets/js/niceDisplay'
 import vehiculeCheckbox from './vehicule-checkbox'
 import services from './Services'
 import version from '../assets/json/version.json'
-import yearSlider from './yearSlider'
+import datesPicker from './datesPicker'
 import circo from './Circo'
 import L from 'leaflet'
 import constants from '../store/modules/constants'
@@ -134,7 +134,7 @@ export default {
     ratio: ratio,
     vehiculeCheckbox,
     services,
-    yearSlider,
+    datesPicker,
     circo
   },
   data () {

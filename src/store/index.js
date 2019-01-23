@@ -95,28 +95,24 @@ function createUrlQuery (context) {
     query.dividende = state.dividende
     query.divisor = state.divisor
   }
-  query.accB = state.acc_dates[0]
-  query.accE = state.acc_dates[1]
-  query.pveB = state.pve_dates[0]
-  query.pveE = state.pve_dates[1]
+  query.accB = dateforUrl(state.acc_dates[0])
+  query.accE = dateforUrl(state.acc_dates[1])
+  query.pveB = dateforUrl(state.pve_dates[0])
+  query.pveE = dateforUrl(state.pve_dates[1])
   return query
 }
 
-function monthYear (date) {
-  return {
-    month: (('00') + String(date % 12 + 1)).slice(-2),
-    year: Math.floor(date / 12)
-  }
+function formatDate (d) {
+  return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
 }
 
-function formatDate (date) {
-  const d = monthYear(date)
-  return `${d.year}-${d.month}-01`
+function humanDate (d) {
+  return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' +
+  d.getFullYear()
 }
 
-function humanDate (date) {
-  const d = monthYear(date)
-  return `01/${d.month}/${d.year}`
+function dateforUrl (d) {
+  return d.getFullYear() + 'x' + ('0' + (d.getMonth() + 1)).slice(-2) + 'x' + ('0' + d.getDate()).slice(-2)
 }
 
 export default new Vuex.Store({
@@ -148,8 +144,8 @@ export default new Vuex.Store({
     basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]],
     showSpinner: false,
     hideAll: false,
-    pve_dates: criteriaList.filters['PV électroniques et accidents']['Période temporelle'].pve.map(([year, month]) => year * 12 + month - 1),
-    acc_dates: criteriaList.filters['PV électroniques et accidents']['Période temporelle'].acc.map(([year, month]) => year * 12 + month - 1),
+    pve_dates: criteriaList.filters['PV électroniques et accidents']['Période temporelle'].pve.map(([year, month, day]) => new Date(year, month - 1, day)),
+    acc_dates: criteriaList.filters['PV électroniques et accidents']['Période temporelle'].acc.map(([year, month, day]) => new Date(year, month - 1, day)),
     pageForPrint: false
   },
   mutations: {
