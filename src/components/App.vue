@@ -56,6 +56,7 @@ export default {
       }
     }
     this.$store.dispatch('replace_url_query')
+    this.$store.dispatch('getDataDateBounds')
   }
 }
 </script>

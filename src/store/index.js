@@ -144,8 +144,10 @@ export default new Vuex.Store({
     basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]],
     showSpinner: false,
     hideAll: false,
-    pve_dates: criteriaList.filters['PV électroniques et accidents']['Période temporelle'].pve.map(([year, month, day]) => new Date(year, month - 1, day)),
-    acc_dates: criteriaList.filters['PV électroniques et accidents']['Période temporelle'].acc.map(([year, month, day]) => new Date(year, month - 1, day)),
+    acc_dates: [new Date(), new Date()],
+    pve_dates: [new Date(), new Date()],
+    acc_dates_bounds: {minDate: new Date(1900, 0, 1), maxDate: new Date(2042, 0, 1)},
+    pve_dates_bounds: {minDate: new Date(1900, 0, 1), maxDate: new Date(2042, 0, 1)},
     pageForPrint: false
   },
   mutations: {
@@ -230,6 +232,12 @@ export default new Vuex.Store({
     },
     set_acc_dates (state, dates) {
       state.acc_dates = dates
+    },
+    set_pve_dates_bounds (state, dates) {
+      state.pve_dates_bounds = dates
+    },
+    set_acc_dates_bounds (state, dates) {
+      state.acc_dates_bounds = dates
     },
     set_page_for_print (state, pageForPrint) {
       state.pageForPrint = pageForPrint
@@ -377,6 +385,21 @@ export default new Vuex.Store({
       }
       context.dispatch('push_url_query')
       context.dispatch('set_view')
+    },
+    getDataDateBounds (context) {
+      const state = context.state
+
+      let fieldName = state.criteria_list['PV électroniques et accidents']['Période temporelle']['field_name_pve']
+      es.dateBounds(constants.PVE, fieldName).then(res => {
+        context.commit('set_pve_dates_bounds', res)
+        context.commit('set_pve_dates', [res.minDate, res.maxDate])
+      })
+
+      fieldName = state.criteria_list['PV électroniques et accidents']['Période temporelle']['field_name_acc']
+      es.dateBounds(constants.ACC, fieldName).then(res => {
+        context.commit('set_acc_dates_bounds', res)
+        context.commit('set_acc_dates', [res.minDate, res.maxDate])
+      })
     }
   },
   getters: {
@@ -508,9 +531,6 @@ export default new Vuex.Store({
         pve: [humanDate(state.pve_dates[0]), humanDate(state.pve_dates[1])],
         acc: [humanDate(state.acc_dates[0]), humanDate(state.acc_dates[1])]
       }
-    },
-    years (state) {
-      return criteriaList.filters['PV électroniques et accidents']['Période temporelle']
     },
     levelIsCirco (state) {
       return state.route.params.view === 'circonscription' || state.route.params.view === 'circonscriptions'

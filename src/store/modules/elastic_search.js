@@ -3,7 +3,7 @@ import _ from 'lodash'
 import aggregationLevelsInfos from '../../assets/json/aggregationLevelsInfos'
 import constants from './constants'
 
-export default { search, searchAsGeoJsonPoints, searchAsGeoJsonGeom, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, querySimpleFilter, searchSimpleFilter, toRoadsDict, generateGraphAgg, keysList }
+export default { search, searchAsGeoJsonPoints, searchAsGeoJsonGeom, generateQuery, generateAggregatedQuery, generateAggregatedQueryByFilter, querySimpleFilter, searchSimpleFilter, toRoadsDict, generateGraphAgg, keysList, dateBounds }
 
 const index = process.env.indices
 
@@ -48,6 +48,30 @@ function keysList (type, fieldName, size) {
   }
   return search(type, query)
     .then(resp => resp.aggregations.group_by.buckets.map(bucket => bucket.key))
+}
+
+function dateBounds (type, fieldName) {
+  const query = {
+    size: 0,
+    aggs: {
+      dates_stats: {
+        stats: {
+          field: fieldName
+        }
+      }
+    }
+  }
+  return search(type, query)
+    .then(resp => {
+      let minDate = new Date(resp.aggregations.dates_stats.min_as_string)
+      minDate.setHours(0, 0, 0, 0)
+      let maxDate = new Date(resp.aggregations.dates_stats.max_as_string)
+      maxDate.setHours(0, 0, 0, 0)
+      return {
+        minDate: minDate,
+        maxDate: maxDate
+      }
+    })
 }
 
 function toRoadsDict (json, otherCount) {

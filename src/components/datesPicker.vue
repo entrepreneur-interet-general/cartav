@@ -38,10 +38,10 @@ export default {
   },
   computed: {
     configAcc () {
-      return {...this.config, ...this.bounds(this.acc)}
+      return {...this.config, ...this.accBounds}
     },
     configPve () {
-      return {...this.config, ...this.bounds(this.pve)}
+      return {...this.config, ...this.pveBounds}
     },
     accidentsStartDate: {
       get () {
@@ -106,6 +106,12 @@ export default {
           })
         }
       }
+    },
+    accBounds () {
+      return this.$store.state.acc_dates_bounds
+    },
+    pveBounds () {
+      return this.$store.state.pve_dates_bounds
     }
   },
   methods: {
@@ -113,12 +119,6 @@ export default {
       // s expected to be in YYYY-MM-DD format
       let da = s.split('-')
       return new Date(da[0], da[1] - 1, da[2])
-    },
-    bounds (type) {
-      let bounds = this.$store.getters.years.bounds[type]
-      let minDate = new Date(bounds[0][0], bounds[0][1] - 1, bounds[0][2])
-      let maxDate = new Date(bounds[1][0], bounds[1][1] - 1, bounds[1][2])
-      return { minDate, maxDate }
     },
     setDateAcc (selectedDates, dateStr, instance) {
       let vm = this

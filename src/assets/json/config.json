@@ -16,13 +16,7 @@
         "field_name_pve": "DATE_JOUR_REEL_INFRACTION",
         "field_name_acc": "date",
         "type": "datePicker",
-        "specificFilter": true,
-        "bounds": {
-          "acc": [[2005, 1, 1], [2018, 10, 31]],
-         "pve": [[2015, 1, 1], [2018, 9, 30]]
-        },
-        "acc": [[2012, 1, 1], [2018, 10, 31]],
-        "pve": [[2017, 1, 1], [2018, 9, 30]]
+        "specificFilter": true
       },
       "Jour" : {
         "field_name_pve": "LIBELLE_JOUR_INFRACTION",
