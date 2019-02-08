@@ -145,8 +145,8 @@ export default new Vuex.Store({
     basemapUrl: criteriaList.basemaps[Object.keys(criteriaList.basemaps)[1]],
     showSpinner: false,
     hideAll: false,
-    acc_dates: [new Date(), new Date()],
-    pve_dates: [new Date(), new Date()],
+    acc_dates: [new Date(0), new Date(0)],
+    pve_dates: [new Date(0), new Date(0)],
     acc_dates_bounds: {minDate: new Date(1900, 0, 1), maxDate: new Date(2042, 0, 1)},
     pve_dates_bounds: {minDate: new Date(1900, 0, 1), maxDate: new Date(2042, 0, 1)},
     pageForPrint: false,
@@ -397,13 +397,17 @@ export default new Vuex.Store({
       let fieldName = state.criteria_list['PV électroniques et accidents']['Période temporelle']['field_name_pve']
       es.dateBounds(constants.PVE, fieldName).then(res => {
         context.commit('set_pve_dates_bounds', res)
-        context.commit('set_pve_dates', [res.minDate, res.maxDate])
+        if (!state.pve_dates[0].getTime()) {
+          context.commit('set_pve_dates', [res.minDate, res.maxDate])
+        }
       })
 
       fieldName = state.criteria_list['PV électroniques et accidents']['Période temporelle']['field_name_acc']
       es.dateBounds(constants.ACC, fieldName).then(res => {
         context.commit('set_acc_dates_bounds', res)
-        context.commit('set_acc_dates', [res.minDate, res.maxDate])
+        if (!state.acc_dates[0].getTime()) {
+          context.commit('set_acc_dates', [res.minDate, res.maxDate])
+        }
       })
     },
     getLocalStorageFavorites (context) {
@@ -417,7 +421,6 @@ export default new Vuex.Store({
       context.commit('set_favorites_list', favoritesList)
     },
     setNewFavorite (context, favorite) {
-      console.log(localStorage.getItem('cartavFavorites'))
       let favoritesList = JSON.parse(localStorage.getItem('cartavFavorites'))
       favoritesList.push(favorite)
       localStorage.setItem('cartavFavorites', JSON.stringify(favoritesList))
@@ -436,7 +439,6 @@ export default new Vuex.Store({
     deleteFavoriteName (context, name) {
       let favoritesList = JSON.parse(localStorage.getItem('cartavFavorites'))
       let newList = _.filter(favoritesList, (value) => {
-        console.log(value)
         return value.name !== name
       })
       localStorage.setItem('cartavFavorites', JSON.stringify(newList))
