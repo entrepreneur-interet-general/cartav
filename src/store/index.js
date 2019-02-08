@@ -14,8 +14,9 @@ import aggregationLevelsInfos from '../assets/json/aggregationLevelsInfos'
 import furl from './modules/filters_in_url'
 import router from '../router'
 import constants from './modules/constants.js'
-
 import CryptoJS from 'crypto-js'
+
+/* global localStorage */
 
 Vue.use(Vuex)
 
@@ -148,7 +149,8 @@ export default new Vuex.Store({
     pve_dates: [new Date(), new Date()],
     acc_dates_bounds: {minDate: new Date(1900, 0, 1), maxDate: new Date(2042, 0, 1)},
     pve_dates_bounds: {minDate: new Date(1900, 0, 1), maxDate: new Date(2042, 0, 1)},
-    pageForPrint: false
+    pageForPrint: false,
+    favoritesList: []
   },
   mutations: {
     set_services_selected (state, list) {
@@ -241,6 +243,9 @@ export default new Vuex.Store({
     },
     set_page_for_print (state, pageForPrint) {
       state.pageForPrint = pageForPrint
+    },
+    set_favorites_list (state, favoritesList) {
+      state.favoritesList = favoritesList
     }
   },
   actions: {
@@ -400,6 +405,42 @@ export default new Vuex.Store({
         context.commit('set_acc_dates_bounds', res)
         context.commit('set_acc_dates', [res.minDate, res.maxDate])
       })
+    },
+    getLocalStorageFavorites (context) {
+      let favoritesList
+      if (!localStorage.getItem('cartavFavorites')) {
+        localStorage.setItem('cartavFavorites', '[]')
+        favoritesList = []
+      } else {
+        favoritesList = JSON.parse(localStorage.getItem('cartavFavorites'))
+      }
+      context.commit('set_favorites_list', favoritesList)
+    },
+    setNewFavorite (context, favorite) {
+      console.log(localStorage.getItem('cartavFavorites'))
+      let favoritesList = JSON.parse(localStorage.getItem('cartavFavorites'))
+      favoritesList.push(favorite)
+      localStorage.setItem('cartavFavorites', JSON.stringify(favoritesList))
+      context.dispatch('getLocalStorageFavorites')
+    },
+    updateFavoriteName (context, {oldName, newName}) {
+      let favoritesList = JSON.parse(localStorage.getItem('cartavFavorites'))
+      for (let f of favoritesList) {
+        if (f.name === oldName) {
+          f.name = newName
+        }
+      }
+      localStorage.setItem('cartavFavorites', JSON.stringify(favoritesList))
+      context.dispatch('getLocalStorageFavorites')
+    },
+    deleteFavoriteName (context, name) {
+      let favoritesList = JSON.parse(localStorage.getItem('cartavFavorites'))
+      let newList = _.filter(favoritesList, (value) => {
+        console.log(value)
+        return value.name !== name
+      })
+      localStorage.setItem('cartavFavorites', JSON.stringify(newList))
+      context.dispatch('getLocalStorageFavorites')
     }
   },
   getters: {

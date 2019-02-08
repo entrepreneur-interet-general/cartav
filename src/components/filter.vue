@@ -105,6 +105,10 @@
           La documentation de cet outil est disponible
           <a href="./static/doc/index.html" target="_blank">en suivant ce lien</a>.
         </p>
+      </div>
+
+      <div class="sidebar-pane" id="favorite">
+        <h1 class="sidebar-header">Raccourcis et vues favorites<span class="sidebar-close"><i class="glyphicon glyphicon-triangle-left"></i></span></h1>
         <h3>Raccourcis</h3>
         <p>
           <ul>
@@ -114,7 +118,47 @@
           <li><a href=".#/carte/régions">Régions</a></li>
           </ul>
         </p>
+        <h3>Vues favorites</h3>
+          <span v-if="showVueInput">
+            <form class="form-inline">
+              <input id="newFavoriteNameInput" type="text" class="form-control" placeholder="Entrer le nom de la vue" v-model='newFavoriteViewName'>
+              <button type="button" class="btn btn-default" v-on:click='addViewToFavorite'>Ok</button>
+              <button type="button" class="btn btn-link greyButton" v-on:click='showVueInput = false'>Annuler</button>
+            </form>
+
+          </span>
+          <span v-else>
+            <button type="button" class="btn btn-default" v-on:click='showVueInputField'><i class="fa fa-plus"></i> Ajouter la vue courrante</button>
+          </span>
+
+          <p>
+            <ul>
+              <li v-for="f in favoritesList">
+                <span v-if="f.name === editFavoriteName">
+                  <form class="form-inline" style="display: inline;">
+                    <input id="updatedFavoriteNameInput" type="text" class="form-control" v-model="changeFavoriteNameTo">
+                    <button type="button" class="btn btn-default" v-on:click='updateFavoriteName'>Ok</button>
+                    <button type="button" class="btn btn-link greyButton" v-on:click="editFavoriteName = ''">Annuler</button>
+                  </form>
+                </span>
+                <span v-else>
+                  <!-- {{ f.name }} -->
+                  <a :href="f.url" target="_blank">{{ f.name }}</a>
+                </span>
+                <span :class="{favoriteOptions: true, hideFavoritesOptions: showDeleteView === f.name || f.name === editFavoriteName}">
+                  <i class="fa fa-pencil" title="éditer le nom" v-on:click='favoriteNameChange(f.name)'></i>
+                  <i class="fa fa-trash" title="supprimer la vue" v-on:click='showDeleteView = f.name'></i>
+                </span>
+                <p v-if="showDeleteView === f.name" class="text-danger">
+                  <span>Supprimer cette vue : </span>
+                    <button type="button" class="btn btn-default" v-on:click='deleteFavoriteName(f.name)'>Ok</button>
+                    <button type="button" class="btn btn-link greyButton" v-on:click="showDeleteView = ''">Annuler</button>
+                </p>
+              </li>
+            </ul>
+          </p>
       </div>
+
     </div>
   </div>
 </template>
@@ -145,7 +189,12 @@ export default {
         {id: 'timeFilters', tabTitle: 'Filtres temporels (accidents et PVE)', category: 'PV électroniques et accidents'},
         {id: 'accidentsFilters', tabTitle: 'Filtres accidents', category: 'Accidents'},
         {id: 'pveFilters', tabTitle: 'Filtres PV électroniques', category: 'PV électroniques'}
-      ]
+      ],
+      showVueInput: false,
+      newFavoriteViewName: '',
+      editFavoriteName: '',
+      changeFavoriteNameTo: '',
+      showDeleteView: ''
     }
   },
   computed: {
@@ -166,6 +215,31 @@ export default {
     },
     hideAll () {
       return this.$store.state.hideAll
+    },
+    favoritesList () {
+      return this.$store.state.favoritesList
+    }
+  },
+  watch: {
+    showVueInput (newVal, oldVal) {
+      if (newVal === false) {
+        this.newFavoriteViewName = ''
+      } else {
+        this.showDeleteView = false
+        this.editFavoriteName = ''
+      }
+    },
+    showDeleteView (newVal, oldVal) {
+      if (newVal) {
+        this.showVueInput = false
+        this.editFavoriteName = ''
+      }
+    },
+    editFavoriteName (newVal, oldVal) {
+      if (newVal) {
+        this.showVueInput = false
+        this.showDeleteView = ''
+      }
     }
   },
   methods: {
@@ -214,6 +288,29 @@ export default {
       } else {
         return this.agg_acc[categoryName + '.' + criteriaName + '.' + valName]
       }
+    },
+    addViewToFavorite () {
+      this.$store.dispatch('setNewFavorite', {name: this.newFavoriteViewName, url: window.location.href})
+      this.showVueInput = false
+    },
+    updateFavoriteName (name) {
+      this.$store.dispatch('updateFavoriteName', {oldName: this.editFavoriteName, newName: this.changeFavoriteNameTo})
+    },
+    deleteFavoriteName (name) {
+      this.$store.dispatch('deleteFavoriteName', name)
+    },
+    favoriteNameChange (name) {
+      this.editFavoriteName = name
+      this.changeFavoriteNameTo = name
+      this.$nextTick(function () {
+        document.getElementById('updatedFavoriteNameInput').focus()
+      })
+    },
+    showVueInputField () {
+      this.showVueInput = true
+      this.$nextTick(function () {
+        document.getElementById('newFavoriteNameInput').focus()
+      })
     }
   }
 }
@@ -418,4 +515,26 @@ label:hover > .seul, .seul:hover{
   color: #337ab7;
 }
 
+#helpIcon {
+  margin-top: 50px;
+}
+
+.favoriteOptions {
+  display: none;
+}
+
+li:hover > .favoriteOptions {
+  display: inline;
+  padding-left: 15px;
+  color: grey;
+  cursor: pointer;
+}
+
+.greyButton {
+  color: grey;
+}
+
+.hideFavoritesOptions {
+  display: none !important;
+}
 </style>
