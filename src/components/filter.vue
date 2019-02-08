@@ -2,11 +2,12 @@
   <div v-show="!hideAll">
     <div class="sidebar-tabs">
       <ul role="tablist">
-        <li><a href="#ratio" role="tab"><abbr title="Sélectionner le contenu à afficher sur la carte"><i class="fa fa-sliders"></i></abbr></a></li>
-        <li><a href="#timeFilters" role="tab"><abbr title="Spécifier la date ou moment des accidents et PV"><i class="fa fa-clock-o"></i></abbr></a></li>
-        <li><a href="#accidentsFilters" role="tab"><abbr title="Filtrer les accidents"><i class="fa fa-car fa-rotate-90"></i><i class="fa fa-male"></i></abbr></a></li>
-        <li><a href="#pveFilters" role="tab"><abbr title="Filtrer les PV électroniques"><strong>PVE</strong></abbr></a></li>
-        <li><a href="#help" role="tab"><abbr title="Aide"><i class="glyphicon glyphicon-question-sign"></i></abbr></a></li>
+        <li><a href="#ratio" role="tab" title="Sélectionner le contenu à afficher sur la carte"><i class="fa fa-sliders"></i></a></li>
+        <li><a href="#timeFilters" role="tab" title="Spécifier la date ou moment des accidents et PV"><i class="fa fa-clock-o"></i></a></li>
+        <li><a href="#accidentsFilters" role="tab" title="Filtrer les accidents"><i class="fa fa-car fa-rotate-90"></i><i class="fa fa-male"></i></a></li>
+        <li><a href="#pveFilters" role="tab" title="Filtrer les PV électroniques"><strong>PVE</strong></a></li>
+        <li id="helpIcon"><a href="#help" role="tab" title="Aide"><i class="glyphicon glyphicon-question-sign"></i></a></li>
+        <li><a href="#favorite" role="tab" title="Vues favorites"><i class="fa fa-star"></i></a></li>
       </ul>
     </div>
 
